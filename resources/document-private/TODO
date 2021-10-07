@@ -1,0 +1,62 @@
+
+
+
+
+
+
+
+
+
+
+mapbox
+leaflet
+
+
+done:
+rollout structure and database
+
+
+shahram esmaeeli 09124785435
+
+* web service test util
+* date based on lang
+
+* Mongo search case in sensitive
+* dto validation rules (multi field)
+* vantar List Set Collection check
+* vantar enum values check
+* FetchCatch does not support Viwable
+
+
+*/5 * * * * wget http://example.com/check
+
+
+Test Server:
+    RAM: min 16G
+    HARD: 1T SSD
+    CPU: min 4core 3GHz
+    OS: Linux Ubuntu or Debian based with SSH access
+
+
+Production Server:
+    ----------------------------------
+    Server: database
+    RAM: min 16G
+    HARD: 2T SSD
+    CPU: Multiple 3.2 GHz+ multi-core
+    OS: Linux Ubuntu or Debian based with SSH access
+    ----------------------------------
+    Server: file repository
+    RAM: 8G
+    HARD: 4T
+    CPU: Multiple 3.2 GHz+ multi-core
+    OS: Linux Ubuntu or Debian based with SSH access
+    ----------------------------------
+    Server: backend and frontend
+    RAM: 16G
+    HARD: 1T
+    CPU: Multiple 3.2 GHz+ multi-core
+    OS: Linux Ubuntu or Debian based with SSH access
+
+    * database + backend + front end server may be one system configures as a whole or as VMs
+    * file server is preferred to be a separated system

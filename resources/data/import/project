@@ -1,0 +1,18 @@
+id=1
+type=RadioMetric
+name={"en":"MCI EMWDM","fa":"پرتوسنجی"}
+slug=radiometric
+employer={"en":"MCI","fa":"همراه اول"}
+executor={"en":"ACECR","fa":"جهاد دانشگاهی"}
+startTime=2019-01-01
+expectedFinishTime=2019-01-01
+-----------------------------
+id=2
+type=HseAudit
+name={"en":"Hse Audit","fa":"بازرسی نصب سایت های فاز ۸"}
+slug=radiometric
+employer={"en":"MCI","fa":"همراه اول"}
+executor={"en":"ACECR","fa":"جهاد دانشگاهی"}
+startTime=2021-01-01
+expectedFinishTime=2022-01-01
+-----------------------------

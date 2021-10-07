@@ -1,0 +1,8 @@
+<Host>
+    <!--
+    add this line
+    /opt/tomcat9/conf/server.xml
+    -->
+    <Context docBase="/opt/tc-tools/files/" path="/static" />
+
+</Host>

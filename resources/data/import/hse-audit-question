@@ -1,0 +1,392 @@
+id=1
+order=1
+questionType=PhotoOnly
+significance=Other
+title={"en":"Self photo on site", "fa":"عکس از خود در محل سایت"}
+comments=گرفتن عکس در سایت برای نشان دادن حضور بازرس الزامی است
+requiresPhoto=true
+requiresAnswer=false
+-----------------------------
+id=2
+order=3
+questionType=PhotoOnly
+significance=Other
+title={"en":"Photo of tower", "fa":"عکس از دکل (ترجیحا با افراد در حال کار روی دکل)"}
+comments=گرفتن عکس که دکل موجود در سایت را به خوبی نشان دهد الزامی است
+requiresPhoto=true
+requiresAnswer=false
+-----------------------------
+id=3
+order=5
+questionType=PhotoOnly
+significance=Other
+title={"en":"Photo of site area", "fa":"عکس از محوطه سایت"}
+comments=گرفتن عکسی که محوطه سایت را نشان دهد الزامی است
+requiresPhoto=true
+requiresAnswer=false
+-----------------------------
+id=4
+order=7
+questionType=TextOnly
+significance=Other
+title={"en":"Site address", "fa":"آدرس سایت"}
+comments=آدرس کامل سایت
+requiresPhoto=false
+requiresAnswer=false
+-----------------------------
+id=5
+order=9
+questionType=TextOnly
+significance=Other
+title={"en":"Height worker names", "fa":"نام دکل بندها"}
+comments=لیست نام دکل بندهای حاضر در سایت
+requiresPhoto=false
+requiresAnswer=true
+-----------------------------
+id=6
+order=11
+questionType=TextOnly
+significance=Other
+title={"en":"Other employee names", "fa":"نام سایر پرسنل"}
+comments=لیست نام سایر پرسنل حاضر در سایت
+requiresPhoto=false
+requiresAnswer=true
+-----------------------------
+id=7
+order=13
+significance=Critical
+questionType=Option
+title={"en":"Safety Helmet (Standard)", "fa":"آیا همه پرسنل کلاه ایمنی دارند؟"}
+comments=داشتن کلاه ایمنی استاندارد (EN397) در همه کارها و برای همه پرسنل اجباری است. حتی اگر یک نفر هم فاقد کلاه استاندارد بود No است.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=8
+order=15
+significance=Critical
+questionType=Option
+title={"en":"Full body Harness (Standard)", "fa":"آیا دکل‌بندها هارنس تمام تنه به تن دارند؟"}
+comments=داشتن هارنس تمام تنه دارای حداقل استاندارد (813EN-361EN-358EN) جهت کار در ارتفاع و برای همهی پرسنل دکلبند اجباریست. حتی اگر یک نفر هم فاقد هارنس استاندارد بود No است.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=9
+order=17
+significance=Critical
+questionType=Option
+title={"en":"Standard Lanyard (Adjustable work positioning & Y-MGO)", "fa":"آیا دکل‌بندها لنیارد به همراه جاذب انرژی و لنیارد موقعیت گیری دارند؟"}
+comments=داشتن لنیارد صعود و فرود با استاندارد EN355 به همراه جاذب انرژی بااستاندارد EN362 و لنیارد موقعیت گیری با استاندارد EN362 در کارهای ارتفاع و برای همه ی پرسنل دکلبند اجباریست. حتی اگر یک نفر از کسانی که در ارتفاع کار می کنند فاقد این دو لنیارد بود، No است.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=10
+order=19
+significance=Critical
+questionType=Option
+title={"en":"Safety certificate (according to the job)", "fa":"آیا پرسنل گواهینامه آموزشی معتبر مثل گواهی کار در ارتفاع برای دکل بندها به همراه دارند؟"}
+comments= همه ی پرسنل حاضر در محل سایت باید دارای گواهینامه ی معتبر متناسب با مخاطرات شغلی خود باشند که تاریخ اعتبار آن نگذشته باشد.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No","Option3":"Has but expired","Option4":"Has but not available","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","Option3":"دارند ولی منقضی شده است","Option4":"دارند ولی بهمراه ندارند","NA":"عدم کاربرد"}}
+-----------------------------
+id=11
+order=21
+significance=Critical
+questionType=Option
+title={"en":"Consideration the weather condition", "fa":"آیا شرایط آب و هوایی برای کار مناسب است؟"}
+comments= در صورت شرایط آب و هوایی بد مثل باد بالای 36 کیلومتر برساعت، یخ زدگی دکل، ساعقه و رعد و برق، باران و برف: درصورت داشتنِ مجوز کار کتبی ارسالی از سوی مدیرعامل به پیمانکاران، به همراه امضاء مقام مسئول، آن آیتم Yes بوده ولی اگر فاقد مجوز کارکتبی از سوی مقام مسئول باشد، آن آیتم No می شود. تصاویر مجوزها باید پیوست شوند.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=12
+order=23
+significance=Major
+questionType=Option
+title={"en":"Permit to work", "fa":"آیا گروه مجوز کار HSE (permit) تمکیل شده با امضای معتبر به همراه دارند؟"}
+comments= مجوز انجام کار که از سوی واحد HSE به پیمانکاران ارسال شده است و باید قبل از شروع کار تکمیل گردد.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=13
+order=25
+significance=Major
+questionType=Option
+title={"en":"Work at height helmets with strings (without cap edge)", "fa":"آیا کلاه ایمنی تمام پرسنل بدون لبه و دارای بند چانه است؟"}
+comments= داشتن کلاه ایمنی استاندارد EN397 با بند چانه و بدون لبه در زمان هرگونه فعالیت در محل سایت اجباریست. حتی اگر یک نفر از پرسنل بالا و پایین، فاقد کلاه با این شرایط باشند، Major است. در کارهای عمرانی نظیر فونداسیون و حفاری، استفاده از کلاه لبه دار بلا مانع است
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=14
+order=27
+significance=Major
+questionType=Option
+title={"en":"Full body Harness (5 attachment points-loops)", "fa":"آیا همه پرسنل هارنس تمام تنه با 5 حلقه هستند؟ حتی اگر یک نفر هم ندارد، پاسخ منفی باشد"}
+comments= داشتن هارنس تمام تنه استاندارد 5 حلقه ای جهت کار در ارتفاع و برای همهی پرسنل دکلبند اجباریست. حتی اگر یک نفر هم فاقد هارنس 5 حلقه ای بود، Major است.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=15
+order=29
+significance=Major
+questionType=Option
+title={"en":"Lighting condition and lighting procurement at night", "fa":"در صورت کار درشب، آیا روشنایی به نحوی است که نفرات بالا و پایین همدیگر را بتوانند ببینند؟ آیا هدلامپ دارند؟"}
+comments= در صورت کار در شب، روشنایی سایت باید کاملا تامین گردد به طوری که نفرات بالا، پایین را ببینند و بتوانند روی دکل یکدیگر و منطقه ی کاری را به طور کامل مشاهده کنند. در این شرایط استفاده از head lamp ضروری بوده و در صورت انجام عملیات نصب در عصر، وجود آن در سایت، الزامی است.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=16
+order=31
+significance=Major
+questionType=Option
+title={"en":"Co2 & Powder Fire Extinguisher on Site", "fa":"آیا کپسول CO2 و کپسول پودر و گاز با نازل پلمپ، تاریخ اعتبار شارژ و گیج در محدوده سبز برای گپسول پودر و گاز در محل سایت موجود است؟ (اگر یکی هم موجود نیست پاسخ خیر می باشد)"}
+comments= وجود کپسول CO2 در سایت، و داشتن نازل و پلمپ سالم ملاک است و کپسول پودر و گاز و داشتن گیج با علامت روی سبز ، و کارت شارژ معتبر ملاک میباشد تصویر دقیق از موارد در صورت مغایرت و تطبیق الزامی است
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=17
+order=33
+significance=Major
+questionType=Option
+title={"en":"Safety Gloves (according to the job)", "fa":"آیا همه کارکنان از دستکش متناسب با کار استفاده می‌کنند؟ (دستکش چرمی برای دکل بندها الزامی است)"}
+comments= استفاده از دستکشهای ایمنی بر طبق نوع کار و مخاطراتش برای کلیه کارکنان دستکش چرمی EN420-EN380 برای دکلبند و سایر دستکشها برای کارکنان دیگر الزامی است. کارگرانی که با طناب و جابجایی بار مواجهند باید دارای دستکش متناسب با کار باشند.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=18
+order=35
+significance=Major
+questionType=Option
+title={"en":"Safe Electric Tools, Dielectric Safety Gloves & Dielectric wrench", "fa":"آیا از تجهیزات ایمنی ضد برق گرفتگی مثل دستکش و تجهیزات ایمنی برق در کارکنان بخش برق استفاده می‌شود؟ آیا آچارهای تجهیزات برقی عایق کاری شده اند؟"}
+comments= استفاده از اتصالات و تجهیزات استاندارد برق و استفاده از دستکش ایمنی ضدبرق برای کارکنانی که با باطریها و تابلوها کار می کنند الزامی است. وجود حداقل بر حسب نیاز یک دستکش در اکیپ پاور الزامی است. اگر نداشتند و با برق کار نمی کردند NO زده و حتما توضیح داده شود که کار برقی نداشتند.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=19
+order=37
+significance=Major
+questionType=Option
+title={"en":"Safety shoes (Anti-Slip)", "fa":"آیا کلیه کارکنان کفش کار دارند؟"}
+comments= استفاده از آچارهای ضد برق کاملا عایق شده برای کارکنانی که با باطریها و تابلوها و تجهیزات برقدار کار میکنند الزامی است. کفشهای ایمنی پنجه فولادی یا کامپوزیت که ترجیحا ضد لغزش و ضد برق برای همه ی پرسنل .
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=20
+order=39
+significance=Major
+questionType=Option
+title={"en":"First aid kit on Site", "fa":"آیا وسایل کمکهای اولیه مجهز در محل سایت موجود است؟"}
+comments=حتما باید جعبه ی کمکهای اولیه در سایت موجود بوده و دارای اقلام زیر باشد: مایع ضد عفونی، باند، گاز استریل ، چسب زخم، دستکش یکبار مصرف، چسبِ باند استریل،قیچی و پنبه ی بهداشتی به تعداد کافی. تصویر الزامی است
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=21
+order=41
+significance=Major
+questionType=Option
+title={"en":"Carrying & Use Barricade tape and Standard Traffic Diversion (signs)", "fa":"آیا در محل سایت ایمن سازی و محوطه سازی مناسب با استفاده از علایم هشدار مانند نوار زرد و غیره انجام شده است؟"}
+comments= نوار خطر زرد رنگ یا تابلوی هشدار شب رنگ و استفاده از آن در مناطقی که احتمال عبور عابرین و دیگر پرسنل وجود دارد. اگر همراهشان نبود No اگر نیاز به استفاده بود ولی استفاده نمی کردند .No همچنین استفاده از انحراف ترافیک با تابلوها و مخروطیها و چراغهای چشمکزن و شبرنگ طبق دستورالعمل مورد نظر میباشد.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=22
+order=43
+significance=Major
+questionType=Option
+title={"en":"Safe Tools Bag", "fa":"آیا دکل‌بندها کیف ابزار مناسب به همراه دارند؟"}
+comments= در صورت داشتن کیف ابزار سالم و مقاوم که به حلقه هارنس متصل است و ابزار به صورت ناخواسته نمی تواند بیرون بریزد؛ گزینه Yes و در صورت نقص در هریک از موارد، گزینه No زده میشود.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=23
+order=45
+significance=Major
+questionType=Option
+title={"en":"Observance of Safety Factors in Crane & Elevator", "fa":"آیا ایمنی ابزار باربری، کار با ماشین‌آلات، گواهینامه راننده جرثقیل، ایمن بودن جرثقیل و ... وجود دارد؟"}
+comments= در این قسمت، بازرس ، نظرِ کلیِ کارشناسیِ خود را در خصوص ایمن بودن یا نبودنِ شرایط کار در باربرداری و کار با ماشینآلات ویژه و بالابر از قبیل گواهینامه ویژه راننده، گواهی سلامت متناسب با نوع ماشین، بازرسی روزانه، بازبودن و تعادل جکها در جرثقیل، عدم روغن ریزی جکها و شلنگها، محصورسازی ناحیه باربرداری، عدم عبور و مرور از زیر بار معلق، سلامت لاستیکها و چراغها و دیگر موارد طبق دستورالعملها بیان میکند.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=24
+order=47
+significance=Major
+questionType=Option
+title={"en":"Safe Welding & Cutting", "fa":"آیا ایمنی کار در خصوص عملیات جوشکاری و برش کاری رعایت می‌گردد؟"}
+comments= در این قسمت، بازرس ، نظرِ کلیِ کارشناسیِ خود را در خصوص ایمن بودن یا نبودنِ شرایط کار در جوشکاری از قبیل استفاده از PPE مناسب ، تجهیزات استاندارد و ایمن و شرایط نگهداری و استفاده از کپسولها و ... بیان می کند. توضیح مختصر ضروریست
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=25
+order=49
+significance=Major
+questionType=Option
+title={"en":"Excavation Safety", "fa":"آیا موارد ایمنی در خصوص حفاری فونداسیون و تجهیزات به کار رفته حفاری و سیویل رعایت می‌گردد؟"}
+comments= در این قسمت، بازرس ، نظرِ کلیِ کارشناسیِ خود را در خصوص ایمن بودن یا نبودنِ شرایط کار در زمان حفاری فونداسیون و .... از قبیل بررسی نوع خاک و شیب، تجهیزات حفاری مکانیکی و دستی و ... بیان میکند.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=26
+order=51
+significance=Major
+questionType=Option
+title={"en":"Safe Pulley and Ropes & Safe Winch", "fa":"قرقره و طناب ایمن، سیم و هوک سالم، وینج مکانیکی ایمن به کار می‌رود؟"}
+comments= قرقره و طناب ایمن که سالم بوده و دارای سیم و هوک سالم باشند. WLL و SWL در آنها رعایت شود. استادارد EN12278 . در صورت کارهایی که به وینچ مکانیکی نیاز بود ؛ وینچ ایمن که سالم بوده و دارای سیم و هوک سالم باشد. و WLL و SWL رعایت شود. حتما باید از قرقره یکطرفه در تجهیز کارگاه استفاده شود.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=27
+order=53
+significance=Major
+questionType=Option
+title={"en":"21- Safe Ladder", "fa":"آیا نردبان استاندارد مقاوم با رعایت استقرار صحیح به کار رفته است؟"}
+comments=استفاده از نردبان استاندارد مقاوم با رعایت استقرار صحیح و یا در صورت نیاز دارای مهار مناسب و با نسبت ارتفاع. 4 به 1
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=28
+order=55
+significance=Major
+questionType=Option
+title={"en":"Occupational Medicine Certificate", "fa":"آیا کلیه کارکنان مدرک و یا رونوشت گواهی معاینه شغلی (طب کار) برای بهمراه دارند؟"}
+comments=همه پرسنل باید دارای گواهی معاینه ی شغلی مرتبت با کار خود باشند. رویت کپی کافی است (نوشتن نام در توضیح و تصویر گواهی).
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=29
+order=57
+significance=Major
+questionType=Option
+title={"en":"Safety glasses", "fa":"آیا پرسنل از عینک ایمنی متناسب با کار (آفتابی، فرزکاری، جوشکاری و ...) استفاده می‌کنند؟"}
+comments=دارای عینک ایمنی متناسب با کار آفتابی، فرزکاری، جوشکاری و .... Safety Glasses
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=30
+order=59
+significance=Major
+questionType=Option
+title={"en":"Safe Carabiners", "fa":"آیا از کارابین استاندارد استفاده می‌شود؟"}
+comments= استفاده از کارابینهای دارای استاندارد EN362 و استفاده از کارابینهای فاقد قفل و اتومات تک حالته ممنوع است
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=31
+order=61
+significance=Major
+questionType=Option
+title={"en":"Environmental Impact", "fa":"آیا پرسنل اصول زیست محیطی را رعایت می‌کنند؟"}
+comments= اگر تمام پرسنل موازین زیست محیطی را رعایت می کردند = YES ولی اگر پرسنل، کارهای مغایر - اصول زیست محیطی انجام می دادند= NO مثل روشن کردن آتش نزدیک دکل، برجا گذاشتن ضایعات و روغن ریزی و ...
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=32
+order=63
+significance=Minor
+questionType=Option
+title={"en":"Safe Act", "fa":"آیا پرسنل موارد ایمنی را رعایت می‌کنند؟ (مثل صعود خارج از حفاظ، یا قرارگیری زیر بار)"}
+comments= اگر تمام پرسنل کارهای ناایمن انجام نمی دادند = YES ولی اگر پرسنل، کارهای ناایمنی انجام می - دادند= NO مثل صعود و فرود از خارج از حفاظ بجای نردبان، قرارگیری زیر بار معلق و سایر شرایط و اعمال نامنطبق با آیین نامه های وزارت کار و ...
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=33
+order=65
+significance=Minor
+questionType=Option
+title={"en":"Suitable clothes", "fa":"آیا پرسنل لباس مناسب کار به همراه نوار شبرنگ و لوگوی شرکت دارند؟"}
+comments= لباس کار مناسب ، ترجیحا چسبیده به بدن و Overall و داشتن لوگو به صورت مشخص به همراه نوار شبرنگ و نمایان بودن هویت شرکت.
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=34
+order=67
+significance=Minor
+questionType=Option
+title={"en":"Safety Masks", "fa":"آیا پرسنل ماسک ضد گرد و غبار و مناسب با انجام کار دارند؟"}
+comments= ماسکهای ضد گردوغبار 95N یا 2or 1FFP در صورت انجام کارهای PM و ... در صورت نیاز.
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"N/A"},"fa":{"Yes":"بلی","No":"خیر","NA":"عدم کاربرد"}}
+-----------------------------
+id=35
+order=69
+significance=Minor
+questionType=Option
+title={"en":"Familiar to Risks", "fa":"آیا پرسنل ریسک های کار خود را می‌دانند؟ (بازرست می بایست ریسک ها را به کلیه پرسنل توضیح دهد)"}
+comments= آشنایی با حد اقل پنج جنبه زیست محیطی و خطرات بهداشتی و ایمنی شغل توضیح برگزاری جلسه کوتاه در مورد خطرات ارتفاع، اجسام معلق، برق، تشعشع، آب و هوا، دود و مواد قابل اشتعال و ....
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=36
+order=71
+significance=Minor
+questionType=Option
+title={"en":"Familiar to Emergency calls", "fa":"آیا پرسنل با شماره تماس های اضطراری و امداد آشنایی دارند؟ (اگر ندارند بازرس می بایست شماره تماس های اضطراری را به کارکنان توضیح دهد)"}
+comments=110 آشنایی با تلفن 02142513 تماسهای اضطراری ، اورژانس 115 ، هلال احمر 112 ، امداد و نجات 125 و
+requiresPhoto=false
+requiresAnswer=true
+optionLabel={"en":{"Yes":"Yes","No":"No"},"fa":{"Yes":"بلی","No":"خیر"}}
+-----------------------------
+id=37
+order=73
+questionType=TextOnly
+significance=Other
+title={"en":"NAK supervisor name", "fa":"نام سوپروایزر ناک"}
+comments=نام سوپروایزر ناک حاضر در سایت
+requiresPhoto=false
+requiresAnswer=false
+-----------------------------
+id=38
+order=75
+questionType=Option
+significance=Other
+title={"en":"NAK supervisor has safety helmet?", "fa":"آیا سوپروایزر ناک کلاه ایمنی دارد؟"}
+comments=آیا سوپروایزر ناک کلاه ایمنی دارند
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","NA":"Supervisor not available"},"fa":{"Yes":"بلی","No":"خیر","Option3":"سوپروایزر در محل حاضر نیست"}}
+-----------------------------
+id=39
+order=77
+questionType=Option
+significance=Other
+title={"en":"NAK supervisor has work boots?", "fa":"آیا سوپروایزر ناک کفش کار دارد؟"}
+comments=آیا سوپروایزر ناک کفش کار دارند
+requiresPhoto=false
+requiresAnswer=false
+optionLabel={"en":{"Yes":"Yes","No":"No","Option3":"Supervisor not available"},"fa":{"Yes":"بلی","No":"خیر","Option3":"سوپروایزر در محل حاضر نیست"}}
+-----------------------------
+id=40
+order=6
+questionType=TextOnly
+significance=Other
+title={"en":"Site supervisor name", "fa":"نام سوپروایزر سایت"}
+comments=نام سوپروایزر حاضر در سایت
+requiresPhoto=false
+requiresAnswer=false
+-----------------------------
