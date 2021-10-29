@@ -60,7 +60,7 @@ public class Sector extends DtoBase {
         public String title;
 
         public Integer antennaCount;
-        @FetchCache("com.tctools.business.dto.location.LocationType:locationTypeId")
+        @FetchCache(dto = LocationType.class, field = "locationTypeId")
         public LocationType.Localed locationType;
         @FetchCache("sectorOptimizationId")
         public SectorOptimization sectorOptimization;

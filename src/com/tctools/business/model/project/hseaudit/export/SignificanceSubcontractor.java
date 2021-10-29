@@ -216,11 +216,11 @@ public class SignificanceSubcontractor extends ExportCommon {
             negativeScore += questionnaire.majorNoCount + questionnaire.criticalNoCount * 6;
 
             boolean isSafe = true;
-            if (questionnaire.criticalNoCount > Param.HSE_CRITICAL_FAIL_THRESHOLD) {
+            if (questionnaire.criticalNoCount >= Param.HSE_CRITICAL_FAIL_THRESHOLD) {
                 ++critical;
                 isSafe = false;
             }
-            if (questionnaire.majorNoCount > Param.HSE_MAJOR_FAIL_THRESHOLD) {
+            if (questionnaire.majorNoCount >= Param.HSE_MAJOR_FAIL_THRESHOLD) {
                 ++major;
                 isSafe = false;
             }

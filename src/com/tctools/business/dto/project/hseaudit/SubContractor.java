@@ -29,9 +29,9 @@ public class SubContractor extends DtoBase {
 
         public Long id;
 
-        @FetchCache(dto = com.tctools.business.dto.location.Region.class, field = "regionId")
+        @FetchCache(dto = Region.class, field = "regionId")
         public Region.Localed region;
-        @FetchCache(dto = com.tctools.business.dto.location.Province.class, field = "provinceId")
+        @FetchCache(dto = Province.class, field = "provinceId")
         public Province.Localed province;
 
         public String name;

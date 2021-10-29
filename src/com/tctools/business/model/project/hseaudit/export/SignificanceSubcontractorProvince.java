@@ -248,10 +248,10 @@ public class SignificanceSubcontractorProvince extends ExportCommon {
                 ++provinceAuditCount;
                 negativeScore += questionnaire.majorNoCount + questionnaire.criticalNoCount * 6;
 
-                if (questionnaire.criticalNoCount > Param.HSE_CRITICAL_FAIL_THRESHOLD) {
+                if (questionnaire.criticalNoCount >= Param.HSE_CRITICAL_FAIL_THRESHOLD) {
                     ++critical;
                 }
-                if (questionnaire.majorNoCount > Param.HSE_MAJOR_FAIL_THRESHOLD) {
+                if (questionnaire.majorNoCount >= Param.HSE_MAJOR_FAIL_THRESHOLD) {
                     ++major;
                 }
             }

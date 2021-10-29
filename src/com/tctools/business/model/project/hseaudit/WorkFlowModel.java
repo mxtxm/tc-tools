@@ -384,23 +384,6 @@ public class WorkFlowModel {
         }
         queryData.setDto(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
         try {
-            /* todo gives error sub_contractor
-            ERROR 14:34:15 MongoSearch.java:87 ! query sub_contractor
-            com.vantar.exception.NoContentException: null
-            at com.vantar.database.nosql.mongo.MongoQueryResult.first(MongoQueryResult.java:81) ~[classes/:?]
-            at com.vantar.database.nosql.mongo.MongoSearch.getDto(MongoSearch.java:85) [classes/:?]
-            at com.vantar.database.nosql.mongo.MongoQueryResult.mapRecordToObject(MongoQueryResult.java:270) [classes/:?]
-            at com.vantar.database.nosql.mongo.MongoQueryResult.mapRecordToDto(MongoQueryResult.java:148) [classes/:?]
-            at com.vantar.database.nosql.mongo.MongoQueryResult.next(MongoQueryResult.java:68) [classes/:?]
-            at com.vantar.database.query.QueryResultBase.asList(QueryResultBase.java:39) [classes/:?]
-            at com.vantar.database.nosql.mongo.MongoSearch.getPage(MongoSearch.java:121) [classes/:?]
-            at com.vantar.business.CommonRepoMongo.search(CommonRepoMongo.java:178) [classes/:?]
-            at com.vantar.business.CommonRepoMongo.search(CommonRepoMongo.java:173) [classes/:?]
-            at com.tctools.business.model.project.hseaudit.WorkFlowModel.search(WorkFlowModel.java:387) [classes/:?]
-            at com.tctools.web.ui.project.hseaudit.QuestionnaireController.hseAuditQuestionnaireSearch(QuestionnaireController.java:59) [classes/:?]
-            at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
-            at jdk.internal.reflect.NativeMethodAccesso
-            */
             return CommonRepoMongo.search(queryData, params.getLang());
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);

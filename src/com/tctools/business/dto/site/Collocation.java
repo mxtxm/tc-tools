@@ -23,9 +23,7 @@ public class Collocation extends DtoBase {
 
         public CollocationType type;
 
-// todo this does not work
-//        @FetchCache(dto = com.tctools.business.dto.site.Collocation.class, field = "operatorId")
-        @Fetch("operatorId")
+        @FetchCache(dto = Operator.class, field = "operatorId")
         public Operator.Localized operator;
     }
 }

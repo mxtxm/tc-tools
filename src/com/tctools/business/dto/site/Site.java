@@ -94,19 +94,19 @@ public class Site extends DtoBase {
 
         public String comments;
 
-        @FetchCache(dto = com.tctools.business.dto.site.BtsStatus.class, field = "btsStatusId")
+        @FetchCache(dto = BtsStatus.class, field = "btsStatusId")
         public BtsStatus.Localed btsStatus;
-        @FetchCache(dto = com.tctools.business.dto.site.BtsOwnership.class, field = "btsOwnershipId")
+        @FetchCache(dto = BtsOwnership.class, field = "btsOwnershipId")
         public BtsOwnership.Localed btsOwnership;
-        @FetchCache(dto = com.tctools.business.dto.site.SiteClass.class, field = "siteClassId")
+        @FetchCache(dto = SiteClass.class, field = "siteClassId")
         public SiteClass.Localed siteClass;
-        @FetchCache(dto = com.tctools.business.dto.site.SiteType.class, field = "siteTypeId")
+        @FetchCache(dto = SiteType.class, field = "siteTypeId")
         public SiteType.Localed siteType;
         @FetchCache("siteOwnershipId")
         public SiteOwnership siteOwnership;
-        @FetchCache(dto = com.tctools.business.dto.site.BtsInstall.class, field = "btsInstallId")
+        @FetchCache(dto = BtsInstall.class, field = "btsInstallId")
         public BtsInstall.Localed btsInstall;
-        @FetchCache(dto = com.tctools.business.dto.site.BtsTowerType.class, field = "btsTowerTypeId")
+        @FetchCache(dto = BtsTowerType.class, field = "btsTowerTypeId")
         public BtsTowerType btsTowerType;
 
         public String buildingHeight;
@@ -117,15 +117,15 @@ public class Site extends DtoBase {
         public List<Sector.Viewable> sectors;
 
         // location > > >
-        @FetchCache(dto = com.tctools.business.dto.location.Region.class, field = "regionId")
+        @FetchCache(dto = Region.class, field = "regionId")
         public Region.Localed region;
-        @FetchCache(dto = com.tctools.business.dto.location.Province.class, field = "provinceId")
+        @FetchCache(dto = Province.class, field = "provinceId")
         public Province.Localed province;
-        @FetchCache(dto = com.tctools.business.dto.location.City.class, field = "cityId")
+        @FetchCache(dto = City.class, field = "cityId")
         public City.Localed city;
         @FetchCache("districtId")
         public District district;
-        @FetchCache(dto = com.tctools.business.dto.location.LocationType.class, field = "locationTypeId")
+        @FetchCache(dto = LocationType.class, field = "locationTypeId")
         public LocationType.Localed locationType;
         public String address;
         public Location location;
@@ -161,9 +161,9 @@ public class Site extends DtoBase {
         @DeLocalized
         public String name;
 
-        @FetchCache(dto = com.tctools.business.dto.location.Province.class, field = "provinceId")
+        @FetchCache(dto = Province.class, field = "provinceId")
         public Province.Localed province;
-        @FetchCache(dto = com.tctools.business.dto.location.City.class, field = "cityId")
+        @FetchCache(dto = City.class, field = "cityId")
         public City.Localed city;
         public String address;
         public Location location;

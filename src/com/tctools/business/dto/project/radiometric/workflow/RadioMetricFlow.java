@@ -430,9 +430,9 @@ public class RadioMetricFlow extends DtoBase {
         // < < < assign
 
         // location > > >
-        @FetchCache(dto = com.tctools.business.dto.location.Province.class, field = "provinceId")
+        @FetchCache(dto = Province.class, field = "provinceId")
         public Province.Localed province;
-        @FetchCache(dto = com.tctools.business.dto.location.City.class, field = "cityId")
+        @FetchCache(dto = City.class, field = "cityId")
         public City.Localed city;
 
         public String siteAddress;

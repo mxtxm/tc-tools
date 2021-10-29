@@ -179,8 +179,8 @@ public class HseAuditQuestionnaire extends DtoBase {
         public List<Long> parents;
 
         public Site.Viewable site;
-        //@FetchCache(dto = com.tctools.business.dto.project.hseaudit.SubContractor.class, field = "subContractorId")
-        @Fetch("subContractorId")
+
+        @FetchCache(dto = SubContractor.class, field = "subContractorId")
         public SubContractor.Viewable subContractor;
         public HseAuditActivity activity;
 
@@ -260,7 +260,7 @@ public class HseAuditQuestionnaire extends DtoBase {
         public List<Long> parents;
 
         public Site.ViewableTiny site;
-        @FetchCache(dto = com.tctools.business.dto.project.hseaudit.SubContractor.class, field = "subContractorId")
+        @FetchCache(dto = SubContractor.class, field = "subContractorId")
         public SubContractor.Viewable subContractor;
         public HseAuditActivity activity;
 
