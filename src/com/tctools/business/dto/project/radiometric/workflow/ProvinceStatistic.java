@@ -1,13 +1,14 @@
 package com.tctools.business.dto.project.radiometric.workflow;
 
+import com.tctools.business.dto.location.Province;
 import com.vantar.database.dto.*;
-
 
 @Mongo
 @Index({"userName:1", "userId:1", "yearMonth:1"})
 public class ProvinceStatistic extends DtoBase {
 
     public Long id;
+    @Depends(Province.class)
     public Long provinceId;
     public String provinceName;
     public Integer yearMonth;

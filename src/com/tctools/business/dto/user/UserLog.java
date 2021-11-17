@@ -12,6 +12,7 @@ public class UserLog extends DtoBase {
     public Long id;
 
     @Required
+    @Depends(User.class)
     public Long userId;
 
     @Required

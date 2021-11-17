@@ -5,11 +5,13 @@ import com.tctools.business.dto.project.hseaudit.HseAuditQuestionnaire;
 import com.tctools.business.dto.project.radiometric.complain.RadioMetricComplain;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.Site;
+import com.tctools.business.dto.user.*;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
 import com.tctools.common.util.ExportCommon;
 import com.vantar.admin.model.Admin;
 import com.vantar.business.CommonRepoMongo;
+import com.vantar.database.dependency.DataDependency;
 import com.vantar.database.dto.*;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -19,13 +21,10 @@ import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
-import org.apache.commons.imaging.*;
-import org.imgscalr.Scalr;
 import org.slf4j.*;
-import javax.imageio.ImageIO;
 import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 
@@ -692,30 +691,61 @@ ui.addMessage("11").write();
 
 
     public void index(Params params, HttpServletResponse response) {
-        try {
-            ImageIO.write(
-                Scalr.resize(ImageIO.read(new File("/home/lynx/downloads/a.jpg")), 150),
-                "jpg",
-                new File("/home/lynx/downloads/a-small.jpg")
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        T10 t10 = new T10();
+        t10.name = "aaaa";
+        T10 t12 = new T10();
+        t12.name = "bbbb";
 
-        if (1==1)return;
+        T2 t2 = new T2();
+        t2.name = "cccc";
+        t2.t = new T4();
+        t2.t.name = "fff";
+        t2.t.s = new ArrayList<>();
+        t2.t.s.add(t10);
+        t2.t.s.add(t12);
 
-        try {
-//            BufferedImage img = ImageIO.read(new File("/home/lynx/downloads/test.jpg"));
-  //          BufferedImage scaledImg = Scalr.resize(img, 150);
-    //        ImageIO.write(scaledImg, "jpg", new File("/home/lynx/downloads/test_thumb.jpg"));
 
-            PictureEdit i = new PictureEdit("/home/lynx/downloads/f1.jpg");
-            i.resize(150);
-            i.write("/home/lynx/downloads/test_thumb.jpg");
+//        try {
+//
+//            CommonRepoMongo.insert(t10);
+//            CommonRepoMongo.insert(t12);
+//
+//            CommonRepoMongo.insert(t2);
+//
+//
+//        } catch (DatabaseException e) {
+//            e.printStackTrace();
+//        }
 
-        } catch (IOException | ImageReadException | ImageWriteException e) {
-            e.printStackTrace();
-        }
+
+        List<DataDependency.Dependants> items = DataDependency.getDependencies(new T10(), 1L);
+        log.error(">>>>>\n\n{}\n\n", items);
+
+
+        //        try {
+//            ImageIO.write(
+//                Scalr.resize(ImageIO.read(new File("/home/lynx/downloads/a.jpg")), 150),
+//                "jpg",
+//                new File("/home/lynx/downloads/a-small.jpg")
+//            );
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (1==1)return;
+//
+//        try {
+////            BufferedImage img = ImageIO.read(new File("/home/lynx/downloads/test.jpg"));
+//  //          BufferedImage scaledImg = Scalr.resize(img, 150);
+//    //        ImageIO.write(scaledImg, "jpg", new File("/home/lynx/downloads/test_thumb.jpg"));
+//
+//            PictureEdit i = new PictureEdit("/home/lynx/downloads/f1.jpg");
+//            i.resize(150);
+//            i.write("/home/lynx/downloads/test_thumb.jpg");
+//
+//        } catch (IOException | ImageReadException | ImageWriteException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

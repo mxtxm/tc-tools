@@ -28,15 +28,22 @@ public class Site extends DtoBase {
 
     public String comments;
 
+    @Depends(BtsStatus.class)
     public Long btsStatusId;
+    @Depends(BtsOwnership.class)
     public Long btsOwnershipId;
+    @Depends(SiteClass.class)
     public Long siteClassId;
+    @Depends(SiteType.class)
     public Long siteTypeId;
+    @Depends(SiteOwnership.class)
     public Long siteOwnershipId;
+    @Depends(BtsInstall.class)
     public Long btsInstallId;
 
     public String towerHeight;
     public String buildingHeight;
+    @Depends(BtsTowerType.class)
     public Long btsTowerTypeId;
     public String frequencyBand;
 
@@ -44,12 +51,17 @@ public class Site extends DtoBase {
     public List<Sector> sectors;
 
     // location > > >
+    @Depends(Region.class)
     public Long regionId;
     @Required
+    @Depends(Province.class)
     public Long provinceId;
     @Required
+    @Depends(City.class)
     public Long cityId;
+    @Depends(District.class)
     public Long districtId;
+    @Depends(LocationType.class)
     public Long locationTypeId;
     public String address;
     @Required

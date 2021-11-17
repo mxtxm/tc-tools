@@ -12,6 +12,7 @@ public class City extends DtoBase {
     public Long id;
 
     @Required
+    @Depends(Province.class)
     public Long provinceId;
 
     @Localized

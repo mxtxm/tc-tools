@@ -11,8 +11,10 @@ public class SubContractor extends DtoBase {
     public Long id;
 
     @Required
+    @Depends(Region.class)
     public Long regionId;
     @Required
+    @Depends(Province.class)
     public Long provinceId;
 
     @Required

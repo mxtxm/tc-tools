@@ -1,5 +1,4 @@
 package com.tctools.business.dto.project.radiometric.workflow;
-// cc
 
 public enum RadioMetricFlowState {
 

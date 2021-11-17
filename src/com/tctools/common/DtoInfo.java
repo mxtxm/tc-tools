@@ -73,6 +73,10 @@ public class DtoInfo {
         q.condition().equal("enabled", true);
         DtoDictionary.add("پرسش", HseAuditQuestion.class, q);
 
+        DtoDictionary.add("a1", T10.class);
+        DtoDictionary.add("a2", T2.class);
+        DtoDictionary.add("a4", T4.class);
+
         // mongo
         DtoDictionary.setCategory("MONGO");
         DtoDictionary.add("Sequences", MongoSequence.class);

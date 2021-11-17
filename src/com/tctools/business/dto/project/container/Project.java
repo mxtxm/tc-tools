@@ -4,7 +4,6 @@ import com.vantar.database.dto.*;
 import com.vantar.util.datetime.DateTime;
 import java.util.Map;
 
-
 @Mongo
 public class Project extends DtoBase {
 

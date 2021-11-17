@@ -6,7 +6,6 @@ import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import java.util.*;
 
-
 @NoStore
 public class Proximity extends DtoBase {
 

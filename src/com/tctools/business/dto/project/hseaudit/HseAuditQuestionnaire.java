@@ -9,7 +9,6 @@ import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
 import java.util.*;
 
-
 @Mongo
 @Index({"site.id:1", "notAllowed:1", "site.code:1", "subContractorId:1", "activity:1", "scheduled:1", "audit:1",
     "lastState:1", "scheduledDateTimeFrom:1"})
@@ -19,6 +18,7 @@ public class HseAuditQuestionnaire extends DtoBase {
 
     @Required
     public Site site;
+    @Depends(SubContractor.class)
     public Long subContractorId;
     public HseAuditActivity activity;
 
@@ -29,7 +29,9 @@ public class HseAuditQuestionnaire extends DtoBase {
     public Boolean assignable;
     @Default("false")
     public Boolean copyable;
+    @Depends(User.class)
     public Long assignorId;
+    @Depends(User.class)
     public Long assigneeId;
     public List<State> state;
     public HseAuditFlowState lastState;

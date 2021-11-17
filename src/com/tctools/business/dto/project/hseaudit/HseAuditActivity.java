@@ -1,8 +1,6 @@
 package com.tctools.business.dto.project.hseaudit;
 
-
 public enum HseAuditActivity {
-
     TowerChange,
     AntennaChange,
     Modernization,
