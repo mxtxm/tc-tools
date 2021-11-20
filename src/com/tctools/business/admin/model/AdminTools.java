@@ -2,13 +2,17 @@ package com.tctools.business.admin.model;
 
 
 import com.tctools.business.dto.project.radiometric.workflow.*;
+import com.tctools.common.Param;
 import com.vantar.admin.model.Admin;
 import com.vantar.business.CommonRepoMongo;
 import com.vantar.exception.*;
 import com.vantar.util.datetime.DateTime;
+import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
 
 
@@ -28,6 +32,7 @@ public class AdminTools {
             .addLine()
             .addBlockLink("Docx templates", "/admin/tools/radiometric/templates")
             .addLine()
+            .addBlockLink("Upload signature", "/admin/tools/radiometric/signature")
             .containerEnd();
 
         ui.finish();
@@ -270,5 +275,44 @@ public class AdminTools {
         ui.addFile("New template", "file");
         ui.addSubmit();
         ui.write();
+    }
+
+    public static void signature(Params params, HttpServletResponse response) {
+        WebUi ui = Admin.getUi("User signature", params, response);
+        if (ui == null) {
+            return;
+        }
+
+        Params.Uploaded file = params.upload("file");
+        if (file != null && file.isUploaded() && !file.isIoError()) {
+            file.moveTo("/opt/tc-tools/files/user/" + file.getOriginalFilename());
+            ui.addMessage("uploaded successfully");
+        }
+
+        ui.beginUploadForm();
+        ui.addMessage("Filename example: 49-signature.jpg");
+        ui.addFile("File", "file");
+        ui.addSubmit();
+
+        drawSignatures(ui);
+
+        ui.write();
+    }
+
+    private static void drawSignatures(WebUi ui) {
+        try {
+            Files.list(Paths.get("/opt/tc-tools/files/user"))
+                .filter(Files::isRegularFile)
+                .forEach((file) -> {
+                    String fileUrl = Param.USERS_URL + file.getFileName();
+                    String filePath = "/opt/tc-tools/files/user/" + file.getFileName();
+                    ui.addBlockLink(
+                        fileUrl + "   (" + FileUtil.getSizeMb(filePath) + "MB)",
+                        fileUrl
+                    );
+                });
+        } catch (IOException ignore) {
+
+        }
     }
 }

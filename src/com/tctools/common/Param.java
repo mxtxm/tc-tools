@@ -22,7 +22,7 @@ public class Param extends VantarParam {
 
     public static final String RADIO_METRIC_URL = "/static/radiometric/";
     public static final String HSE_AUDIT_URL = "/static/hse-audit/";
-    public static final String USERS_URL = "/static/users/";
+    public static final String USERS_URL = "/static/user/";
 
     public static final Integer HSE_CRITICAL_FAIL_THRESHOLD = 1;
     public static final Integer HSE_MAJOR_FAIL_THRESHOLD = 6;

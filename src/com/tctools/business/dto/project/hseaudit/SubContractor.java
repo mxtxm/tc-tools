@@ -25,6 +25,9 @@ public class SubContractor extends DtoBase {
     public String email;
     public String mobile;
 
+    public Boolean isTci;
+    public Boolean isNotTci;
+
 
     @Storage("SubContractor")
     public static class Viewable extends DtoBase {

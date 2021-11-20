@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
     "/admin/tools/update/all",
     "/admin/tools/radiometric/templates",
     "/admin/tools/radiometric/templates/docx",
+    "/admin/tools/radiometric/signature",
 })
 @MultipartConfig(
     location="/tmp",
@@ -46,7 +47,7 @@ public class AdminToolsController extends RouteToMethod {
         AdminTools.radiometricTemplates(params, response);
     }
 
-    public void toolsRadiometricTemplatesDocx(Params params, HttpServletResponse response) {
-        Response.download(response, "/opt/tc-tools/templates/radiometric/site-radiometric.docx", "site-radiometric.docx");
+    public void toolsRadiometricSignature(Params params, HttpServletResponse response) {
+        AdminTools.signature(params, response);
     }
 }

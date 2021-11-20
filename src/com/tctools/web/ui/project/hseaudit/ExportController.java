@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
     "/ui/hse/audit/significance/month",
     "/ui/hse/audit/significance/subcontractor/province",
+    "/ui/hse/audit/significance/subcontractor/province/complete",
 
     //http://localhost:8081/ui/hse/audit/significance/subcontractor/province?from=1400-01-1&to=1400-5-5&subcontractorids=399,123
     //http://localhost:8081/ui/hse/audit/significance/subcontractor?from=1400-01-1&to=1400-5-5&provinceids=1,2,30
@@ -66,6 +67,12 @@ public class ExportController extends RouteToMethod {
         User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
         user.projectAccess(ProjectType.HseAudit);
         SignificanceSubcontractorProvince.outputAggregate(params, response);
+    }
+
+    public void hseAuditSignificanceSubcontractorProvinceComplete(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
+        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
+        user.projectAccess(ProjectType.HseAudit);
+        SignificanceSubcontractorProvinceComplete.outputAggregate(params, response);
     }
 
     public void hseAuditSignificanceProvince(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {

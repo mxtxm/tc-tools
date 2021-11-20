@@ -691,35 +691,232 @@ ui.addMessage("11").write();
 
 
     public void index(Params params, HttpServletResponse response) {
-        T10 t10 = new T10();
-        t10.name = "aaaa";
-        T10 t12 = new T10();
-        t12.name = "bbbb";
+        Test1 test1 = new Test1();
+        test1.id = 1L;
+        test1.name = "AA";
 
-        T2 t2 = new T2();
-        t2.name = "cccc";
-        t2.t = new T4();
-        t2.t.name = "fff";
-        t2.t.s = new ArrayList<>();
-        t2.t.s.add(t10);
-        t2.t.s.add(t12);
+        Test1 test12 = new Test1();
+        test12.id = 2L;
+        test12.name = "BB";
+
+        Test1 test13 = new Test1();
+        test13.id = 3L;
+        test13.name = "CC";
+
+        Test1 test14 = new Test1();
+        test14.id = 4L;
+        test14.name = "DD";
+
+        Test1 test15 = new Test1();
+        test15.id = 5L;
+        test15.name = "EE";
+
+        Test1 test16 = new Test1();
+        test16.id = 6L;
+        test16.name = "FF";
+
+        Test1 test17 = new Test1();
+        test17.id = 7L;
+        test17.name = "GG";
+
+        Test1 test18 = new Test1();
+        test18.id = 8L;
+        test18.name = "HH";
+
+        Test1 test19 = new Test1();
+        test19.id = 9L;
+        test19.name = "II";
+
+        Test1 test20 = new Test1();
+        test20.id = 10L;
+        test20.name = "JJ";
+
+        Test1 test21 = new Test1();
+        test21.id = 11L;
+        test21.name = "KK";
+
+        Test1 test22 = new Test1();
+        test22.id = 12L;
+        test22.name = "LL";
+
+        Test1 test23 = new Test1();
+        test23.id = 13L;
+        test23.name = "MM";
+
+        Test1 test24 = new Test1();
+        test24.id = 14L;
+        test24.name = "NN";
+
+        Test1 test25 = new Test1();
+        test25.id = 15L;
+        test25.name = "OO";
+
+        Test1 test26 = new Test1();
+        test26.id = 16L;
+        test26.name = "PP";
+
+        Test1 test27 = new Test1();
+        test27.id = 17L;
+        test27.name = "QQ";
 
 
+////
+        Test2 test2 = new Test2();
+        test2.name = "AAA";
+        test2.test1Id = 1L;
+////
+        Test3 test3 = new Test3();
+        test3.name = "AAAA";
+        test3.test1Ids = new ArrayList<>();
+        test3.test1Ids.add(2L);
+        test3.test1Ids.add(3L);
+////
+        Test4 test4 = new Test4();
+        test4.name = "AAAAA";
+        test4.test1 = test14;
+////
+        Test5 test5 = new Test5();
+        test5.name = "AAAAA";
+        test5.test1s = new ArrayList<>();
+        test5.test1s.add(test15);
+        test5.test1s.add(test16);
+////
+        Test7 test7 = new Test7();
+        test7.name = "AAAAAAA";
+        test7.test1Id = 7L;
+        test7.test1 = test18;
+        Test6 test6 = new Test6();
+        test6.name = "AAAAAA";
+        test6.test7 = test7;
+////
+        Test7 test71 = new Test7();
+        test71.name = "BBBBBBB";
+        test71.test1Id = 0L;
+        test71.test1 = test20;
+        Test6 test61 = new Test6();
+        test61.name = "BBBBBB";
+        test61.test7 = test71;
+        Test8 test8 = new Test8();
+        test8.name = "AAAAAAAA";
+        test8.test6 = test61;
+////
+        Test7 test72 = new Test7();
+        test72.name = "CCCCCCC";
+        test72.test1Id = 11L;
+        test72.test1 = test12;
+        Test7 test73 = new Test7();
+        test73.name = "DDDDDDD";
+        test73.test1Id = 13L;
+        test73.test1 = test14;
+        Test9 test9 = new Test9();
+        test9.name = "AAAAAAAAA";
+        test9.test7 = new ArrayList<>();
+        test9.test7.add(test72);
+        test9.test7.add(test73);
+////
+        Test7 test75 = new Test7();
+        test75.name = "FFFFFFF";
+        test75.test1Id = 15L;
+        test75.test1 = test16;
+        Test7 test76 = new Test7();
+        test76.name = "FFFFFFF";
+        test76.test1Id = 17L;
+        test76.test1 = test18;
+        Test6 test64 = new Test6();
+        test64.name = "NNNNNN";
+        test64.test7 = test75;
+        Test6 test65 = new Test6();
+        test65.name = "GGGGGG";
+        test65.test7 = test76;
+        Test10 test100 = new Test10();
+        test100.name = "AAAAAAAAAA";
+        test100.test6 = new ArrayList<>();
+        test100.test6.add(test64);
+        test100.test6.add(test65);
+
+//
 //        try {
+//            CommonRepoMongo.insert(test1);
+//            CommonRepoMongo.insert(test12);
+//            CommonRepoMongo.insert(test13);
+//            CommonRepoMongo.insert(test14);
+//            CommonRepoMongo.insert(test15);
+//            CommonRepoMongo.insert(test16);
+//            CommonRepoMongo.insert(test17);
+//            CommonRepoMongo.insert(test18);
+//            CommonRepoMongo.insert(test19);
+//            CommonRepoMongo.insert(test20);
+//            CommonRepoMongo.insert(test21);
+//            CommonRepoMongo.insert(test22);
+//            CommonRepoMongo.insert(test23);
+//            CommonRepoMongo.insert(test24);
+//            CommonRepoMongo.insert(test25);
+//            CommonRepoMongo.insert(test26);
+//            CommonRepoMongo.insert(test27);
 //
-//            CommonRepoMongo.insert(t10);
-//            CommonRepoMongo.insert(t12);
-//
-//            CommonRepoMongo.insert(t2);
+//            CommonRepoMongo.insert(test2);
+//            CommonRepoMongo.insert(test3);
+//            CommonRepoMongo.insert(test4);
+//            CommonRepoMongo.insert(test5);
+//            CommonRepoMongo.insert(test6);
+//            CommonRepoMongo.insert(test8);
+//            CommonRepoMongo.insert(test9);
+//            CommonRepoMongo.insert(test100);
 //
 //
 //        } catch (DatabaseException e) {
 //            e.printStackTrace();
 //        }
 
+        List<DataDependency.Dependants> items;
 
-        List<DataDependency.Dependants> items = DataDependency.getDependencies(new T10(), 1L);
-        log.error(">>>>>\n\n{}\n\n", items);
+//        items = DataDependency.getDependencies(new Test1(), 1L);
+//        log.error(">>>>>{} > 1", items);
+//        items = DataDependency.getDependencies(new Test1(), 2L);
+//        log.error(">>>>>{} > 1", items);
+//        items = DataDependency.getDependencies(new Test1(), 3L);
+//        log.error(">>>>>{} > 1", items);
+//
+        items = DataDependency.getDependencies(new Test1(), 4L);
+        log.error(">>>>>{} > 0", items);
+
+
+
+
+        items = DataDependency.getDependencies(new Test1(), 5L);
+        log.error(">>>>>{} > 0", items);
+
+        items = DataDependency.getDependencies(new Test1(), 6L);
+        log.error(">>>>>{} > 0", items);
+
+        items = DataDependency.getDependencies(new Test1(), 7L);
+        log.error(">>>>>{} > 1", items);
+        items = DataDependency.getDependencies(new Test1(), 8L);
+        log.error(">>>>>{} > 0", items);
+
+        items = DataDependency.getDependencies(new Test1(), 9L);
+        log.error(">>>>>{} > 1", items);
+        items = DataDependency.getDependencies(new Test1(), 10L);
+        log.error(">>>>>{} > 0", items);
+
+        items = DataDependency.getDependencies(new Test1(), 11L);
+        log.error(">>>>>{} > 1", items);
+        items = DataDependency.getDependencies(new Test1(), 12L);
+        log.error(">>>>>{} > 0", items);
+        items = DataDependency.getDependencies(new Test1(), 13L);
+        log.error(">>>>>{} > 1", items);
+        items = DataDependency.getDependencies(new Test1(), 14L);
+        log.error(">>>>>{} > 0", items);
+
+        items = DataDependency.getDependencies(new Test1(), 15L);
+        log.error(">>>>>{} > 1", items);
+        items = DataDependency.getDependencies(new Test1(), 16L);
+        log.error(">>>>>{} > 0", items);
+        items = DataDependency.getDependencies(new Test1(), 17L);
+        log.error(">>>>>{} > 1", items);
+        items = DataDependency.getDependencies(new Test1(), 18L);
+        log.error(">>>>>{} > 0", items);
+
 
 
         //        try {
