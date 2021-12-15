@@ -71,7 +71,7 @@ public class QuestionnaireController extends RouteToMethod {
         Response.writeJson(response, WorkFlowModel.get(params));
     }
 
-    public void hseAuditQuestionnaireImageDelete(Params params, HttpServletResponse response) throws AuthException, InputException {
+    public void hseAuditQuestionnaireImageDelete(Params params, HttpServletResponse response) throws AuthException, InputException, ServiceException {
         User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.deleteImage(params));

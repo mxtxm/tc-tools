@@ -48,8 +48,13 @@ public class AdminImportHseAudit {
         }
 
         Map<Integer, HseAuditQuestion> questions = new HashMap<>();
-        for (HseAuditQuestion q : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
-            questions.put(q.order, q);
+        try {
+            for (HseAuditQuestion q : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
+                questions.put(q.order, q);
+            }
+        } catch (ServiceException e) {
+            ui.addErrorMessage(e);
+            return;
         }
 
         String filepath = FileUtil.getTempFilename();
@@ -252,13 +257,23 @@ public class AdminImportHseAudit {
             return;
         }
 
-        List<HseAuditQuestion> questions = Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class);
+        List<HseAuditQuestion> questions;
+        try {
+            questions = Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class);
+        } catch (ServiceException e) {
+            return;
+        }
         Map<Long, HseAuditQuestion> questionMap = new HashMap<>();
         for (HseAuditQuestion q : questions) {
             questionMap.put(q.id, q);
         }
 
-        List<User> users = Services.get(ServiceDtoCache.class).getList(User.class);
+        List<User> users;
+        try {
+            users = Services.get(ServiceDtoCache.class).getList(User.class);
+        } catch (ServiceException e) {
+            return;
+        }
         Map<Long, User> userMap = new HashMap<>();
         for (User u : users) {
             userMap.put(u.id, u);

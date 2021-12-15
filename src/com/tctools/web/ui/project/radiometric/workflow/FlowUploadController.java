@@ -6,7 +6,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/radio/metric/flow/update",
     "/ui/radio/metric/image/upload",

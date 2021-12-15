@@ -141,11 +141,15 @@ public class AdminSiteImport {
         ui.addMessage("db > operators").write();
         Map<String, Long> operatorIds = new HashMap<>();
         Set<String> operatorNames = new HashSet<>();
-        for (Operator operator : Services.get(ServiceDtoCache.class).getList(Operator.class)) {
-            String name = normalizeMore(operator.name.get("fa"));
-            operatorIds.put(name, operator.id);
-            operatorNames.add(name);
-            operatorNames.add(operator.name.get("en"));
+        try {
+            for (Operator operator : Services.get(ServiceDtoCache.class).getList(Operator.class)) {
+                String name = normalizeMore(operator.name.get("fa"));
+                operatorIds.put(name, operator.id);
+                operatorNames.add(name);
+                operatorNames.add(operator.name.get("en"));
+            }
+        } catch (ServiceException ignore) {
+
         }
 
         try {
@@ -476,7 +480,12 @@ public class AdminSiteImport {
 //                continue;
 //            }
 
-            List<T> dtos = (List<T>) Services.get(ServiceDtoCache.class).getList(obj.getClass());
+            List<T> dtos = null;
+            try {
+                dtos = (List<T>) Services.get(ServiceDtoCache.class).getList(obj.getClass());
+            } catch (ServiceException e) {
+                return null;
+            }
             for (T dto : dtos) {
                 if (dto.hasAnnotation("name", Localized.class)) {
                     for (String v : ((Map<String, String>) dto.getPropertyValue("name")).values()) {

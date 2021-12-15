@@ -17,7 +17,7 @@ public class AuthController extends RouteToMethod {
         Response.writeJson(response, AuthModel.signin(params));
     }
 
-    public void userSignout(Params params, HttpServletResponse response) {
+    public void userSignout(Params params, HttpServletResponse response) throws ServiceException {
         AuthModel.signout(params);
         Response.writeSuccess(response);
     }

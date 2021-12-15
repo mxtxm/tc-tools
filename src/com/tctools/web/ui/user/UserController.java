@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class UserController extends RouteToMethod {
 
-    public void usersGetRoles(Params params, HttpServletResponse response) throws AuthException {
+    public void usersGetRoles(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
         Response.writeJson(
             response,
@@ -43,7 +43,7 @@ public class UserController extends RouteToMethod {
         );
     }
 
-    public void userGetCurrent(Params params, HttpServletResponse response) throws AuthException, NoContentException {
+    public void userGetCurrent(Params params, HttpServletResponse response) throws AuthException, NoContentException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN, Role.VENDOR);
         Response.writeJson(response, UserModel.getCurrentUser(params));
     }
@@ -93,7 +93,7 @@ public class UserController extends RouteToMethod {
         Response.writeJson(response, UserModel.delete(params));
     }
 
-    public void userSignatureExists(Params params, HttpServletResponse response) throws AuthException {
+    public void userSignatureExists(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
         Response.writeJson(response, UserModel.signatureExists(user));
     }

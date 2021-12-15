@@ -92,7 +92,13 @@ public class AdminSynchHseAudit {
             flow.state.add(new State(flow.lastState, flow.lastStateDateTime));
 
             if (site.provinceId != null) {
-                List<SubContractor> contractors = Services.get(ServiceDtoCache.class).getList(SubContractor.class);
+                List<SubContractor> contractors;
+                try {
+                    contractors = Services.get(ServiceDtoCache.class).getList(SubContractor.class);
+                } catch (ServiceException e) {
+                    ui.addErrorMessage(e);
+                    return;
+                }
                 for (SubContractor contractor : contractors) {
                     if (site.provinceId.equals(contractor.provinceId)) {
                         flow.subContractorId = contractor.id;

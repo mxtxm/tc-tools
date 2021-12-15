@@ -11,7 +11,12 @@ import java.util.List;
 public class UserRepo {
 
     public CommonUser getUserForAuth(String username) throws NoContentException {
-        List<User> users = Services.get(ServiceDtoCache.class).getList(User.class);
+        List<User> users;
+        try {
+            users = Services.get(ServiceDtoCache.class).getList(User.class);
+        } catch (ServiceException e) {
+            throw new NoContentException();
+        }
         for (User u : users) {
             if (u.username.equals(username)) {
                 return u;
@@ -24,7 +29,11 @@ public class UserRepo {
         if (userId == null) {
             return;
         }
-        setDataUpdated(Services.get(ServiceDtoCache.class).getDto(User.class, userId), tag);
+        try {
+            setDataUpdated(Services.get(ServiceDtoCache.class).getDto(User.class, userId), tag);
+        } catch (ServiceException ignore) {
+
+        }
     }
 
     public static void setDataUpdated(User user, String tag) throws DatabaseException {

@@ -2,7 +2,7 @@ package com.tctools.web.ui.site;
 
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.model.site.BtsShareModel;
-import com.vantar.exception.AuthException;
+import com.vantar.exception.*;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.web.*;
@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class BtsShareController extends RouteToMethod {
 
-    public void siteBtsShareGet(Params params, HttpServletResponse response) throws AuthException {
+    public void siteBtsShareGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.ENGINEER, Role.MANAGER, Role.TECHNICIAN);
         Response.writeJson(response, BtsShareModel.getAll(params));
     }
 
-    public void siteBtsShareKeyval(Params params, HttpServletResponse response) throws AuthException {
+    public void siteBtsShareKeyval(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.ENGINEER, Role.MANAGER, Role.TECHNICIAN);
         Response.writeJson(response, BtsShareModel.getAsKeyValue(params));
     }

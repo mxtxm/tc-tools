@@ -4,6 +4,7 @@ import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
 import com.vantar.database.dto.*;
+import com.vantar.exception.ServiceException;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
@@ -115,7 +116,12 @@ public class HseAuditQuestionnaire extends DtoBase {
                 a1.question == null || a2.question == null || a1.question.order == null || a2.question.order == null ?
                     0 : a1.question.order.compareTo(a2.question.order));
 
-            ServiceDtoCache cache = Services.get(ServiceDtoCache.class);
+            ServiceDtoCache cache;
+            try {
+                cache = Services.get(ServiceDtoCache.class);
+            } catch (ServiceException e) {
+                return true;
+            }
             int i = 0;
             ListIterator<HseAuditAnswer> it = answers.listIterator();
             HashSet<Long> questionIds = new HashSet<>(100);

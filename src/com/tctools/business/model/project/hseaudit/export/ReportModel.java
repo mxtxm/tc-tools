@@ -84,7 +84,12 @@ public class ReportModel {
     }
 
     private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, HseAuditFlowState state) throws DatabaseException {
-        Map<Long, Dto> provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
+        Map<Long, Dto> provinces;
+        try {
+            provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
+        } catch (ServiceException e) {
+            return;
+        }
 
         QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire());
         q.condition().equal("lastState", state);

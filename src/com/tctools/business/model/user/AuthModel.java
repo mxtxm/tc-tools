@@ -13,7 +13,7 @@ public class AuthModel {
         return new ResponseMessage(AppLangKey.SIGNIN_SUCCESS, Services.get(ServiceAuth.class).signin(params));
     }
 
-    public static void signout(Params params) {
+    public static void signout(Params params) throws ServiceException {
         Services.get(ServiceAuth.class).signout(params);
     }
 }

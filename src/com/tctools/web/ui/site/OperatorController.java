@@ -2,7 +2,7 @@ package com.tctools.web.ui.site;
 
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.model.site.OperatorModel;
-import com.vantar.exception.AuthException;
+import com.vantar.exception.*;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.web.*;
@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class OperatorController extends RouteToMethod {
 
-    public void operatorsGet(Params params, HttpServletResponse response) throws AuthException {
+    public void operatorsGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
         Response.writeJson(response, OperatorModel.getAll(params));
     }
 
-    public void operatorsKeyval(Params params, HttpServletResponse response) throws AuthException {
+    public void operatorsKeyval(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
         Response.writeJson(response, OperatorModel.getAsKeyValue(params));
     }

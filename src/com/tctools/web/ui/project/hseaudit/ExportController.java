@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletResponse;
     "/ui/hse/audit/significance/subcontractor/province",
     "/ui/hse/audit/significance/subcontractor/province/complete",
 
+    //http://localhost:8081/ui/hse/audit/significance/subcontractor/province/complete?from=1400-01-1&to=1400-5-5&excel=1
+    //http://www.cel.ictrc.ac.ir:8080/ui/hse/audit/significance/subcontractor/province/complete?from=1400-01-1&to=1400-5-5&excel=1
+
     //http://localhost:8081/ui/hse/audit/significance/subcontractor/province?from=1400-01-1&to=1400-5-5&subcontractorids=399,123
     //http://localhost:8081/ui/hse/audit/significance/subcontractor?from=1400-01-1&to=1400-5-5&provinceids=1,2,30
     //http://localhost:8081/ui/hse/audit/question/subcontractor?from=1399-09-1&to=1400-5-30&provinceids=1,2,30

@@ -221,14 +221,18 @@ public class SignificanceSubcontractorProvince extends ExportCommon {
         public Map<String, Statistics> statistics = new LinkedHashMap<>(50);
 
         public QuestionStatistics(List<Long> provinceIds) {
-            for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
-                if (provinceIds != null && !provinceIds.isEmpty()) {
-                    if (provinceIds.contains(province.id)) {
+            try {
+                for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
+                    if (provinceIds != null && !provinceIds.isEmpty()) {
+                        if (provinceIds.contains(province.id)) {
+                            statistics.put(province.name.get(LANG), new Statistics());
+                        }
+                    } else  {
                         statistics.put(province.name.get(LANG), new Statistics());
                     }
-                } else  {
-                    statistics.put(province.name.get(LANG), new Statistics());
                 }
+            } catch (ServiceException ignore) {
+
             }
         }
 

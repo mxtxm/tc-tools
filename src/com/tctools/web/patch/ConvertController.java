@@ -64,8 +64,16 @@ public class ConvertController extends RouteToMethod {
 
     private static final Logger log = LoggerFactory.getLogger(ConvertController.class);
     private static final long SHAHSANAM = 19L;
-    private static final User shahsanam = Services.get(ServiceDtoCache.class).getDto(User.class, SHAHSANAM);
+    private static User shahsanam;
 
+
+    static {
+        try {
+            shahsanam = Services.get(ServiceDtoCache.class).getDto(User.class, SHAHSANAM);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void fixSectorOne(Params params, HttpServletResponse response) {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
@@ -812,10 +820,19 @@ public class ConvertController extends RouteToMethod {
         String directory = "/opt/tc-tools/convert/files/";
         //String directory = "/opt/tc-tools/convert/files/C.C Old/";
         //String directory = "/opt/tc-tools/convert/files/Regular New/";
-        List<PropertyType> propertyTypes = Services.get(ServiceDtoCache.class).getList(PropertyType.class);
-        List<PropertySection> propertySections = Services.get(ServiceDtoCache.class).getList(PropertySection.class);
-        List<SiteType> siteTypes = Services.get(ServiceDtoCache.class).getList(SiteType.class);
-        List<Operator> operators = Services.get(ServiceDtoCache.class).getList(Operator.class);
+        List<PropertyType> propertyTypes ;
+        List<PropertySection> propertySections;
+        List<SiteType> siteTypes;
+        List<Operator> operators;
+        try {
+            propertyTypes = Services.get(ServiceDtoCache.class).getList(PropertyType.class);
+            propertySections = Services.get(ServiceDtoCache.class).getList(PropertySection.class);
+            siteTypes = Services.get(ServiceDtoCache.class).getList(SiteType.class);
+            operators = Services.get(ServiceDtoCache.class).getList(Operator.class);
+        } catch (ServiceException e) {
+            ui.addErrorMessage(e);
+            return;
+        }
 
 
         Set<String> doneSiteCodes = new HashSet<>(40000);

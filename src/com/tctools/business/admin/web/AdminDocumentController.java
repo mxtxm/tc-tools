@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AdminDocumentController extends RouteToMethod {
 
     public void documentShowDtos(Params params, HttpServletResponse response) {
-        AdminDocument.show(Settings.config.getProperty("documents.dir") + "objects.md", response, false);
+        AdminDocument.showFromFile(Settings.config.getProperty("documents.dir") + "objects.md", response);
     }
 
 }

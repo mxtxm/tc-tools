@@ -691,6 +691,22 @@ ui.addMessage("11").write();
 
 
     public void index(Params params, HttpServletResponse response) {
+        QueryBuilder q = new QueryBuilder(new Test9());
+        q.condition().in("test7.test1.id", 112);
+
+        try {
+            log.error(">>>>{}", CommonRepoMongo.getData(q));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        } catch (NoContentException e) {
+            e.printStackTrace();
+        }
+
+
+        if (true) return;
+
+        DtoDictionary.Info dt = DtoDictionary.get("Test7");
+
         Test1 test1 = new Test1();
         test1.id = 1L;
         test1.name = "AA";
@@ -791,7 +807,7 @@ ui.addMessage("11").write();
 ////
         Test7 test71 = new Test7();
         test71.name = "BBBBBBB";
-        test71.test1Id = 0L;
+        test71.test1Id = 10L;
         test71.test1 = test20;
         Test6 test61 = new Test6();
         test61.name = "BBBBBB";
@@ -877,20 +893,21 @@ ui.addMessage("11").write();
 //        items = DataDependency.getDependencies(new Test1(), 3L);
 //        log.error(">>>>>{} > 1", items);
 //
-        items = DataDependency.getDependencies(new Test1(), 4L);
-        log.error(">>>>>{} > 0", items);
+        //items = DataDependency.getDependencies(new Test1(), 4L);
+        //log.error(">>>>>{} > 0", items);
 
 
 
 
-        items = DataDependency.getDependencies(new Test1(), 5L);
-        log.error(">>>>>{} > 0", items);
+//        items = DataDependency.getDependencies(new Test1(), 5L);
+//        log.error(">>>>>{} > 0", items);
+//
+//        items = DataDependency.getDependencies(new Test1(), 6L);
+//        log.error(">>>>>{} > 0", items);
+//
+//        items = DataDependency.getDependencies(new Test1(), 7L);
+//        log.error(">>>>>{} > 1", items);
 
-        items = DataDependency.getDependencies(new Test1(), 6L);
-        log.error(">>>>>{} > 0", items);
-
-        items = DataDependency.getDependencies(new Test1(), 7L);
-        log.error(">>>>>{} > 1", items);
         items = DataDependency.getDependencies(new Test1(), 8L);
         log.error(">>>>>{} > 0", items);
 
@@ -898,6 +915,9 @@ ui.addMessage("11").write();
         log.error(">>>>>{} > 1", items);
         items = DataDependency.getDependencies(new Test1(), 10L);
         log.error(">>>>>{} > 0", items);
+
+        if(1==1)return;
+
 
         items = DataDependency.getDependencies(new Test1(), 11L);
         log.error(">>>>>{} > 1", items);

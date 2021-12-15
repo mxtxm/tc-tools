@@ -21,11 +21,8 @@ import java.util.*;
 
 public class UserModel {
 
-    public static User getCurrentUser(Params params) throws NoContentException {
+    public static User getCurrentUser(Params params) throws NoContentException, ServiceException, AuthException {
         ServiceAuth auth = Services.get(ServiceAuth.class);
-        if (auth == null) {
-            throw new NoContentException();
-        }
         User user = (User) auth.getCurrentUser(params);
         if (user == null) {
             throw new NoContentException();
@@ -185,7 +182,7 @@ public class UserModel {
         return CommonModelMongo.delete(params, user);
     }
 
-    public static ResponseMessage signatureSubmit(Params params) throws InputException, AuthException {
+    public static ResponseMessage signatureSubmit(Params params) throws InputException, AuthException, ServiceException {
         Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD);
 
         if (!uploaded.isUploaded() || uploaded.isIoError()) {

@@ -6,4 +6,5 @@ public enum HseAuditAnswerOption {
     NA,
     Option3,
     Option4,
+    Option5,
 }

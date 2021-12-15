@@ -2,7 +2,7 @@ package com.tctools.web.ui.site;
 
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.model.site.*;
-import com.vantar.exception.AuthException;
+import com.vantar.exception.*;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.web.*;
@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class BtsOwnershipController extends RouteToMethod {
 
-    public void siteBtsOwnershipGet(Params params, HttpServletResponse response) throws AuthException {
+    public void siteBtsOwnershipGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.ENGINEER, Role.MANAGER, Role.TECHNICIAN);
         Response.writeJson(response, BtsOwnershipModel.getAll(params));
     }
 
-    public void siteBtsOwnershipKeyval(Params params, HttpServletResponse response) throws AuthException {
+    public void siteBtsOwnershipKeyval(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.ENGINEER, Role.MANAGER, Role.TECHNICIAN);
         Response.writeJson(response, BtsOwnershipModel.getAsKeyValue(params));
     }

@@ -159,6 +159,11 @@ public class User extends DtoBase implements CommonUser {
     }
 
     @Override
+    public List<? extends CommonUserRole> getRoles() {
+        return null;
+    }
+
+    @Override
     public void setSigningIn() {
         siginingIn = true;
     }

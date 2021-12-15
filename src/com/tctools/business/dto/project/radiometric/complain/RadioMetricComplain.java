@@ -7,6 +7,7 @@ import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
+import com.vantar.exception.ServiceException;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
@@ -90,7 +91,12 @@ public class RadioMetricComplain extends DtoBase {
 
 
     private static String getImageFilenameX(Long cityId, String complainerName, String ccnumber) {
-        City city = Services.get(ServiceDtoCache.class).getDto(City.class, cityId);
+        City city;
+        try {
+            city = Services.get(ServiceDtoCache.class).getDto(City.class, cityId);
+        } catch (ServiceException e) {
+            city = null;
+        }
         return complainerName + " -  درخواست شماره " + ccnumber + " - " + (city == null ? "" : city.name.get("fa")) + ".png";
     }
 

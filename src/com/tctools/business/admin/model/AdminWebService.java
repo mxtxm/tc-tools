@@ -3,6 +3,7 @@ package com.tctools.business.admin.model;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.admin.model.Admin;
 import com.vantar.database.dto.*;
+import com.vantar.exception.ServiceException;
 import com.vantar.http.Url;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
@@ -181,7 +182,12 @@ public class AdminWebService {
 
             if (field.className != null) {
                 Dto dto = DtoDictionary.get(field.className).getDtoInstance();
-                ServiceDtoCache cache = Services.get(ServiceDtoCache.class);
+                ServiceDtoCache cache;
+                try {
+                    cache = Services.get(ServiceDtoCache.class);
+                } catch (ServiceException e) {
+                    continue;
+                }
                 ui.addSelect(field.className, field.name, cache.getList(dto.getClass()));
                 continue;
             }

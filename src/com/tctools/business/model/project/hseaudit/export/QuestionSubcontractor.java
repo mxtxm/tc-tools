@@ -272,14 +272,18 @@ public class QuestionSubcontractor extends ExportCommon {
         public Set<String> extraOptions = new HashSet<>(10);
 
         public QuestionStatistics(List<Long> subContractorIds) {
-            for (SubContractor subContractor : Services.get(ServiceDtoCache.class).getList(SubContractor.class)) {
-                if (subContractorIds != null && !subContractorIds.isEmpty()) {
-                    if (subContractorIds.contains(subContractor.id)) {
+            try {
+                for (SubContractor subContractor : Services.get(ServiceDtoCache.class).getList(SubContractor.class)) {
+                    if (subContractorIds != null && !subContractorIds.isEmpty()) {
+                        if (subContractorIds.contains(subContractor.id)) {
+                            statistics.put(subContractor.name, new Statistics());
+                        }
+                    } else {
                         statistics.put(subContractor.name, new Statistics());
                     }
-                } else {
-                    statistics.put(subContractor.name, new Statistics());
                 }
+            } catch (ServiceException ignore) {
+
             }
         }
 

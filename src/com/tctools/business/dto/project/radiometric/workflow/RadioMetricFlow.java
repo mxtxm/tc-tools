@@ -7,6 +7,7 @@ import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
+import com.vantar.exception.ServiceException;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
@@ -230,14 +231,16 @@ public class RadioMetricFlow extends DtoBase {
         }
 
         if (RadioMetricFlowState.Planned.equals(lastState)) {
-            City cityObj = Services.get(ServiceDtoCache.class).getDto(City.class, site.cityId);
-            if (cityObj != null) {
-                reportedCity = cityObj.name.get("fa");
+            try {
+                reportedCity = Services.get(ServiceDtoCache.class).getDto(City.class, site.cityId).name.get("fa");
+            } catch (ServiceException ignore) {
+
             }
 
-            Province provinceObj = Services.get(ServiceDtoCache.class).getDto(Province.class, site.provinceId);
-            if (provinceObj != null) {
-                reportedProvince = provinceObj.name.get("fa");
+            try {
+                reportedProvince = Services.get(ServiceDtoCache.class).getDto(Province.class, site.provinceId).name.get("fa");
+            } catch (ServiceException ignore) {
+
             }
 
             StringBuilder msg = new StringBuilder();
