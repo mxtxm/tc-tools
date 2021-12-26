@@ -11,15 +11,14 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/question/type/get",
 })
 public class QuestionTypeController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionTypeGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, EnumUtil.getEnumValues(HseAuditQuestionType.values()));
     }
 }

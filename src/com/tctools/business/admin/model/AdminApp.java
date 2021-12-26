@@ -5,8 +5,10 @@ import com.tctools.business.dto.user.Role;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.admin.model.*;
 import com.vantar.database.dto.Dto;
-import com.vantar.exception.DatabaseException;
-import com.vantar.locale.*;
+import com.vantar.exception.*;
+import com.vantar.locale.Locale;
+import com.vantar.service.Services;
+import com.vantar.service.auth.ServiceAuth;
 import com.vantar.util.file.FileUtil;
 import com.vantar.web.Params;
 import javax.servlet.http.HttpServletResponse;
@@ -63,11 +65,14 @@ public class AdminApp {
     }
 
     public static void extendMenu(Params params) {
-        if (AdminAuth.hasAccess(params, Role.MANAGER)) {
-            Admin.menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
+        try {
+            if (Services.get(ServiceAuth.class).hasAccess(params, Role.MANAGER)) {
+                Admin.menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
+            }
+        } catch (ServiceException ignore) {
+
         }
-        Admin.menu.put(Locale.getString(AppLangKey.ADMIN_DUMMY_USERS), "/admin/users/dummy/index");
-        //Admin.menu.put(Locale.getString(AppLangKey.ADMIN_WEBSERVICES), "/admin/webservice/index");
+
         Admin.menu.put(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), "/admin/image/browse");
         Admin.menu.put("Tools", "/admin/tools/index");
     }

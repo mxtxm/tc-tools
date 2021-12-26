@@ -11,15 +11,14 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/flow/state/get",
 })
 public class FlowStateController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditFlowStateGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, EnumUtil.getEnumValues(HseAuditFlowState.values()));
     }
 }

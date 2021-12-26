@@ -18,7 +18,6 @@ import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-
 @WebServlet({
     "/patch/missing/radiometric",
     "/patch/invalid/selected/sector",
@@ -39,11 +38,8 @@ public class PatchController extends RouteToMethod {
      * 22 aug 2021
      * find missing radiometric records with existing folder
      */
-    public void missingRadiometric(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void missingRadiometric(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         DirUtil.browseDir(Param.RADIO_METRIC_FILES, rDir -> {
             DirUtil.browseDir(rDir + "/measurement/", mDir -> {
@@ -69,11 +65,8 @@ public class PatchController extends RouteToMethod {
      * 24 aug 2021
      * find radiometric records that stored selected sector not matches calculated selected sector
      */
-    public void invalidSelectedSector(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void invalidSelectedSector(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().in(
@@ -129,11 +122,8 @@ public class PatchController extends RouteToMethod {
      * 24 aug 2021
      * find radiometric records that stored selected sector not matches calculated selected sector then fix to calculated
      */
-    public void invalidSelectedSectorFix(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void invalidSelectedSectorFix(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().in(
@@ -202,11 +192,8 @@ public class PatchController extends RouteToMethod {
      * 2 sep 2021
      * find hse records that dont have sub contractor
      */
-    public void invalidQuestionnaireNoSubcontractor(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void invalidQuestionnaireNoSubcontractor(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
         q.condition().in("lastState", HseAuditFlowState.PreApproved, HseAuditFlowState.Approved);

@@ -18,11 +18,8 @@ import java.util.*;
 
 public class AdminSynchRadiometric {
 
-    public static void index(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void index(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         if (!params.contains("f")) {
             ui.beginFormPost()

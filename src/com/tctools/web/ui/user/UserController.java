@@ -10,7 +10,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/users/get/roles",
 
@@ -43,68 +42,68 @@ public class UserController extends RouteToMethod {
         );
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void userGetCurrent(Params params, HttpServletResponse response) throws AuthException, NoContentException, ServiceException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN, Role.VENDOR);
         Response.writeJson(response, UserModel.getCurrentUser(params));
     }
 
-    public void userGetById(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void userGetById(Params params, HttpServletResponse response) throws ServerException, NoContentException, InputException {
         Response.writeJson(response, UserModel.getUserById(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void usersAll(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        Response.writeJson(response, UserModel.getAll(params, user));
+        Response.writeJson(response, UserModel.getAll(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void usersAllKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        Response.writeJson(response, UserModel.getAsKeyValue(params, user));
+        Response.writeJson(response, UserModel.getAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void usersTechniciansGet(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        Response.writeJson(response, UserModel.getTechnicians(params, user));
+        Response.writeJson(response, UserModel.getTechnicians(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void usersTechniciansKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        Response.writeJson(response, UserModel.getTechniciansAsKeyValue(params, user));
+        Response.writeJson(response, UserModel.getTechniciansAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void usersAcTechniciansKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        Response.writeJson(response, UserModel.getAcTechniciansAsKeyValue(params, user));
+        Response.writeJson(response, UserModel.getAcTechniciansAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER",})
     public void userInsert(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
-        Response.writeJson(response, UserModel.insert(params, user));
+        Response.writeJson(response, UserModel.insert(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void userUpdate(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
-        Response.writeJson(response, UserModel.update(params, user));
+        Response.writeJson(response, UserModel.update(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    public void userDelete(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
+    @Access({"MANAGER", "ENGINEER",})
+    public void userDelete(Params params, HttpServletResponse response) throws InputException, ServerException {
         Response.writeJson(response, UserModel.delete(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void userSignatureExists(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
-        Response.writeJson(response, UserModel.signatureExists(user));
+        Response.writeJson(response, UserModel.signatureExists(((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void userChangePassword(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
-        Response.writeJson(response, UserModel.changePassword(params, user));
+        Response.writeJson(response, UserModel.changePassword(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void userUnsubscribe(Params params, HttpServletResponse response) throws AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
-        Response.writeJson(response, UserModel.unsubscribe(user));
+        Response.writeJson(response, UserModel.unsubscribe(((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 }

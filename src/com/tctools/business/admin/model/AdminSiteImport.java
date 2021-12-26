@@ -37,11 +37,8 @@ public class AdminSiteImport {
     private static Map<String, Long> codeIdMap;
 
 
-    public static void importSites(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.IMPORT_SITE_DATA), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void importSites(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.IMPORT_SITE_DATA), params, response, true);
 
         if (!params.contains("f")) {
             String fields =

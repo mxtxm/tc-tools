@@ -20,7 +20,7 @@ import com.vantar.service.log.LogEvent;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
@@ -43,7 +43,7 @@ public class WorkFlowModel {
         }
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = flowParams.id;
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
 
@@ -150,7 +150,7 @@ public class WorkFlowModel {
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (questionnaireId)");
         }
 
@@ -266,7 +266,7 @@ public class WorkFlowModel {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
         Long questionId = params.getLong("questionId");
-        if (ObjectUtil.isIdInvalid(flow.id) || ObjectUtil.isIdInvalid(questionId)) {
+        if (NumberUtil.isIdInvalid(flow.id) || NumberUtil.isIdInvalid(questionId)) {
             throw new InputException(VantarKey.INVALID_ID, "id (questionnaireId) / questionId");
         }
 
@@ -313,7 +313,7 @@ public class WorkFlowModel {
         }
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = flowParams.id;
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
 
@@ -345,7 +345,7 @@ public class WorkFlowModel {
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = id;
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
@@ -405,7 +405,7 @@ public class WorkFlowModel {
     public static HseAuditQuestionnaire.Viewable get(Params params) throws ServerException, NoContentException, InputException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 

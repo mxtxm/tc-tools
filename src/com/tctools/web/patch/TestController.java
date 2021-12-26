@@ -51,11 +51,9 @@ public class TestController extends RouteToMethod {
 
     public static final Logger log = LoggerFactory.getLogger(TestController.class);
 
-    public void fixSecSelect(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixSecSelect(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         try {
             //List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
 
@@ -88,11 +86,9 @@ public class TestController extends RouteToMethod {
 
         ui.write();
     }
-    public void fixSec(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixSec(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         try {
             List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
 
@@ -124,11 +120,8 @@ public class TestController extends RouteToMethod {
     }
 
 
-    public void fixDate(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixDate(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         String[] x = ("ES0427\n" +
             "ES1046\n" +
@@ -424,11 +417,9 @@ public class TestController extends RouteToMethod {
 
 
 
-    public void cityFix(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void cityFix(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         try {
             List<City> items = CommonRepoMongo.getData(new City());
 
@@ -468,11 +459,9 @@ public class TestController extends RouteToMethod {
     }
 
 
-    public void fixComplainImages(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixComplainImages(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         try {
             List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
 
@@ -543,11 +532,9 @@ public class TestController extends RouteToMethod {
     }
 
 
-    public void checkComplains(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void checkComplains(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         try {
             List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
             List<RadioMetricComplain> complains = CommonRepoMongo.getData(new RadioMetricComplain());
@@ -570,11 +557,8 @@ public class TestController extends RouteToMethod {
         ui.write();
     }
 
-    public void check(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void check(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         String dtos = params.getString("dtos");
 
@@ -624,11 +608,8 @@ public class TestController extends RouteToMethod {
     }
 
 
-    public void fix(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fix(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         Site s = new Site();
         RadioMetricFlow r = new RadioMetricFlow();

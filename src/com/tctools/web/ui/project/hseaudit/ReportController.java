@@ -10,7 +10,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/state/aggregate",
     "/ui/hse/audit/activity/aggregate",
@@ -21,39 +20,39 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ReportController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditStateAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, ReportModel.stateAggregate());
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditActivityAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, ReportModel.activityAggregate());
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditProvinceAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, ReportModel.provinceAudit());
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditAnswerAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, ReportModel.answerCount());
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditUsersDoneAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, ReportModel.usersDoneAggregate(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditUserDoneAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, ReportModel.userDoneAggregate(params));
     }
 }

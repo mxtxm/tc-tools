@@ -16,9 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ActivityController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditActivityGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, EnumUtil.getEnumValues(HseAuditActivity.values()));
     }
 }

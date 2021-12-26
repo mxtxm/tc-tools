@@ -10,7 +10,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/radio/metric/complain/insert",
     "/ui/radio/metric/complain/update",
@@ -23,15 +22,16 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class ComplainUploadController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricComplainInsert(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.insert(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricComplainUpdate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.update(params));
     }
 }

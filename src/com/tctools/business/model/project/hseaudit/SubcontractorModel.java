@@ -7,7 +7,7 @@ import com.vantar.database.dto.Dto;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.Params;
 import java.util.*;
@@ -33,7 +33,7 @@ public class SubcontractorModel {
         SubContractor subContractor = new SubContractor();
         subContractor.id = params.getLong("id");
 
-        if (ObjectUtil.isIdInvalid(subContractor.id)) {
+        if (NumberUtil.isIdInvalid(subContractor.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (SubContractor.id)");
         }
 

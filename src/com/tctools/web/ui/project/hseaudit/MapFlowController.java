@@ -10,7 +10,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/flows/search/map",
 
@@ -20,27 +19,29 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class MapFlowController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditFlowsSearchMap(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, MapFlowModel.searchForMap(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN",})
     public void hseAuditSiteAssign(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, MapFlowModel.assign(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN",})
     public void hseAuditSiteAssignRemove(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, MapFlowModel.removeAssign(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN",})
     public void hseAuditCreateChild(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, MapFlowModel.createChild(params));
     }
 }

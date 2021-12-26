@@ -1,14 +1,9 @@
 package com.tctools.web.ui.site;
 
-import com.tctools.business.dto.user.Role;
-import com.tctools.business.model.site.*;
-import com.vantar.exception.*;
-import com.vantar.service.Services;
-import com.vantar.service.auth.ServiceAuth;
+import com.tctools.business.model.site.SiteOwnershipModel;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
-
 
 @WebServlet({
     "/ui/site/ownership/get",
@@ -16,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SiteOwnershipController extends RouteToMethod {
 
-    public void siteOwnershipGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void siteOwnershipGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteOwnershipModel.getAll());
     }
 
-    public void siteOwnershipKeyval(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void siteOwnershipKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteOwnershipModel.getAsKeyValue());
     }
 }

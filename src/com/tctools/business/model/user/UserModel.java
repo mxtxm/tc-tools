@@ -13,7 +13,7 @@ import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
 import com.vantar.service.auth.*;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
@@ -32,7 +32,7 @@ public class UserModel {
 
     public static User getUserById(Params params) throws ServerException, NoContentException, InputException {
         Long id = params.getLong("id");
-        if (!ObjectUtil.isIdValid(id)) {
+        if (!NumberUtil.isIdValid(id)) {
             throw new InputException(VantarKey.INVALID_ID, "User.id");
         }
 
@@ -212,7 +212,7 @@ public class UserModel {
         User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
 
         Long id = params.getLong("id");
-        if (ObjectUtil.isIdValid(id)) {
+        if (NumberUtil.isIdValid(id)) {
             if (user.role == Role.MANAGER || user.role == Role.ADMIN || user.role == Role.ROOT) {
                 user.id = id;
             } else {
@@ -234,7 +234,7 @@ public class UserModel {
 
     public static ResponseMessage changePassword(Params params, User user) throws InputException, ServerException, AuthException {
         Long id = params.getLong("id");
-        if (ObjectUtil.isIdValid(id)) {
+        if (NumberUtil.isIdValid(id)) {
             if (user.role == Role.MANAGER || user.role == Role.ADMIN || user.role == Role.ROOT) {
                 user.id = id;
             } else {

@@ -1,6 +1,7 @@
 package com.tctools.business.admin.model;
 
 import com.vantar.admin.model.Admin;
+import com.vantar.exception.FinishException;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
 import com.vantar.util.datetime.DateTime;
@@ -18,11 +19,8 @@ public class AdminRequestLog {
     private volatile static boolean capture = false;
 
 
-    public static void showLog(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_MENU_DOCUMENTS), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void showLog(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_MENU_DOCUMENTS), params, response, true);
 
         Boolean setCapture = params.getBoolean("capture");
         if (setCapture != null) {

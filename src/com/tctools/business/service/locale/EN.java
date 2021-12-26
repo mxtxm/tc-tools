@@ -49,12 +49,9 @@ public class EN implements Translation {
         tokens.put(AppLangKey.GPS_DATA_MISSING_CSV_DATA, "GPS data missing, csv file");
         tokens.put(AppLangKey.DUPLICATE, "Duplicate > {0} : {1}");
 
-        tokens.put(AppLangKey.ADMIN_DUMMY_USERS, "Dummy users");
         tokens.put(AppLangKey.ADMIN_WEBSERVICES, "WebServices");
         tokens.put(AppLangKey.ADMIN_MAP, "map");
         tokens.put(AppLangKey.ADMIN_IMAGE_BROWSE, "Photos");
-        tokens.put(AppLangKey.DUMMY_USER_SET, "Set dummy user");
-        tokens.put(AppLangKey.NO_DUMMY_USER_SET, "No Dummy user");
         tokens.put(AppLangKey.ROLE, "User role");
 
         tokens.put(AppLangKey.INVALID_LOCATION, "Invalid location");

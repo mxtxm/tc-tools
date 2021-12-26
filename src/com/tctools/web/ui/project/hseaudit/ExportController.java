@@ -10,7 +10,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/daily/report",
     "/ui/hse/audit/data",
@@ -36,57 +35,57 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ExportController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditDailyReport(Params params, HttpServletResponse response) throws AuthException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         ExportModel.dailyReport(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditData(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         ExportModel.auditData(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditQuestionProvince(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         QuestionProvince.outputAggregate(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditQuestionSubcontractor(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         QuestionSubcontractor.outputAggregate(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditSignificanceMonth(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         SignificanceMonth.outputAggregate(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditSignificanceSubcontractorProvince(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         SignificanceSubcontractorProvince.outputAggregate(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditSignificanceSubcontractorProvinceComplete(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         SignificanceSubcontractorProvinceComplete.outputAggregate(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditSignificanceProvince(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         SignificanceProvince.outputAggregate(params, response);
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditSignificanceSubcontractor(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         SignificanceSubcontractor.outputAggregate(params, response);
     }
 }

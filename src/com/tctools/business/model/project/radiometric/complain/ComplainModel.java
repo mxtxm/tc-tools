@@ -12,7 +12,7 @@ import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.log.LogEvent;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
@@ -43,7 +43,7 @@ public class ComplainModel {
         RadioMetricComplain complain = new RadioMetricComplain();
         complain.id = params.getLong("id");
 
-        if (ObjectUtil.isIdInvalid(complain.id)) {
+        if (NumberUtil.isIdInvalid(complain.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id");
         }
 
@@ -58,7 +58,7 @@ public class ComplainModel {
             @Override
             public void beforeWrite(Dto dto) throws InputException, ServerException {
                 RadioMetricComplain complain = (RadioMetricComplain) dto;
-                if (ObjectUtil.isIdInvalid(complain.id)) {
+                if (NumberUtil.isIdInvalid(complain.id)) {
                     throw new InputException(VantarKey.INVALID_ID);
                 }
                 completeData(complain);
@@ -70,7 +70,7 @@ public class ComplainModel {
                 RadioMetricComplain complain = (RadioMetricComplain) dto;
                 try {
 //                    complain = CommonRepoMongo.getById(complain);
-                    if (ObjectUtil.isIdInvalid(complain.workFlowId)) {
+                    if (NumberUtil.isIdInvalid(complain.workFlowId)) {
                         return;
                     }
 
@@ -120,7 +120,7 @@ public class ComplainModel {
     public static ResponseMessage delete(Params params) throws InputException, ServerException {
         RadioMetricComplain complain = new RadioMetricComplain();
         complain.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(complain.id)) {
+        if (NumberUtil.isIdInvalid(complain.id)) {
             throw new InputException(VantarKey.INVALID_ID);
         }
 
@@ -130,7 +130,7 @@ public class ComplainModel {
 
                 RadioMetricFlow r = new RadioMetricFlow();
                 r.id = complain.workFlowId;
-                if (ObjectUtil.isIdValid(r.id)) {
+                if (NumberUtil.isIdValid(r.id)) {
                     CommonRepoMongo.delete(r);
                 }
             } catch (NoContentException | DatabaseException ignore) {
@@ -153,7 +153,7 @@ public class ComplainModel {
      */
     private static void completeData(RadioMetricComplain complain) throws ServerException, InputException {
         Site site = new Site();
-        if (ObjectUtil.isIdValid(complain.siteId)) {
+        if (NumberUtil.isIdValid(complain.siteId)) {
             site.id = complain.siteId;
             try {
                 site = CommonRepoMongo.getById(site);
@@ -203,7 +203,7 @@ public class ComplainModel {
         RadioMetricComplain.Viewable complain = new RadioMetricComplain.Viewable();
         complain.id = params.getLong("id");
 
-        if (ObjectUtil.isIdInvalid(complain.id)) {
+        if (NumberUtil.isIdInvalid(complain.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (complain.id)");
         }
 

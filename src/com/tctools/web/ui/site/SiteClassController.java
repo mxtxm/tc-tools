@@ -1,14 +1,10 @@
 package com.tctools.web.ui.site;
 
-import com.tctools.business.dto.user.Role;
 import com.tctools.business.model.site.SiteClassModel;
 import com.vantar.exception.*;
-import com.vantar.service.Services;
-import com.vantar.service.auth.ServiceAuth;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
-
 
 @WebServlet({
     "/ui/site/class/get",
@@ -16,13 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SiteClassController extends RouteToMethod {
 
-    public void siteClassGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.ENGINEER, Role.MANAGER, Role.TECHNICIAN);
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void siteClassGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteClassModel.getAll(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteClassKeyval(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.ENGINEER, Role.MANAGER, Role.TECHNICIAN);
         Response.writeJson(response, SiteClassModel.getAsKeyValue(params));
     }
 }

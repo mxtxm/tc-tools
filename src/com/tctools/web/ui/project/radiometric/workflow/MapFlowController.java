@@ -21,27 +21,29 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class MapFlowController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR", "READONLY",})
     public void radioMetricFlowsSearchMap(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, MapFlowModel.searchForMap(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricSiteAssign(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assign(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricSiteAssignRemove(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assignRemove(params, user));
     }
 
-    public void radioMetricUpdateMeasurementLocation(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.RadioMetric);
+    @Access({"MANAGER", "ENGINEER",})
+    public void radioMetricUpdateMeasurementLocation(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, MapFlowModel.updateSpotLocation(params));
     }
 }

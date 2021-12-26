@@ -2,9 +2,9 @@ package com.tctools.business.model.project.hseaudit.export;
 
 
 import com.tctools.business.dto.project.hseaudit.*;
-import com.tctools.common.util.Docx;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
+import com.tctools.common.util.Docx;
 import com.tctools.web.patch.TestController;
 import com.vantar.business.CommonRepoMongo;
 import com.vantar.database.dto.Dto;
@@ -13,7 +13,7 @@ import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.web.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -31,7 +31,7 @@ public class ExportModel {
     public static void auditData(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
         HseAuditQuestionnaire.Viewable flow = new HseAuditQuestionnaire.Viewable();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id");
         }
 

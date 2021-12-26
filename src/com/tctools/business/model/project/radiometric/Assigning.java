@@ -14,7 +14,7 @@ import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.service.log.LogEvent;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
@@ -28,10 +28,10 @@ public class Assigning {
         flow.complain = new RadioMetricComplain();
         flow.complain.id = params.getLong("complainId");
 
-        if (ObjectUtil.isIdInvalid(flow.complain.id)) {
+        if (NumberUtil.isIdInvalid(flow.complain.id)) {
             throw new InputException(VantarKey.INVALID_ID, "complainId (complain.id)");
         }
-        if (ObjectUtil.isIdInvalid(flow.assigneeId)) {
+        if (NumberUtil.isIdInvalid(flow.assigneeId)) {
             throw new InputException(AppLangKey.INVALID_ASSIGNEE);
         }
 
@@ -125,7 +125,7 @@ public class Assigning {
             throw new InputException(VantarKey.INVALID_ID, "ids");
         }
         Long assigneeId = params.getLong("assigneeId");
-        if (ObjectUtil.isIdInvalid(assigneeId)) {
+        if (NumberUtil.isIdInvalid(assigneeId)) {
             throw new InputException(AppLangKey.INVALID_ASSIGNEE);
         }
 
@@ -170,7 +170,7 @@ public class Assigning {
     public static ResponseMessage assignRemove(Params params, User remover) throws InputException, ServerException, NoContentException {
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow.id)");
         }
 

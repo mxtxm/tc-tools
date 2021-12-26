@@ -12,7 +12,7 @@ import com.vantar.locale.VantarKey;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ public class ExportSite extends ExportCommon {
 
         RadioMetricFlow.Viewable flow = new RadioMetricFlow.Viewable();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 
@@ -75,7 +75,7 @@ public class ExportSite extends ExportCommon {
 
         RadioMetricFlow.Viewable flow = new RadioMetricFlow.Viewable();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 

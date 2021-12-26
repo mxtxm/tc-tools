@@ -7,7 +7,7 @@ import com.vantar.database.datatype.Location;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
@@ -35,7 +35,7 @@ public class SiteModel {
         site.id = params.getLong("id");
         site.code = params.getString("code");
 
-        if (ObjectUtil.isIdInvalid(site.id) && StringUtil.isEmpty(site.code)) {
+        if (NumberUtil.isIdInvalid(site.id) && StringUtil.isEmpty(site.code)) {
             throw new InputException(AppLangKey.INVALID_SITE);
         }
 

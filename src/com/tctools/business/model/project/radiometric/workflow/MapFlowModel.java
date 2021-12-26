@@ -6,7 +6,7 @@ import com.vantar.business.CommonRepoMongo;
 import com.vantar.database.query.QueryData;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.web.*;
 import java.util.*;
 
@@ -40,7 +40,7 @@ public class MapFlowModel {
         flow.id = params.getLong("id");
         flow.spotLocation = params.getLocation("spotLocation");
         flow.skipBeforeUpdate();
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");
         }
         if (flow.spotLocation == null || !flow.spotLocation.isValid()) {

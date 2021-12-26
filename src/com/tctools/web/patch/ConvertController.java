@@ -27,6 +27,7 @@ import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.json.Json;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.object.ObjectUtil;
 import com.vantar.util.string.*;
 import com.vantar.web.*;
@@ -75,12 +76,8 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
-    public void fixSectorOne(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
-
+    public void fixSectorOne(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         ui.write();
         try {
@@ -113,11 +110,8 @@ public class ConvertController extends RouteToMethod {
 
     }
 
-    public void fixDate(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixDate(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         DateTime d;
         try {
@@ -169,11 +163,9 @@ public class ConvertController extends RouteToMethod {
 
     }
 
-    public void mergeUser(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void mergeUser(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         ui.beginFormPost();
         ui.addTextArea("User", "user");
         ui.addSubmit();
@@ -224,11 +216,8 @@ public class ConvertController extends RouteToMethod {
     }
 
 
-    public void changeState(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void changeState(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         ui.beginFormPost();
         ui.addTextArea("Site codes", "codes");
@@ -300,11 +289,8 @@ public class ConvertController extends RouteToMethod {
 
 
 
-    public void fixFileName(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixFileName(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.addMessage("> > >").write();
 
         Map<String, String> m = new HashMap<>();
@@ -338,11 +324,9 @@ public class ConvertController extends RouteToMethod {
         processFile("/opt/tc-tools/files/radiometric/", callback);
     }
 
-    public void fixAssign(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixAssign(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         ui.addMessage("> > >").write();
 
         String directory = "/opt/tc-tools/convert/files/";
@@ -403,11 +387,8 @@ public class ConvertController extends RouteToMethod {
         ui.addMessage("< < <").write();
     }
 
-    public void fixState(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fixState(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.write();
 
         try {
@@ -428,12 +409,10 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
-    public void users(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void users(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.write();
+
         try {
             List<User> data = CommonRepoMongo.getData(new User());
 
@@ -557,12 +536,10 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
-    public void log(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void log(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.write();
+
         try {
             List<RadioMetricFlow> data = CommonRepoMongo.getData(new RadioMetricFlow());
             for (RadioMetricFlow f : data) {
@@ -600,11 +577,8 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
-    public void fix(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void fix(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         try {
             List<RadioMetricFlow> data = CommonRepoMongo.getData(new RadioMetricFlow());
             for (RadioMetricFlow f : data) {
@@ -650,11 +624,9 @@ public class ConvertController extends RouteToMethod {
         log.info(docToDox(params.getString("path"), null));
     }
 
-    public void createSh(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void createSh(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         ui.addMessage("doc to dox > > >").write();
         String directory = "/opt/tc-tools/convert/files/";
         List<String> commands = new ArrayList<>();
@@ -680,11 +652,9 @@ public class ConvertController extends RouteToMethod {
             .write();
     }
 
-    public void compare(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void compare(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         ui.addMessage("> > >").write();
 
         String directory = "/opt/tc-tools/convert/files/";
@@ -797,11 +767,9 @@ public class ConvertController extends RouteToMethod {
         ui.addMessage("< < <").write();
     }
 
-    public void index(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public void index(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
         ui.addMessage("begin convert > > >").write();
 
         Map<String, SPCC> sp;
@@ -1438,10 +1406,10 @@ public class ConvertController extends RouteToMethod {
         flow.complain = new RadioMetricComplain();
         flow.complain.id = params.getLong("complainId");
 
-        if (ObjectUtil.isIdInvalid(flow.complain.id)) {
+        if (NumberUtil.isIdInvalid(flow.complain.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (complain.id)");
         }
-        if (ObjectUtil.isIdInvalid(flow.assigneeId)) {
+        if (NumberUtil.isIdInvalid(flow.assigneeId)) {
             throw new InputException(AppLangKey.INVALID_ASSIGNEE);
         }
 

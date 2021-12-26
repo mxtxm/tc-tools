@@ -11,7 +11,7 @@ import com.vantar.database.query.QueryData;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.slf4j.*;
@@ -50,7 +50,7 @@ public class MapFlowModel {
     public static ResponseMessage assign(Params params, User assignor) throws InputException, ServerException, NoContentException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
@@ -61,12 +61,12 @@ public class MapFlowModel {
         }
 
         flow.assigneeId = params.getLong("assigneeId");
-        if (ObjectUtil.isIdInvalid(flow.assigneeId)) {
+        if (NumberUtil.isIdInvalid(flow.assigneeId)) {
             throw new InputException(AppLangKey.INVALID_ASSIGNEE);
         }
 
         flow.subContractorId = params.getLong("subContractorId");
-        if (ObjectUtil.isIdInvalid(flow.assigneeId)) {
+        if (NumberUtil.isIdInvalid(flow.assigneeId)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.subContractorId)");
         }
 
@@ -100,7 +100,7 @@ public class MapFlowModel {
     public static ResponseMessage removeAssign(Params params, User remover) throws InputException, ServerException, NoContentException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
@@ -159,7 +159,7 @@ public class MapFlowModel {
     public static ResponseMessage createChild(Params params) throws InputException, ServerException, NoContentException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 

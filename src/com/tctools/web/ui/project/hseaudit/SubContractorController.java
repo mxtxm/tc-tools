@@ -10,7 +10,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/subcontractors/search",
     "/ui/hse/audit/subcontractor/get",
@@ -18,21 +17,21 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SubContractorController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditSubcontractorsSearch(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, SubcontractorModel.search(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditSubcontractorGet(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, SubcontractorModel.get(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditSubcontractorAutocomplete(Params params, HttpServletResponse response) throws ServerException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, SubcontractorModel.autoComplete(params));
     }
 }

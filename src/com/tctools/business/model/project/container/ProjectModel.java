@@ -5,7 +5,7 @@ import com.tctools.business.dto.site.Site;
 import com.vantar.business.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.web.*;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class ProjectModel {
         Project.Viewable project = new Project.Viewable();
         project.id = params.getLong("id");
 
-        if (ObjectUtil.isIdInvalid(project.id)) {
+        if (NumberUtil.isIdInvalid(project.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (Project.id)");
         }
 

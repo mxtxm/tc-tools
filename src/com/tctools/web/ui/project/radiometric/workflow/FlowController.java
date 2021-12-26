@@ -25,57 +25,61 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class FlowController extends RouteToMethod {
 
+    @Access({"MANAGER", "ENGINEER",})
     public void radioMetricFlowDelete(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.delete(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN",})
     public void radioMetricFlowUpdateState(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.updateState(params, user));
     }
 
+    @Access({"TECHNICIAN",})
     public void radioMetricFlowCommit(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.commitMeasurements(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricFlowGet(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.get(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricFlowsSearch(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.VENDOR, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.search(params));
     }
 
+    @Access({"TECHNICIAN", "READONLY",})
     public void radioMetricFlowGetTasksNew(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.getNewTasks(params, user));
     }
 
+    @Access({"TECHNICIAN", "READONLY",})
     public void radioMetricFlowGetTasksFinished(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.getFinishedTasks(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN",})
     public void radioMetricImageDelete(Params params, HttpServletResponse response) throws AuthException, InputException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN, Role.ENGINEER, Role.MANAGER);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.deleteImage(params));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN",})
     public void radioMetricLogDelete(Params params, HttpServletResponse response) throws AuthException, InputException, ServerException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN, Role.ENGINEER, Role.MANAGER);
-        user.projectAccess(ProjectType.RadioMetric);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.deleteLog(params));
     }
 }

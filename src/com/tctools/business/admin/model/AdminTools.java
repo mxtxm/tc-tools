@@ -18,11 +18,8 @@ import java.util.*;
 
 public class AdminTools {
 
-    public static void index(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi("Tools", params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void index(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi("Tools", params, response, false);
 
         ui  .beginBox("Radio Metric")
             .addBlockLink("CHANGE/ADD STATE", "/admin/tools/state/add")
@@ -38,11 +35,8 @@ public class AdminTools {
         ui.finish();
     }
 
-    public static void addState(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi("Add state", params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void addState(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi("Add state", params, response, false);
 
         String s = params.getString("codes");
         String st = params.getString("state");
@@ -145,11 +139,8 @@ public class AdminTools {
         ui.write();
     }
 
-    public static void updateState(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi("Update state", params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void updateState(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi("Update state", params, response, false);
 
         String s = params.getString("codes");
         String st = params.getString("state");
@@ -237,11 +228,8 @@ public class AdminTools {
         ui.write();
     }
 
-    public static void updateAll(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi("Update all", params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void updateAll(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi("Update all", params, response, false);
         try {
             List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
 
@@ -257,11 +245,8 @@ public class AdminTools {
         ui.write();
     }
 
-    public static void radiometricTemplates(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi("Radiometric templates", params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void radiometricTemplates(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi("Radiometric templates", params, response, false);
 
         Params.Uploaded file = params.upload("file");
         if (file != null && file.isUploaded() && !file.isIoError()) {
@@ -277,11 +262,8 @@ public class AdminTools {
         ui.write();
     }
 
-    public static void signature(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi("User signature", params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void signature(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi("User signature", params, response, false);
 
         Params.Uploaded file = params.upload("file");
         if (file != null && file.isUploaded() && !file.isIoError()) {

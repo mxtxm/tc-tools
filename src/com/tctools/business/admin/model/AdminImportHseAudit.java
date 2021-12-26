@@ -32,11 +32,8 @@ public class AdminImportHseAudit {
 
 
     // done work probably deprecated
-    public static void work(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void work(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         if (!params.contains("f")) {
             ui.beginUploadForm()
@@ -244,11 +241,8 @@ public class AdminImportHseAudit {
         return map.get(name);
     }
 
-    public static void fix(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_FIX), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void fix(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_FIX), params, response, true);
 
         if (!params.contains("f")) {
             ui.beginFormGet()
@@ -341,11 +335,8 @@ public class AdminImportHseAudit {
         ui.finish();
     }
 
-    public static void fixFiles(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_FIX), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void fixFiles(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_FIX), params, response, true);
 
         if (!params.contains("f")) {
             ui.beginFormGet()

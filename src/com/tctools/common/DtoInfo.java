@@ -16,19 +16,19 @@ import com.vantar.service.log.dto.Log;
 public class DtoInfo {
 
     public static void start() {
-        DtoDictionary.setCategory("داده های پایه");
-        DtoDictionary.add("a21", Test1.class);
-        DtoDictionary.add("a22", Test2.class);
-        DtoDictionary.add("a23", Test3.class);
-        DtoDictionary.add("a24", Test4.class);
-        DtoDictionary.add("a25", Test5.class);
-        DtoDictionary.add("a26", Test6.class);
-        DtoDictionary.add("a27", Test7.class);
-        DtoDictionary.add("a28", Test8.class);
-        DtoDictionary.add("a29", Test9.class);
-        DtoDictionary.add("a20", Test10.class);
-
-        if (1==1)return;
+//        DtoDictionary.setCategory("داده های پایه");
+//        DtoDictionary.add("a21", Test1.class);
+//        DtoDictionary.add("a22", Test2.class);
+//        DtoDictionary.add("a23", Test3.class);
+//        DtoDictionary.add("a24", Test4.class);
+//        DtoDictionary.add("a25", Test5.class);
+//        DtoDictionary.add("a26", Test6.class);
+//        DtoDictionary.add("a27", Test7.class);
+//        DtoDictionary.add("a28", Test8.class);
+//        DtoDictionary.add("a29", Test9.class);
+//        DtoDictionary.add("a20", Test10.class);
+//
+//        if (1==1)return;
 
         // base
         DtoDictionary.setCategory("داده های پایه");

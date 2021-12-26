@@ -17,7 +17,7 @@ import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
@@ -53,7 +53,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_JSON_DATA);
         }
 
-        if (tempParams == null || ObjectUtil.isIdInvalid(tempParams.id)) {
+        if (tempParams == null || NumberUtil.isIdInvalid(tempParams.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
         }
 
@@ -148,7 +148,7 @@ public class WorkFlowModel {
             throw new InputException(AppLangKey.INVALID_STATE);
         }
 
-        if (ObjectUtil.isIdInvalid(flowId)) {
+        if (NumberUtil.isIdInvalid(flowId)) {
             throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");
         }
 
@@ -205,7 +205,7 @@ public class WorkFlowModel {
     public static RadioMetricFlow.Viewable get(Params params) throws ServerException, NoContentException, InputException {
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (flow.id)");
         }
         QueryBuilder q = new QueryBuilder(flow, new RadioMetricFlow.Viewable());
@@ -220,7 +220,7 @@ public class WorkFlowModel {
     public static ResponseMessage deleteLog(Params params) throws InputException, ServerException {
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID);
         }
 
@@ -271,7 +271,7 @@ public class WorkFlowModel {
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");
         }
 
@@ -329,7 +329,7 @@ public class WorkFlowModel {
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");
         }
 
@@ -531,7 +531,7 @@ public class WorkFlowModel {
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = StringUtil.scrapeLong(parts[0]);
-        if (ObjectUtil.isIdInvalid(flow.id)) {
+        if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
         }
 
@@ -552,7 +552,7 @@ public class WorkFlowModel {
     }
 
     private static ResponseMessage deleteImageComplain(Long complainId, String path) throws ServerException, InputException {
-        if (ObjectUtil.isIdInvalid(complainId)) {
+        if (NumberUtil.isIdInvalid(complainId)) {
             throw new InputException(VantarKey.INVALID_ID, "complainid");
         }
 

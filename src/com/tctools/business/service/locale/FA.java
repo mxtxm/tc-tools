@@ -50,12 +50,9 @@ public class FA implements Translation {
         tokens.put(AppLangKey.GPS_DATA_MISSING_CSV_DATA, "فاقد اطلاعات GPS است");
         tokens.put(AppLangKey.DUPLICATE, "تکراری > {0} : {1}");
 
-        tokens.put(AppLangKey.ADMIN_DUMMY_USERS, "کاربران قلابی");
         tokens.put(AppLangKey.ADMIN_WEBSERVICES, "وب سرویس ها");
         tokens.put(AppLangKey.ADMIN_MAP, "نقشه");
         tokens.put(AppLangKey.ADMIN_IMAGE_BROWSE, "عکس ها");
-        tokens.put(AppLangKey.DUMMY_USER_SET, "کاربر قلابی انتخاب شده");
-        tokens.put(AppLangKey.NO_DUMMY_USER_SET, "کاربر قلابی انتخابی نشده");
         tokens.put(AppLangKey.ROLE, "نقش کاربر");
 
         tokens.put(AppLangKey.INVALID_LOCATION, "ظول و عرض جغرافیایی نادرست است");

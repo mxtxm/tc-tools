@@ -5,7 +5,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/property/sections/get",
     "/ui/property/sections/keyval",

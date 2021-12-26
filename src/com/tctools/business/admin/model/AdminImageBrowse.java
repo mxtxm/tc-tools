@@ -2,6 +2,7 @@ package com.tctools.business.admin.model;
 
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.admin.model.Admin;
+import com.vantar.exception.FinishException;
 import com.vantar.locale.Locale;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
@@ -13,11 +14,8 @@ import java.nio.file.*;
 
 public class AdminImageBrowse {
 
-    public static void index(Params params, HttpServletResponse response) {
-        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), params, response);
-        if (ui == null) {
-            return;
-        }
+    public static void index(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), params, response, false);
 
         try {
             drawStructure(ui, "/static/", "/opt/tc-tools/files/");

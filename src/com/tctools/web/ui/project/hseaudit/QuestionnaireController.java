@@ -11,7 +11,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet({
     "/ui/hse/audit/questionnaire/submit",
 
@@ -24,67 +23,67 @@ import javax.servlet.http.HttpServletResponse;
     "/ui/hse/audit/questionnaire/get",
 
     "/ui/hse/audit/questionnaire/image/delete",
-
     "/ui/hse/audit/questionnaire/get/assigned/test",
 })
 public class QuestionnaireController extends RouteToMethod {
 
+    @Access({"TECHNICIAN",})
     public void hseAuditQuestionnaireSubmit(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.submit(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireDelete(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.delete(params));
     }
 
+    @Access({"MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireUpdate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.update(params));
     }
 
+    @Access({"MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireUpdateState(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.updateState(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditQuestionnaireSearch(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.search(params));
     }
 
+    @Access({"TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireGetAssigned(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.getAssigned(params, user));
     }
 
+    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireGet(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.get(params));
     }
 
+    @Access({"MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireImageDelete(Params params, HttpServletResponse response) throws AuthException, InputException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.deleteImage(params));
     }
 
+    @Access({"TECHNICIAN",})
     public void hseAuditQuestionnaireGetAssignedTest(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
-
         response.setHeader("Cache-Control", params.getString("cacheparams"));
-
         TestController.log.error(">>>>>SHAHIN {}", params.getHeaders());
-
         Response.writeJson(response, WorkFlowModel.getAssigned(params, user));
     }
 
