@@ -8,6 +8,7 @@ import java.util.Map;
 @Mongo
 public class LocationType extends DtoBase {
 
+
     public Long id;
 
     @Localized
