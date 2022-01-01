@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class BtsTowerController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsTowerGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsTowerModel.getAll());
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsTowerKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsTowerModel.getAsKeyValue());
     }

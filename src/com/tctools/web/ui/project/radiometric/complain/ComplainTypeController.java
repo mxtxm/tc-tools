@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ComplainTypeController extends RouteToMethod {
 
-    @Access({"MANAGER", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "VENDOR", "READONLY",})
     public void usersGetRoles(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Response.writeJson(response, EnumUtil.getEnumValues(ComplainType.values()));
     }

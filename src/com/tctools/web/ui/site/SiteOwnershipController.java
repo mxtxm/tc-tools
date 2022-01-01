@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SiteOwnershipController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteOwnershipGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteOwnershipModel.getAll());
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteOwnershipKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteOwnershipModel.getAsKeyValue());
     }

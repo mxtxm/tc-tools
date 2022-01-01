@@ -22,14 +22,14 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class ComplainUploadController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricComplainInsert(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.insert(params, user));
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricComplainUpdate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.update(params));

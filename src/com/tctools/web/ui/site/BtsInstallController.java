@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class BtsInstallController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsInstallGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsInstallModel.getAll(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsInstallKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsInstallModel.getAsKeyValue(params));
     }

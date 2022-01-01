@@ -47,73 +47,74 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ExportController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricSiteDocx(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         ExportSite.docx(params, response, true);
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricSiteZip(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         ExportSite.zip(params, response);
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricSiteAssignedExcel(Params params, HttpServletResponse response) throws AuthException, ServerException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         ExportAssigned.excel(params, user, response);
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricReportWavecontrolExcel(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         ExportWaveControl.excel(params, response);
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricOverviewState(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, StateReport.getOverview(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricOverviewStateMonthly(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, StateReport.getMonthlyOverview());
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricOverviewStateMonthlyTarget(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, StateReport.getMonthlyOverviewTarget());
     }
 
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricOverviewType(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJsonString(response, MetricTypeReport.getCount());
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricPerformanceTechMonthly(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, TechReport.getMonthlyPerformance(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricPerformanceTech(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, TechReport.getTotalPerformance(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricPerformanceProvinceMonthly(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ProvinceReport.getMonthlyPerformance(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricPerformanceProvince(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ProvinceReport.getTotalPerformance(params));

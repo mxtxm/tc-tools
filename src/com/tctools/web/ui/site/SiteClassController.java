@@ -12,12 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SiteClassController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteClassGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteClassModel.getAll(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteClassKeyval(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Response.writeJson(response, SiteClassModel.getAsKeyValue(params));
     }

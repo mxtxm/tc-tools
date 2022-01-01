@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SectorOptimizationController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteSectorOptimizationGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, SectorOptimizationModel.getAll());
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteSectorOptimizationKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, SectorOptimizationModel.getAsKeyValue());
     }

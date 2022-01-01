@@ -15,27 +15,27 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ProjectController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void projectInsert(Params params, HttpServletResponse response) throws ServerException, InputException {
         Response.writeJson(response, ProjectModel.insert(params));
     }
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void projectUpdate(Params params, HttpServletResponse response) throws ServerException, InputException {
         Response.writeJson(response, ProjectModel.update(params));
     }
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void projectDelete(Params params, HttpServletResponse response) throws ServerException, InputException {
         Response.writeJson(response, ProjectModel.delete(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void projectGet(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
         Response.writeJson(response, ProjectModel.get(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void projectsGetAll(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, ProjectModel.getAll(params));
     }

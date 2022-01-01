@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ProjectTypeController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void projectTypeGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, EnumUtil.getEnumValues(ProjectType.values()));
     }

@@ -27,58 +27,58 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class QuestionnaireController extends RouteToMethod {
 
-    @Access({"TECHNICIAN",})
+    @Access({"ADMIN", "TECHNICIAN",})
     public void hseAuditQuestionnaireSubmit(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.submit(params, user));
     }
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireDelete(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.delete(params));
     }
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireUpdate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.update(params));
     }
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireUpdateState(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.updateState(params, user));
     }
 
-    @Access({"MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
     public void hseAuditQuestionnaireSearch(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.search(params));
     }
 
-    @Access({"TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireGetAssigned(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.getAssigned(params, user));
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireGet(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.get(params));
     }
 
-    @Access({"MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER",})
     public void hseAuditQuestionnaireImageDelete(Params params, HttpServletResponse response) throws AuthException, InputException, ServiceException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.deleteImage(params));
     }
 
-    @Access({"TECHNICIAN",})
+    @Access({"ADMIN", "TECHNICIAN",})
     public void hseAuditQuestionnaireGetAssignedTest(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);

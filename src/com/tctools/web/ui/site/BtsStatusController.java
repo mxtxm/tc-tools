@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class BtsStatusController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsStatusGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsStatusModel.getAll(params));
     }
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsStatusKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsStatusModel.getAsKeyValue(params));
     }

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class FlowStateController extends RouteToMethod {
 
-    @Access({"MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditFlowStateGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, EnumUtil.getEnumValues(HseAuditFlowState.values()));
