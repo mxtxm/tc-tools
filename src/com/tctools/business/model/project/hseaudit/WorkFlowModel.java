@@ -35,7 +35,7 @@ public class WorkFlowModel {
 
 
     public static ResponseMessage submit(Params params, User user) throws ServerException, InputException, NoContentException {
-TestController.log.error(">>>>1 {}");
+TestController.log.error(">>>>{}", params.getJson());
         // get flow
         FlowParams flowParams;
         try {
