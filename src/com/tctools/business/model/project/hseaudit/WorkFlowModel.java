@@ -7,6 +7,7 @@ import com.tctools.business.repo.user.UserRepo;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.SendMessage;
+import com.tctools.web.patch.TestController;
 import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.dto.Dto;
@@ -34,34 +35,45 @@ public class WorkFlowModel {
 
 
     public static ResponseMessage submit(Params params, User user) throws ServerException, InputException, NoContentException {
+TestController.log.error(">>>>1 {}");
         // get flow
         FlowParams flowParams;
         try {
             flowParams = params.getJson(FlowParams.class);
+            TestController.log.error(">>>> {}", flowParams);
         } catch (Exception e) {
+            TestController.log.error(">>>> {}",  e);
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
+TestController.log.error(">>>> {}");
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = flowParams.id;
         if (NumberUtil.isIdInvalid(flow.id)) {
+TestController.log.error(">>>> {}");
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
+        TestController.log.error(">>>> {}");
 
         try {
             flow = CommonRepoMongo.getById(flow, params.getLang());
+            TestController.log.error(">>>> {}");
         } catch (DatabaseException e) {
+            TestController.log.error(">>>> {}");
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
+        TestController.log.error(">>>> {}");
         flow.answers = null;
         flow.inCompleteImages = new HashSet<>();
         flow.lastStateDateTime = new DateTime();
         flow.auditDateTime = flow.lastStateDateTime;
+        TestController.log.error(">>>> {}");
 
         // set state
         flow.lastState = flowParams.notAllowed == null || !flowParams.notAllowed ?
             HseAuditFlowState.Incomplete :
             HseAuditFlowState.Restricted;
         flow.state.add(new State(flow.lastState, flow.lastStateDateTime, user));
+        TestController.log.error(">>>> {}");
 
         // get questions
         ServiceDtoCache cache = Services.get(ServiceDtoCache.class);
@@ -69,15 +81,18 @@ public class WorkFlowModel {
         for (HseAuditQuestion question : cache.getList(HseAuditQuestion.class)) {
             questions.put(question.id, question);
         }
+        TestController.log.error(">>>> {}");
 
         return CommonModelMongo.updateJson(params, flow, new CommonModel.WriteEvent() {
             @Override
             public void beforeWrite(Dto dto) throws InputException {
                 HseAuditQuestionnaire flow = (HseAuditQuestionnaire) dto;
+                TestController.log.error(">>>> {}");
 
                 if (flow.answers == null) {
                     throw new InputException(VantarKey.REQUIRED, "answers");
                 }
+                TestController.log.error(">>>> {}");
 
                 ListIterator<HseAuditAnswer> it = flow.answers.listIterator();
                 while (it.hasNext()) {
@@ -87,6 +102,7 @@ public class WorkFlowModel {
                         continue;
                     }
                     questions.remove(answer.questionId);
+                    TestController.log.error(">>>> {}");
 
                     if (StringUtil.isNotEmpty(answer.imageName)) {
                         flow.inCompleteImages.add(answer.imageName);
@@ -96,6 +112,7 @@ public class WorkFlowModel {
                         flow.inCompleteImages.addAll(answer.imageNames);
                     }
                 }
+                TestController.log.error(">>>> {}");
 
                 for (Map.Entry<Long, HseAuditQuestion> q : questions.entrySet()) {
                     HseAuditAnswer answer = new HseAuditAnswer();
@@ -107,10 +124,13 @@ public class WorkFlowModel {
 
             @Override
             public void afterWrite(Dto dto) {
+                TestController.log.error(">>>> {}");
                 HseAuditQuestionnaire flow = (HseAuditQuestionnaire) dto;
                 try {
                     UserRepo.setDataUpdated(flow.assigneeId, ProjectType.HseAudit.name());
+                    TestController.log.error(">>>> {}");
                 } catch (DatabaseException ignore) {
+                    TestController.log.error(">>>> {}");
 
                 }
             }
@@ -432,5 +452,9 @@ public class WorkFlowModel {
 
         public Long id;
         public Boolean notAllowed;
+
+        public String toString() {
+            return "id:" + id + ", notAllowed" + notAllowed;
+        }
     }
 }
