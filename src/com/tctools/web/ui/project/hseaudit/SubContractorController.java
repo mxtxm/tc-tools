@@ -17,13 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SubContractorController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditSubcontractorsSearch(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, SubcontractorModel.search(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditSubcontractorGet(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, SubcontractorModel.get(params));

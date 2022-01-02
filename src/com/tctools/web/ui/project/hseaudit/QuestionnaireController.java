@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class QuestionnaireController extends RouteToMethod {
 
-    @Access({"ADMIN", "TECHNICIAN",})
+    @Access({"ADMIN", "MANAGER", "TECHNICIAN",})
     public void hseAuditQuestionnaireSubmit(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
@@ -46,20 +46,20 @@ public class QuestionnaireController extends RouteToMethod {
         Response.writeJson(response, WorkFlowModel.update(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN",})
     public void hseAuditQuestionnaireUpdateState(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.updateState(params, user));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireSearch(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, WorkFlowModel.search(params));
     }
 
-    @Access({"ADMIN", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "TECHNICIAN", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireGetAssigned(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
@@ -78,7 +78,7 @@ public class QuestionnaireController extends RouteToMethod {
         Response.writeJson(response, WorkFlowModel.deleteImage(params));
     }
 
-    @Access({"ADMIN", "TECHNICIAN",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "READONLY",})
     public void hseAuditQuestionnaireGetAssignedTest(Params params, HttpServletResponse response) throws ServerException, NoContentException, AuthException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.HseAudit);
