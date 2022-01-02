@@ -26,6 +26,11 @@ public class ComplainModel {
         return CommonModelMongo.insert(params, complain, new CommonModel.WriteEvent() {
 
             @Override
+            public void beforeSet(Dto dto) {
+
+            }
+
+            @Override
             public void beforeWrite(Dto dto) throws InputException, ServerException {
                 RadioMetricComplain complain = (RadioMetricComplain) dto;
                 completeData(complain);
@@ -54,6 +59,11 @@ public class ComplainModel {
         }
 
         return CommonModelMongo.updateStrict(params, complain, new CommonModel.WriteEvent() {
+
+            @Override
+            public void beforeSet(Dto dto) {
+
+            }
 
             @Override
             public void beforeWrite(Dto dto) throws InputException, ServerException {

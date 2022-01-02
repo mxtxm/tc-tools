@@ -27,6 +27,12 @@ public class WorkFlowModel {
 
     public static ResponseMessage delete(Params params) throws InputException, ServerException {
         return CommonModelMongo.delete(params, new RadioMetricFlow(), new CommonModel.WriteEvent() {
+
+            @Override
+            public void beforeSet(Dto dto) {
+
+            }
+
             @Override
             public void beforeWrite(Dto dto) {
 
@@ -67,6 +73,12 @@ public class WorkFlowModel {
         }
 
         return CommonModelMongo.updateJsonStrict(params, flow, new CommonModel.WriteEvent() {
+
+            @Override
+            public void beforeSet(Dto dto) {
+
+            }
+
             @Override
             public void beforeWrite(Dto dto) {
 

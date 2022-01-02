@@ -126,6 +126,12 @@ public class UserModel {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT");
         return CommonModelMongo.insert(params, user, new CommonModel.WriteEvent() {
+
+            @Override
+            public void beforeSet(Dto dto) {
+
+            }
+
             @Override
             public void beforeWrite(Dto dto) throws InputException {
                 if (creator.role == Role.ENGINEER) {
@@ -151,6 +157,12 @@ public class UserModel {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT");
         return CommonModelMongo.update(params, user, new CommonModel.WriteEvent() {
+
+            @Override
+            public void beforeSet(Dto dto) {
+
+            }
+
             @Override
             public void beforeWrite(Dto dto) throws InputException {
                 User u = (User) dto;
