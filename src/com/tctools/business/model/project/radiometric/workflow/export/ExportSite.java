@@ -52,7 +52,8 @@ public class ExportSite extends ExportCommon {
             isOld = false;
         }
         String oldZipFile = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id + "/" + zipFile;
-        if (!isOld || !FileUtil.exists(oldZipFile)) {
+        //if (!isOld || !FileUtil.exists(oldZipFile)) {
+        if (!isOld) {
             docx(params, response, false);
 
             if (!RadioMetricComplain.isEmpty(flow.complain)) {
@@ -491,7 +492,8 @@ public class ExportSite extends ExportCommon {
         String filePath = flow.getPath();
         try {
             boolean isOld = flow.assignDateTime != null && flow.assignDateTime.isBefore(new DateTime("2021-05-20"));
-            if (!isOld || !FileUtil.exists(filePath + filename)) {
+//            if (!isOld || !FileUtil.exists(filePath + filename)) {
+            if (!isOld) {
                 Docx.createFromTemplate(Param.RADIO_METRIC_SITE_TEMPLATE, filePath, filename, mapping);
             }
 
