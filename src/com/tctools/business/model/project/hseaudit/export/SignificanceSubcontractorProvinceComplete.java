@@ -466,17 +466,17 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         CellStyle style = styles.get("d");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 12, true);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(241, 0, 0), new DefaultIndexedColorMap()));
             styles.put("d", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 12, true);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(241, 0, 0), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -484,17 +484,17 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         CellStyle style = styles.get("p");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 12, true);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(121, 198, 235), new DefaultIndexedColorMap()));
             styles.put("p", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 12, true);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(121, 198, 235), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -502,17 +502,17 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         CellStyle style = styles.get("s");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 12, true);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(121, 198, 235), new DefaultIndexedColorMap()));
             styles.put("s", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 12, true);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(121, 198, 235), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -520,17 +520,17 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         CellStyle style = styles.get("q");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 13, false);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 234, 176), new DefaultIndexedColorMap()));
             styles.put("q", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 13, false);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 234, 176), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -538,17 +538,17 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         CellStyle style = styles.get("tq");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 11, false);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(216, 244, 255), new DefaultIndexedColorMap()));
             styles.put("tq", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 11, false);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(216, 244, 255), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -556,45 +556,45 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         CellStyle style = styles.get("ce");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 11, false);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 255, 255), new DefaultIndexedColorMap()));
             styles.put("ce", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 11, false);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 255, 255), new DefaultIndexedColorMap()));
         return style;
     }
 
     private static CellStyle getCellStyleStatus(Workbook workbook, int status) {
-        CellStyle style = styles.get("st");
+        CellStyle style = styles.get("st" + status);
         if (style == null) {
             style = workbook.createCellStyle();
-            styles.put("st", style);
-        }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        setFont(workbook, style, (short) 13, false);
-        if (status == 1) {
-            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(127, 255, 50), new DefaultIndexedColorMap()));
-        }
-        if (status == 2) {
-            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(252, 255, 0), new DefaultIndexedColorMap()));
-        }
-        if (status == 3) {
-            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 186, 0), new DefaultIndexedColorMap()));
-        }
-        if (status == 4) {
-            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 108, 0), new DefaultIndexedColorMap()));
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            setFont(workbook, style, (short) 13, false);
+            if (status == 1) {
+                ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(127, 255, 50), new DefaultIndexedColorMap()));
+            }
+            if (status == 2) {
+                ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(252, 255, 0), new DefaultIndexedColorMap()));
+            }
+            if (status == 3) {
+                ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 186, 0), new DefaultIndexedColorMap()));
+            }
+            if (status == 4) {
+                ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 108, 0), new DefaultIndexedColorMap()));
+            }
+            styles.put("st" + status, style);
         }
         return style;
     }

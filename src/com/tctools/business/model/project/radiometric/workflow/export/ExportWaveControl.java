@@ -278,20 +278,20 @@ public class ExportWaveControl extends ExportCommon {
         CellStyle style = styles.get("Header");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            Font font = workbook.createFont();
+            font.setBold(true);
+            style.setFont(font);
+            style.setWrapText(true);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(231, 230, 230), new DefaultIndexedColorMap()));
             styles.put("Header", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        Font font = workbook.createFont();
-        font.setBold(true);
-        style.setFont(font);
-        style.setWrapText(true);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(231, 230, 230), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -299,16 +299,16 @@ public class ExportWaveControl extends ExportCommon {
         CellStyle style = styles.get("Pink");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(252, 228, 214), new DefaultIndexedColorMap()));
             styles.put("Pink", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(252, 228, 214), new DefaultIndexedColorMap()));
         return style;
     }
 
@@ -316,16 +316,16 @@ public class ExportWaveControl extends ExportCommon {
         CellStyle style = styles.get("Yellow");
         if (style == null) {
             style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(251, 255, 106), new DefaultIndexedColorMap()));
             styles.put("Yellow", style);
         }
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(251, 255, 106), new DefaultIndexedColorMap()));
         return style;
     }
 }

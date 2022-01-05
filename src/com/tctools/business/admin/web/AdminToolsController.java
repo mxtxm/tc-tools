@@ -47,6 +47,10 @@ public class AdminToolsController extends RouteToMethod {
         AdminTools.radiometricTemplates(params, response);
     }
 
+    public void toolsRadiometricTemplatesDocx(Params params, HttpServletResponse response) throws FinishException {
+        Response.download(response, "/opt/tc-tools/templates/radiometric/site-radiometric.docx", "site-radiometric.docx");
+    }
+
     public void toolsRadiometricSignature(Params params, HttpServletResponse response) throws FinishException {
         AdminTools.signature(params, response);
     }

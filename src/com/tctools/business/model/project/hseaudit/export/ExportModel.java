@@ -26,6 +26,7 @@ import java.util.*;
 public class ExportModel {
 
     public static final Logger log = LoggerFactory.getLogger(TestController.class);
+    private static Map<String, CellStyle> styles;
 
 
     public static void auditData(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
@@ -34,6 +35,8 @@ public class ExportModel {
         if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id");
         }
+
+        styles = new HashMap<>(10);
 
         try {
             flow = CommonRepoMongo.getById(flow, params.getLang());
@@ -136,6 +139,8 @@ public class ExportModel {
 
 
     public static void dailyReport(Params params, HttpServletResponse response) throws ServerException {
+        styles = new HashMap<>(10);
+
         // <cell, questionId>
         Map<Integer, Long> t = new HashMap<>();
         t.put(9, 40L); // supervisor
@@ -324,78 +329,102 @@ public class ExportModel {
     }
 
     private static CellStyle getCellStyleNormal(Workbook wb) {
-        CellStyle style = wb.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
+        CellStyle style = styles.get("getCellStyleNormal");
+        if (style == null) {
+            style = wb.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            styles.put("getCellStyleNormal", style);
+        }
         return style;
     }
 
     private static CellStyle getCellStyleIndex(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(248, 203, 173), new DefaultIndexedColorMap()));
+        CellStyle style = styles.get("getCellStyleIndex");
+        if (style == null) {
+            style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(248, 203, 173), new DefaultIndexedColorMap()));
+            styles.put("getCellStyleIndex", style);
+        }
         return style;
     }
 
     private static CellStyle getCellStyleCritical(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(217, 217, 217), new DefaultIndexedColorMap()));
+        CellStyle style = styles.get("getCellStyleCritical");
+        if (style == null) {
+            style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(217, 217, 217), new DefaultIndexedColorMap()));
+            styles.put("getCellStyleCritical", style);
+        }
         return style;
     }
 
     private static CellStyle getCellStyleMajor(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(252, 228, 214), new DefaultIndexedColorMap()));
+        CellStyle style = styles.get("getCellStyleMajor");
+        if (style == null) {
+            style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(252, 228, 214), new DefaultIndexedColorMap()));
+            styles.put("getCellStyleMajor", style);
+        }
         return style;
     }
 
     private static CellStyle getCellStyleMinor(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(231, 230, 230), new DefaultIndexedColorMap()));
+        CellStyle style = styles.get("getCellStyleMinor");
+        if (style == null) {
+            style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(231, 230, 230), new DefaultIndexedColorMap()));
+            styles.put("getCellStyleMinor", style);
+        }
         return style;
     }
 
     private static CellStyle getCellStyleFailed(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(239, 23, 57), new DefaultIndexedColorMap()));
+        CellStyle style = styles.get("getCellStyleFailed");
+        if (style == null) {
+            style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.CENTER);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            ((XSSFCellStyle) style).setFillForegroundColor(new XSSFColor(new java.awt.Color(239, 23, 57), new DefaultIndexedColorMap()));
+            styles.put("getCellStyleFailed", style);
+        }
         return style;
     }
 }
