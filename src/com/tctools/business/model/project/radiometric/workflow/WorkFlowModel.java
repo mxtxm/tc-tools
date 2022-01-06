@@ -265,11 +265,8 @@ public class WorkFlowModel {
             "radiationStatus" + height,
             "icnirpPercent" + height
         );
-        try {
-            CommonRepoMongo.update(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
+
+        CommonModelMongo.update(flow);
 
         return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
     }
@@ -304,22 +301,14 @@ public class WorkFlowModel {
 
         setDeviceData(flow);
         success.put("flow", flow);
-        try {
-            CommonRepoMongo.update(flow);
 
-            if (!errors.isEmpty()) {
-                throw new InputException(errors);
-            }
+        CommonModelMongo.update(flow);
 
-            return new ResponseMessage(VantarKey.UPDATE_SUCCESS, success);
-        } catch (DatabaseException e) {
-
-            if (!errors.isEmpty()) {
-                throw new InputException(errors);
-            }
-
-            throw new ServerException(VantarKey.UPDATE_FAIL);
+        if (!errors.isEmpty()) {
+            throw new InputException(errors);
         }
+
+        return new ResponseMessage(VantarKey.UPDATE_SUCCESS, success);
     }
 
     private static void setDeviceData(RadioMetricFlow flow) {
@@ -359,12 +348,8 @@ public class WorkFlowModel {
             throw new InputException(errors);
         }
 
-        try {
-            CommonRepoMongo.update(flow);
-            return new ResponseMessage(VantarKey.UPDATE_SUCCESS, success);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
+        CommonModelMongo.update(flow);
+        return new ResponseMessage(VantarKey.UPDATE_SUCCESS, success);
     }
 
     private static void uploadImages(Params params, RadioMetricFlow flow, Map<String, Object> success, List<ValidationError> errors) {
@@ -555,11 +540,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
         }
 
-        try {
-            CommonRepoMongo.update(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
+        CommonModelMongo.update(flow);
         return new ResponseMessage(VantarKey.DELETE_SUCCESS);
     }
 
@@ -573,7 +554,7 @@ public class WorkFlowModel {
         try {
             complain = CommonRepoMongo.getById(complain);
             complain.imageUrl = null;
-            CommonRepoMongo.update(complain);
+            CommonModelMongo.update(complain);
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (NoContentException e) {
@@ -586,7 +567,7 @@ public class WorkFlowModel {
             try {
                 flow = CommonRepoMongo.getById(flow);
                 flow.complain.imageUrl = null;
-                CommonRepoMongo.update(flow);
+                CommonModelMongo.update(flow);
 
                 FileUtil.removeFile(
                     StringUtil.replace(

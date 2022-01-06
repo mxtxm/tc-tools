@@ -7,22 +7,28 @@ import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
 import com.vantar.admin.model.Admin;
 import com.vantar.business.CommonRepoMongo;
+import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.*;
+import com.vantar.locale.Locale;
+import com.vantar.service.Services;
+import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.file.DirUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.slf4j.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.*;
+
 
 @WebServlet({
     "/patch/missing/radiometric",
     "/patch/invalid/selected/sector",
     "/patch/invalid/selected/sector/fix",
     "/patch/invalid/questionnaire/no/subcontractor",
+    "/patch/invalid/questionnaire/missing/subcontractor",
 })
 @MultipartConfig(
     location="/tmp",
@@ -91,10 +97,12 @@ public class PatchController extends RouteToMethod {
                 }
 
                 String calculatedSelected = null;
+                String calculatedSelectedToShow = null;
                 WorkFlowModel.setNearestSector(f);
                 for (Sector s : f.sectors) {
                     if (s.selected) {
-                        calculatedSelected = s.title;
+                        calculatedSelected = StringUtil.remove(s.title, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0');
+                        calculatedSelectedToShow = calculatedSelected + " (" + s.title + ")";
                     }
                 }
 
@@ -103,12 +111,12 @@ public class PatchController extends RouteToMethod {
                 }
 
                 if (selected == null) {
-                    ui.addErrorMessage(f.site.code + " (" + f.id + ") NO SELECTED SECTOR " + " calculated=" + calculatedSelected);
+                    ui.addErrorMessage(f.site.code + " (" + f.id + ") NO SELECTED SECTOR " + " calculated=" + calculatedSelectedToShow);
                     continue;
                 }
 
                 if (!selected.equals(calculatedSelected)) {
-                    ui.addErrorMessage(f.site.code + " (" + f.id + ") MISS-MATCH stored=" + selected + " calculated=" + calculatedSelected);
+                    ui.addErrorMessage(f.site.code + " (" + f.id + ") MISS-MATCH stored=" + selected + " calculated=" + calculatedSelectedToShow);
                 }
             }
         } catch (DatabaseException | NoContentException e) {
@@ -201,6 +209,30 @@ public class PatchController extends RouteToMethod {
             List<HseAuditQuestionnaire.Viewable> flows = CommonRepoMongo.getData(q, "fa");
             for (HseAuditQuestionnaire.Viewable f : flows) {
                 if (f.subContractor == null) {
+                    ui.addErrorMessage(f.site.code + " (" + f.id + ")").write();
+                }
+            }
+        } catch (DatabaseException | NoContentException e) {
+            ui.addErrorMessage(e).write();
+        }
+
+        ui.addMessage("finished!").write();
+    }
+
+    /**
+     * 7 jan 2022
+     * find hse records that dont have sub contractor
+     */
+    public void invalidQuestionnaireMissingSubcontractor(Params params, HttpServletResponse response) throws FinishException, ServiceException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
+        Map<Long, Dto> subContractor = Services.get(ServiceDtoCache.class).getMap(SubContractor.class);
+
+        try {
+
+            List<HseAuditQuestionnaire> flows = CommonRepoMongo.getAll(new HseAuditQuestionnaire(), "fa");
+            for (HseAuditQuestionnaire f : flows) {
+                if (f.subContractorId != null && subContractor.containsKey(f.subContractorId)) {
                     ui.addErrorMessage(f.site.code + " (" + f.id + ")").write();
                 }
             }
