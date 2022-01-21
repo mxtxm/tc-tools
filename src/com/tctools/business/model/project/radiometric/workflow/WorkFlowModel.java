@@ -72,7 +72,8 @@ public class WorkFlowModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
-        return CommonModelMongo.updateJsonStrict(params, flow, new CommonModel.WriteEvent() {
+        params.set("action", Dto.Action.UPDATE_ALL_COLS);
+        return CommonModelMongo.updateJson(params, flow, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {
@@ -141,7 +142,8 @@ public class WorkFlowModel {
         // permission
         switch (user.role) {
             case VENDOR:
-                if (state != RadioMetricFlowState.Returned && state != RadioMetricFlowState.Approved) {
+                if (state != RadioMetricFlowState.Returned && state != RadioMetricFlowState.Approved
+                    && state != RadioMetricFlowState.Verified && state != RadioMetricFlowState.Terminated) {
                     throw new InputException(AppLangKey.INVALID_STATE);
                 }
                 break;

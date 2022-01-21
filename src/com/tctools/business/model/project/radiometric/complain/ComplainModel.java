@@ -58,7 +58,8 @@ public class ComplainModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
-        return CommonModelMongo.updateStrict(params, complain, new CommonModel.WriteEvent() {
+        params.set("action", Dto.Action.UPDATE_ALL_COLS);
+        return CommonModelMongo.update(params, complain, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {

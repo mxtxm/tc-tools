@@ -1,9 +1,41 @@
+front:
+    * logo tobe changed to nak
+    * complaint > complaints
+
+backend:
+SB2150 beshe bejaye azimuth OMNI zad, gozaresh age azimuth nadahste bashe kharab mideh
+
+*** vendore: faghat betavanad site verify shode ra bebinad betavanad terminate konadya approve ya return konad
+*** manager betavanad return va terminate ra revise ya verify konad
+
+
+map:
+    *** R > ghabele assign
+            terminate
+            problematic
+            pending ghabeleassign
+            revise
+            planned
+
+    *** heatmap *** bar asase search bashad na hamechi
+            *** codesite faghat yekbar biad balatarin adadha
+    *** link az market be safhe site
+    *** data kenari site > name shaki va shomare shekayat
+    *** density > power density(microwatt/cm3) 100cm
+
+
+
+
+
+
+
+
+
+
 mapbox
 leaflet
 
 
-done:
-rollout structure and database
 
 
 shahram esmaeeli 09124785435

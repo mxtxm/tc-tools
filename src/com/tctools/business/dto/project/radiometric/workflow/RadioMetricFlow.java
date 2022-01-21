@@ -185,7 +185,9 @@ public class RadioMetricFlow extends DtoBase {
         boolean isStateAssignable =
             state == RadioMetricFlowState.Pending
                 || state == RadioMetricFlowState.Problematic
-                || state == RadioMetricFlowState.Returned;
+                || state == RadioMetricFlowState.Returned
+                || state == RadioMetricFlowState.Revise
+                || state == RadioMetricFlowState.Terminated;
 
         return isInService && isStateAssignable;
     }

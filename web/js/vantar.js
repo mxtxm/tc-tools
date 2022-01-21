@@ -28,7 +28,7 @@ $(window).on("load", function () {
             x[e.attr('name')] = v;
         });
         if (nullProperties.length > 0) {
-            x['nullProperties'] = nullProperties;
+            x['__nullProperties'] = nullProperties;
         }
         $('#asjson').val(JSON.stringify(x));
     });

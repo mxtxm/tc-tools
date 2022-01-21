@@ -20,7 +20,7 @@ import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.ObjectUtil;
+import com.vantar.util.object.*;
 import com.vantar.util.string.*;
 import com.vantar.web.*;
 import org.slf4j.*;
@@ -251,12 +251,12 @@ public class AdminSiteImport {
                         }
 
                         if (fieldName.equals("LocationType")) {
-                            Dto dto = ObjectUtil.getInstance("com.tctools.business.dto.location." + fieldName);
+                            Dto dto = ClassUtil.getInstance("com.tctools.business.dto.location." + fieldName);
                             ObjectUtil.setPropertyValue(sector, getPropertyNameFromReference(dto), getId(ui, dto, value, null));
                             continue;
                         }
                         if (fieldName.equals("SectorOptimization")) {
-                            Dto dto = ObjectUtil.getInstance("com.tctools.business.dto.site." + fieldName);
+                            Dto dto = ClassUtil.getInstance("com.tctools.business.dto.site." + fieldName);
                             ObjectUtil.setPropertyValue(sector, getPropertyNameFromReference(dto), getId(ui, dto, value, null));
                             continue;
                         }
@@ -298,7 +298,7 @@ public class AdminSiteImport {
                     }
 
                     for (String p : new String[] {"com.tctools.business.dto.location", "com.tctools.business.dto.site"}) {
-                        Dto dto = ObjectUtil.getInstance(p + "." + fieldName);
+                        Dto dto = ClassUtil.getInstance(p + "." + fieldName);
 
                         // > > > SCALAR VALUE
                         if (dto == null) {

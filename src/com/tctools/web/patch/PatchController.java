@@ -2,7 +2,7 @@ package com.tctools.web.patch;
 
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.project.radiometric.workflow.*;
-import com.tctools.business.dto.site.Sector;
+import com.tctools.business.dto.site.*;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
 import com.vantar.admin.model.Admin;
@@ -10,8 +10,8 @@ import com.vantar.business.CommonRepoMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
-import com.vantar.locale.*;
 import com.vantar.locale.Locale;
+import com.vantar.locale.*;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.file.DirUtil;
@@ -24,6 +24,7 @@ import java.util.*;
 
 
 @WebServlet({
+    "/patch/fix/omni",
     "/patch/missing/radiometric",
     "/patch/invalid/selected/sector",
     "/patch/invalid/selected/sector/fix",
@@ -39,6 +40,98 @@ import java.util.*;
 public class PatchController extends RouteToMethod {
 
     public static final Logger log = LoggerFactory.getLogger(PatchController.class);
+
+
+    /**
+     * 20 Jan 2022
+     * update radiometric sectors omni and directional with site data
+     */
+    public void fixOmni(Params params, HttpServletResponse response) throws FinishException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+        ui.addMessage("start...").write();
+
+        List<Site> sites;
+        List<RadioMetricFlow> flows;
+        try {
+            sites = CommonRepoMongo.getAll(new Site());
+            flows = CommonRepoMongo.getAll(new RadioMetricFlow());
+        } catch (NoContentException | DatabaseException e) {
+            ui.addErrorMessage(e).finish();
+            return;
+        }
+
+        for (RadioMetricFlow flow : flows) {
+            for (Site site : sites) {
+                if (flow.site.code.equals(site.code)) {
+                    if (flow.site.sectors == null || site.sectors == null) {
+                        break;
+                    }
+
+                    for (Sector flowSector : flow.site.sectors) {
+                        for (Sector sector : site.sectors) {
+                            if (sector.title.equals(flowSector.title)) {
+                                flowSector.isOmni = sector.isOmni;
+                                flowSector.isDirectional = sector.isDirectional;
+                                if (flowSector.antennaCount == null) {
+                                    flowSector.antennaCount = sector.antennaCount;
+                                }
+                                if (flowSector.locationTypeId == null) {
+                                    flowSector.locationTypeId = sector.locationTypeId;
+                                }
+                                if (flowSector.height == null) {
+                                    flowSector.height = sector.height;
+                                }
+                                if (flowSector.onSiteHeight == null) {
+                                    flowSector.onSiteHeight = sector.onSiteHeight;
+                                }
+                                if (flowSector.electricalTilt == null) {
+                                    flowSector.electricalTilt = sector.electricalTilt;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if (flow.sectors != null) {
+                        for (Sector flowSector : flow.sectors) {
+                            for (Sector sector : site.sectors) {
+                                if (sector.title.equals(flowSector.title)) {
+                                    flowSector.isOmni = sector.isOmni;
+                                    flowSector.isDirectional = sector.isDirectional;
+                                    if (flowSector.antennaCount == null) {
+                                        flowSector.antennaCount = sector.antennaCount;
+                                    }
+                                    if (flowSector.locationTypeId == null) {
+                                        flowSector.locationTypeId = sector.locationTypeId;
+                                    }
+                                    if (flowSector.height == null) {
+                                        flowSector.height = sector.height;
+                                    }
+                                    if (flowSector.onSiteHeight == null) {
+                                        flowSector.onSiteHeight = sector.onSiteHeight;
+                                    }
+                                    if (flowSector.electricalTilt == null) {
+                                        flowSector.electricalTilt = sector.electricalTilt;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            try {
+                CommonRepoMongo.update(flow);
+                ui.addMessage(flow.site.code).write();
+            } catch (DatabaseException e) {
+                ui.addErrorMessage(e).finish();
+            }
+        }
+
+        ui.addMessage("finished!").finish();
+    }
 
     /**
      * 22 aug 2021

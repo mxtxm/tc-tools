@@ -329,7 +329,8 @@ public class WorkFlowModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
-        return CommonModelMongo.updateJsonStrict(params, flow);
+        params.set("action", Dto.Action.UPDATE_ALL_COLS);
+        return CommonModelMongo.updateJson(params, flow);
     }
 
     public static ResponseMessage updateState(Params params, User user) throws InputException, ServerException, NoContentException {

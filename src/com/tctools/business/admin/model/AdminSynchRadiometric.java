@@ -66,14 +66,20 @@ public class AdminSynchRadiometric {
             try {
                 for (Dto dto : CommonRepoMongo.getData(q)) {
                     flow = (RadioMetricFlow) dto;
+
+                    if (!RadioMetricFlowState.Pending.equals(flow.lastState) && !RadioMetricFlowState.Planned.equals(flow.lastState)) {
+                        continue;
+                    }
+
+
                     flow.site = site;
 
-                    if (RadioMetricFlowState.Pending.equals(flow.lastState) || RadioMetricFlowState.Planned.equals(flow.lastState)) {
-                        flow.provinceId = site.provinceId;
-                        flow.cityId = site.cityId;
-                        flow.siteLocation = site.location;
-                        flow.siteAddress = site.address;
-                    }
+                    //if (RadioMetricFlowState.Pending.equals(flow.lastState) || RadioMetricFlowState.Planned.equals(flow.lastState)) {
+                    flow.provinceId = site.provinceId;
+                    flow.cityId = site.cityId;
+                    flow.siteLocation = site.location;
+                    flow.siteAddress = site.address;
+                    //}
 
                     Set<RadioMetricProximityType> types = new HashSet<>(5);
                     if (flow.proximities == null) {
@@ -100,7 +106,7 @@ public class AdminSynchRadiometric {
 
                     CommonRepoMongo.update(flow);
                     if (ui != null) {
-                        ui.addMessage(Locale.getString(AppLangKey.UPDATED, flow.getClass().getSimpleName(), flow.site.code)).write();
+                        ui.addMessage(Locale.getString(AppLangKey.UPDATED, flow.getClass().getSimpleName(), flow.site.code) + " " + flow.lastState).write();
                     }
                 }
             } catch (NoContentException ignore) {
