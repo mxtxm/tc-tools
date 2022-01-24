@@ -3,7 +3,6 @@ package com.tctools.business.model.project.container;
 import com.tctools.business.dto.project.container.Project;
 import com.tctools.business.dto.site.Site;
 import com.vantar.business.*;
-import com.vantar.database.dto.Dto;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.number.NumberUtil;
@@ -18,7 +17,7 @@ public class ProjectModel {
     }
 
     public static ResponseMessage update(Params params) throws InputException, ServerException {
-        params.set("action", Dto.Action.UPDATE_ALL_COLS);
+        //params.set("action", Dto.Action.UPDATE_ALL_COLS);
         return CommonModelMongo.updateJson(params, new Project());
     }
 

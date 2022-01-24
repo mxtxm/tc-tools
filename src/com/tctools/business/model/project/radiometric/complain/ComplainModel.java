@@ -58,7 +58,6 @@ public class ComplainModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
-        params.set("action", Dto.Action.UPDATE_ALL_COLS);
         return CommonModelMongo.update(params, complain, new CommonModel.WriteEvent() {
 
             @Override
@@ -80,7 +79,6 @@ public class ComplainModel {
             public void afterWrite(Dto dto) throws ServerException {
                 RadioMetricComplain complain = (RadioMetricComplain) dto;
                 try {
-//                    complain = CommonRepoMongo.getById(complain);
                     if (NumberUtil.isIdInvalid(complain.workFlowId)) {
                         return;
                     }
@@ -89,8 +87,6 @@ public class ComplainModel {
                     flow.id = complain.workFlowId;
                     flow.complain = complain;
                     CommonRepoMongo.update(flow);
-  //              } catch (NoContentException ignore) {
-
                 } catch (DatabaseException e) {
                     LogEvent.error(ComplainModel.class, complain, e);
                     throw new ServerException(VantarKey.UPDATE_FAIL);

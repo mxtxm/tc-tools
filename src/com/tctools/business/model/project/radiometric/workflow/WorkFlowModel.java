@@ -72,7 +72,7 @@ public class WorkFlowModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
-        params.set("action", Dto.Action.UPDATE_ALL_COLS);
+        //params.set("action", Dto.Action.UPDATE_ALL_COLS);
         return CommonModelMongo.updateJson(params, flow, new CommonModel.WriteEvent() {
 
             @Override

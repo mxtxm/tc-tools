@@ -35,12 +35,15 @@ pre, code {
 pre, code {
     font-family: Courier, monospace !important;
     color: #0e32b1;
+    line-height: 130%;
+    font-size: 13px;
 }
 
 
 p {
     padding: 0 70px 10px 80px;
     font-size: 14px;
+    line-height: 150%;
 }
 
 strong {
@@ -52,9 +55,11 @@ strong.key {
 }
 
 h1 {
-    color: #0e9900;
-    padding: 20px 30px 0 30px;
-    font-size: 22px;
+    color: #728823;
+    background-color: #eefde5;
+    padding: 20px 30px;
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 h2 {
@@ -62,28 +67,37 @@ h2 {
     color: #444;
     padding: 20px 30px;
     margin-top: 20px;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
 }
 
 h3 {
     color: #9b0404;
     padding: 0 50px 10px 50px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 }
 
 h4 {
     border-top: 1px solid #444;
-    color: #2ec6a0;
+    color: #aaa;
     padding: 20px 30px;
     margin-top: 20px;
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+h6 {
+    border-top: 1px solid #444;
+    color: #9cd76c;
+    padding: 20px 30px;
+    margin-top: 20px;
+    font-size: 22px;
     font-weight: bold;
 }
 
 h5 {
-    color: #e33a3a;
+    color: #ff7474;
     padding: 0 50px 10px 50px;
     font-size: 16px;
     font-weight: bold;
@@ -109,4 +123,13 @@ a {
 a:hover {
     border-bottom: 1px solid #ea5656;
     color: #ea5656;
+}
+
+label.database {
+    font-size: 10px;
+    color: #aaa;
+}
+
+.b-field {
+    color: #7e9d71;
 }

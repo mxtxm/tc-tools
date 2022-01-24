@@ -34,6 +34,7 @@ public class DtoInfo {
         DtoDictionary.setCategory("داده های پایه");
         DtoDictionary.add( "لاگ", Log.class);
         DtoDictionary.add( "تنظیمات", Settings.class);
+        DtoDictionary.add( "تست", WebTest.class);
 
         // user
         DtoDictionary.setCategory("کاربران");

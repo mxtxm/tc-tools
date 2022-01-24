@@ -337,6 +337,10 @@ td div {
     text-align: center;
 }
 
+.db-box-nostore {
+    width: 250px;
+}
+
 .db-box {
     width: 250px;
 }
@@ -452,6 +456,7 @@ pre.red {
     padding: 10px 0 20px 0;
 }
 
+.actions a,
 #actions a {
     padding: 0 10px;
 }
@@ -657,7 +662,16 @@ table.form td {
 .format {
     padding: 10px 5px;
     font-size: 13px;
-    color: #6b6b6b;
+    color: #924f49;
+    font-family: Courier, monospace;
+}
+
+pre.format {
+    padding: 10px 5px!important;
+    font-size: 10px!important;
+    color: #924f49 !important;
+    background-color: white!important;
+    font-family: Courier, monospace;
 }
 
 .unique {
@@ -671,3 +685,60 @@ table.form td {
     font-size: 13px;
     color: #54961a;
 }
+
+.delete-item {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+/* log */
+
+.log-row {
+    width: 100%;
+    border-top: 1px solid #4fb80d;
+}
+
+.log-col-user {
+    float: left;
+    width: 20%;
+}
+.log-col-user .action {
+    background-color: #4fb80d;
+    color: white;
+    font-weight: bold;
+    padding: 2px;
+}
+.log-col-user .time {
+
+}
+.log-col-user .user {
+
+}
+
+.log-col-request {
+    float: left;
+    width: 30%;
+}
+.log-col-request .url {
+    font-size: 10px;
+}
+.log-col-request .ip {
+    font-size: 10px;
+}
+.log-col-request strong,
+.log-col-request .headers {
+    font-size: 10px!important;
+    background-color: white;
+}
+
+.log-col-data {
+    float: left;
+    width: 45%;
+}
+.log-col-data .object {
+    font-size: 10px;
+}
+.log-col-data .description {
+    font-size: 10px;
+}
+
