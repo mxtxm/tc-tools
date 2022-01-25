@@ -76,7 +76,7 @@ public class RadioMetricComplain extends DtoBase {
     public String complainerComments;
     // < < < complainer
 
-    // visitor data > > >
+    // visit data > > >
     @Depends(PropertyType.class)
     public Long propertyId;
     @Depends(PropertySection.class)
@@ -85,7 +85,7 @@ public class RadioMetricComplain extends DtoBase {
     public Integer floorCount;
     public Integer floor;
     public Integer unitNumber;
-    // visitor data < < <
+    // visit data < < <
 
     public String imageUrl;
 
@@ -134,6 +134,14 @@ public class RadioMetricComplain extends DtoBase {
         imageUrl = getImageUrl(true);
         if (location != null) {
             location.round(Param.LOCATION_DECIMALS);
+        }
+        if (assigneeId != null && workFlowId != null) {
+            assignable = false;
+        } else {
+            assignable = true;
+            assigneeId = null;
+            workFlowId = null;
+            assignTime = null;
         }
         return true;
     }
