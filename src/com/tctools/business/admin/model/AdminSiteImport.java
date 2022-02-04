@@ -37,6 +37,21 @@ public class AdminSiteImport {
     private static Map<String, Long> codeIdMap;
 
 
+    private static Sector getSecondSector(Map<String, Sector> sectors, Sector sector) {
+        Sector sector2;
+        switch (sector.title) {
+            case "A":
+                return sectors.get("A2");
+            case "B":
+                return sectors.get("B2");
+            case "C":
+                return sectors.get("C2");
+            case "D":
+                return sectors.get("D2");
+        }
+        return null;
+    }
+
     public static void importSites(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(AppLangKey.IMPORT_SITE_DATA), params, response, true);
 
@@ -246,36 +261,76 @@ public class AdminSiteImport {
                         fieldName = fieldInfo;
 
                         if (StringUtil.isEmpty(value)) {
-                            ObjectUtil.setPropertyValue(sector, fieldName, null);
                             continue;
+                        }
+
+                        String value2;
+                        if (StringUtil.contains(value, '/')) {
+                            String[] parts = StringUtil.split(value, '/');
+                            value = parts[0];
+                            value2 = parts[1];
+                        } else {
+                            value2 = null;
                         }
 
                         if (fieldName.equals("LocationType")) {
-                            Dto dto = ClassUtil.getInstance("com.tctools.business.dto.location." + fieldName);
-                            ObjectUtil.setPropertyValue(sector, getPropertyNameFromReference(dto), getId(ui, dto, value, null));
+                            Dto dto = ClassUtil.getInstance("com.tctools.business.dto.location.LocationType");
+                            sector.setPropertyValue("locationTypeId", getId(ui, dto, value, null));
+
+                            if (value2 != null) {
+                                Sector sector2 = getSecondSector(sectors, sector);
+                                if (sector2 != null) {
+                                    Dto dto2 = ClassUtil.getInstance("com.tctools.business.dto.location.LocationType");
+                                    sector2.setPropertyValue("locationTypeId", getId(ui, dto2, value2, null));
+                                }
+                            }
                             continue;
                         }
                         if (fieldName.equals("SectorOptimization")) {
-                            Dto dto = ClassUtil.getInstance("com.tctools.business.dto.site." + fieldName);
-                            ObjectUtil.setPropertyValue(sector, getPropertyNameFromReference(dto), getId(ui, dto, value, null));
+                            Dto dto = ClassUtil.getInstance("com.tctools.business.dto.site.SectorOptimization");
+                            sector.setPropertyValue("sectorOptimizationId", getId(ui, dto, value, null));
+
+                            if (value2 != null) {
+                                Sector sector2 = getSecondSector(sectors, sector);
+                                if (sector2 != null) {
+                                    Dto dto2 = ClassUtil.getInstance("com.tctools.business.dto.site.SectorOptimization");
+                                    sector2.setPropertyValue("sectorOptimizationId", getId(ui, dto2, value2, null));
+                                }
+                            }
                             continue;
                         }
 
+                        sector.setPropertyValue(fieldName, value);
                         if (value.equalsIgnoreCase("omni")) {
                             sector.isOmni = true;
                         }
                         if (value.equalsIgnoreCase("directional")) {
                             sector.isDirectional = true;
                         }
-
-                        ObjectUtil.setPropertyValue(sector, fieldName, value);
                         if (sector.height != null) {
                             sector.onSiteHeight = sector.height;
                         }
+
+                        if (value2 != null) {
+                            Sector sector2 = getSecondSector(sectors, sector);
+                            if (sector2 != null) {
+                                sector2.setPropertyValue(fieldName, value2);
+                                if (value2.equalsIgnoreCase("omni")) {
+                                    sector2.isOmni = true;
+                                }
+                                if (value2.equalsIgnoreCase("directional")) {
+                                    sector2.isDirectional = true;
+                                }
+                                if (sector2.height != null) {
+                                    sector2.onSiteHeight = sector2.height;
+                                }
+                            }
+                        }
+
                         continue;
                     }
                     // < < < SECTOR
-//1396-12-14
+
                     //  > > > LOCATION
                     if (value != null && fieldName.equals("longitude")) {
                         site.location.longitude = StringUtil.toDouble(value);

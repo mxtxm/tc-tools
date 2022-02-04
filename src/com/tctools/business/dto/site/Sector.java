@@ -71,10 +71,13 @@ public class Sector extends DtoBase {
         public Double onSiteHeight;
         public Integer mechanicalTilt;
         public Integer electricalTilt;
+        public Boolean isOmni;
+        public Boolean isDirectional;
 
 
         public boolean isEmpty() {
-            return azimuth == null || title == null || height == null;
+            return !((azimuth != null && height != null) ||
+                ((isOmni != null && isOmni) || (isDirectional != null && isDirectional)));
         }
     }
 }

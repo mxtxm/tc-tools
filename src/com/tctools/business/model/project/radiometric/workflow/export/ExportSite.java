@@ -51,8 +51,6 @@ public class ExportSite extends ExportCommon {
         } catch (DateTimeException ignore) {
             isOld = false;
         }
-        String oldZipFile = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id + "/" + zipFile;
-        //if (!isOld || !FileUtil.exists(oldZipFile)) {
         if (!isOld) {
             docx(params, response, false);
 
@@ -151,7 +149,7 @@ public class ExportSite extends ExportCommon {
                 if (!sector.title.equals("A") && !sector.title.equals("B") && !sector.title.equals("C") ) {
                     continue;
                 }
-                mapping.put("sAngle" + sector.title, getValue(sector.azimuth));
+                mapping.put("sAngle" + sector.title, getValue(sector.azimuth == null ? sector.height : sector.azimuth));
                 mapping.put("mTilt" + sector.title, getValue(sector.mechanicalTilt));
                 mapping.put("eTilt" + sector.title, getValue(sector.electricalTilt));
 

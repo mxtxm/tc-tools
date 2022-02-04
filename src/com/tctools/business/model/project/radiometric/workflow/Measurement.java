@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.*;
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 
 public class Measurement {
@@ -42,6 +42,9 @@ public class Measurement {
         double sumValue2 = 0;
         DateTime logDateTime = null;
         Location location = new Location();
+
+        DateTime startDateTime = null;
+        DateTime endDateTime = null;
 
         try {
             CSVReader reader = new CSVReader(new FileReader(csvPath));
@@ -78,7 +81,7 @@ public class Measurement {
                     // #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,
                     case 9:
                         break;
-                    // #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,,
+                    // RECORDS FOR: #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,,
                     default:
                         if (record.length != 8 && record.length != 5) {
                             errors.add(new ValidationError(Param.FILE_UPLOAD + height, AppLangKey.INVALID_MEASURE_CSV_DATA));
@@ -103,20 +106,22 @@ public class Measurement {
                             location.longitude = StringUtil.toDouble(record[6]);
                         }
 
-                        if (i >= 10 && i <= 20) {
-                            try {
-                                DateTime dateTime = new DateTime(record[1] + " " + record[2]);
-                                if (dateTime.formatter().hour <= 0 || dateTime.formatter().hour > MEASUREMENT_MAX_HOUR) {
-                                    isMeasurementTimeAcceptable = false;
-                                }
-
-                                if (i == 10) {
-                                    logDateTime = dateTime;
-                                }
-                            } catch (DateTimeException e) {
-                                log.error("!invalid date ({}, {})", record[1], record[2], e);
-                                continue;
+                        try {
+                            endDateTime = new DateTime(record[1] + " " + record[2]);
+                            if (endDateTime.formatter().hour <= 0 || endDateTime.formatter().hour > MEASUREMENT_MAX_HOUR) {
+                                isMeasurementTimeAcceptable = false;
                             }
+
+                            if (i >= 10 && logDateTime == null) {
+                                logDateTime = endDateTime;
+                            }
+                            if (startDateTime == null) {
+                                startDateTime = endDateTime;
+                            }
+
+                        } catch (DateTimeException e) {
+                            log.error("!invalid date ({}, {})", record[1], record[2], e);
+                            continue;
                         }
 
                         if (value > 0) {
@@ -163,6 +168,42 @@ public class Measurement {
         flow.setPropertyValue("densityAverageDivMinRadiation" + height, densityAverageDivMinRadiation);
         flow.setPropertyValue("logDateTime" + height, logDateTime);
         flow.setPropertyValue("radiationStatus" + height, RadioMetricRadiationStatus.Compatible);
+
+        // > > > validation
+        Set<String> msg = new HashSet<>();
+        if (flow.validationMessage != null) {
+            for (String m : StringUtil.splitToSet(flow.validationMessage, '\n')) {
+                if (!m.startsWith(height + ":")) {
+                    msg.add(m);
+                }
+            }
+        }
+
+        long mins = endDateTime.diffSeconds(startDateTime) / 60;
+        if (mins < 3) {
+            msg.add(height + ": too quick (" + mins + "minutes)");
+        } else if (mins > 6) {
+            msg.add(height + ": too slow (" + mins + "minutes)");
+        }
+
+        // compare with each-other
+        if (flow.logDateTime100 != null && flow.logDateTime150 != null && flow.logDateTime170 != null) {
+            long minA = flow.logDateTime100.diffSeconds(flow.logDateTime150) / 60;
+            long minB = flow.logDateTime100.diffSeconds(flow.logDateTime170) / 60;
+            long minC = flow.logDateTime170.diffSeconds(flow.logDateTime150) / 60;
+            if (minA >= 10) {
+                msg.add("100~150: (" + minA + "minutes)");
+            }
+            if (minB >= 10) {
+                msg.add("100~170: (" + minB + "minutes)");
+            }
+            if (minC >= 10) {
+                msg.add("150~170:  (" + minC + "minutes)");
+            }
+        }
+
+        flow.validationMessage = CollectionUtil.join(msg, "\n");
+        // validation < < <
     }
 
     public static void createOkExcel(String csvPath) throws ServerException {

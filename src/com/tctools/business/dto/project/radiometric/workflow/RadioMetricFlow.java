@@ -94,6 +94,7 @@ public class RadioMetricFlow extends DtoBase {
     public String measurementType;
 
     // checking
+    public String validationMessage;
     public String committableMessage;
     public Boolean isCommittable;
 

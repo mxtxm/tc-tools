@@ -142,6 +142,7 @@ public class RadioMetricComplain extends DtoBase {
             assigneeId = null;
             workFlowId = null;
             assignTime = null;
+            addNullProperties("assigneeId", "workFlowId", "assignTime");
         }
         return true;
     }
