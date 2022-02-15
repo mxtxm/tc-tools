@@ -8,7 +8,7 @@ import com.tctools.business.dto.system.Settings;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.Excel;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
@@ -35,6 +35,7 @@ public class AdminSiteImport {
     private static final Logger log = LoggerFactory.getLogger(AdminSiteImport.class);
     private static Map<String, String> stringMaps;
     private static Map<String, Long> codeIdMap;
+    protected static Set<String> siteCodes;
 
 
     private static Sector getSecondSector(Map<String, Sector> sectors, Sector sector) {
@@ -127,7 +128,6 @@ public class AdminSiteImport {
             ui.beginUploadForm()
                 .addEmptyLine()
                 .addFile(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "csv")
-                .addInput("Codes", "codes")
                 .addTextArea(Locale.getString(AppLangKey.IMPORT_BTS_FIELD_ORDER), "fields", fields)
                 .addCheckbox("Synch all Radio Metric states", "synchallradiometric")
                 .addCheckbox("Synch all HSE Audit states", "synchallhse")
@@ -139,6 +139,7 @@ public class AdminSiteImport {
         // > > > I M P O R T
 
         long t1 = System.currentTimeMillis();
+        siteCodes = new HashSet<>(40000);
         int recordCount = 0;
         boolean doAllStatesRadioMetric = params.isChecked("synchallradiometric");
         boolean doAllStatesHseAudit = params.isChecked("synchallhse");
@@ -147,7 +148,6 @@ public class AdminSiteImport {
         loadSites(ui);
 
         String[] fields = StringUtil.split(params.getString("fields"), '\n');
-        Set<String> codes = params.getString("codes") == null ? null : StringUtil.splitToSet(params.getString("codes"), ',');
         String path = FileUtil.getTempDirectory() + new DateTime().getAsTimestamp();
 
         ui.addMessage("db > operators").write();
@@ -207,8 +207,6 @@ public class AdminSiteImport {
                 sectors.put("D", new Sector("D"));
                 sectors.put("D2", new Sector("D2"));
 
-                boolean exclude = false;
-
                 // > > > 21 share
                 String shared = record[21];
                 if (shared == null || shared.contains("مشترک نمی باشد")) {
@@ -245,15 +243,15 @@ public class AdminSiteImport {
                     if ("...".equals(fields[k])) {
                         continue;
                     }
-                    if (codes != null && site.code != null && !codes.contains(site.code)) {
-                        exclude = true;
-                        break;
-                    }
 
                     String value = getString(record[k]);
                     String[] field = StringUtil.split(fields[k], ':');
                     String fieldName = field[0];
                     String fieldInfo = field.length == 2 ? field[1] : null;
+
+                    if ("code".equals(fieldName)) {
+                        siteCodes.add(value);
+                    }
 
                     // > > > SECTOR
                     if (fieldName.startsWith("Sector")) {
@@ -412,9 +410,7 @@ public class AdminSiteImport {
                         // < < < REFERENCE VALUE
                     }
                 }
-                if (exclude) {
-                    continue;
-                }
+
                 // < < < FIELD
 
                 if (site.location.isEmpty()) {
@@ -477,6 +473,8 @@ public class AdminSiteImport {
             ui.addErrorMessage(e);
         }
 
+        removeRemovedSited(ui);
+
         ui.addMessage("Finished! " + recordCount + " took " + ((System.currentTimeMillis() - t1) / 1000 / 60 / 60) + " minutes").finish();
     }
 
@@ -504,10 +502,10 @@ public class AdminSiteImport {
 
         for (Map.Entry<String, String> entry : stringMaps.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(value)) {
-                return entry.getValue();
+                return entry.getValue().trim();
             }
         }
-        return value;
+        return value.trim();
     }
 
     private static void loadSites(WebUi ui) {
@@ -629,5 +627,27 @@ public class AdminSiteImport {
             prevChar = c;
         }
         return v1Set.equals(v2Set);
+    }
+
+    private static void removeRemovedSited(WebUi ui) {
+        try {
+            for (Dto dto : CommonRepoMongo.getData(new Site())) {
+                Site site = (Site) dto;
+                if (!siteCodes.contains(site.code)) {
+                    try {
+                        CommonModelMongo.deleteById(site);
+                        ui.addMessage("deleted " + site.code + " from Site");
+                    } catch (InputException | ServerException e) {
+                        log.error("! can not delete {}", site);
+                        ui.addErrorMessage(e);
+                    }
+                }
+            }
+        } catch (DatabaseException | NoContentException e) {
+            ui.addErrorMessage(e);
+        }
+
+        AdminSynchHseAudit.removeRemovedSited(ui);
+        AdminSynchRadiometric.removeRemovedSited(ui);
     }
 }

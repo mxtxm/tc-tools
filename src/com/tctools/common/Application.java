@@ -74,7 +74,7 @@ public class Application implements ServletContextListener {
                 // > > > auth service
                 try {
                     Services.get(ServiceAuth.class)
-                        .restoreTokens()
+                  /////      .restoreTokens()
                         .startupSignin(User.getTemporaryRoot())
                         .setEvent(username -> {
                             UserRepo repo = new UserRepo();

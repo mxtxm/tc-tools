@@ -4,7 +4,7 @@ import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -141,6 +141,29 @@ public class AdminSynchRadiometric {
             if (ui != null) {
                 ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), flowId + " - " + title)).write();
             }
+        }
+    }
+
+    protected static void removeRemovedSited(WebUi ui) {
+        try {
+            for (Dto dto : CommonRepoMongo.getData(new RadioMetricFlow())) {
+                RadioMetricFlow flow = (RadioMetricFlow) dto;
+                if (!AdminSiteImport.siteCodes.contains(flow.site.code)) {
+                    if(RadioMetricFlowState.Completed.equals(flow.lastState)
+                        || RadioMetricFlowState.Approved.equals(flow.lastState)
+                        || RadioMetricFlowState.Verified.equals(flow.lastState)) {
+                        continue;
+                    }
+                    try {
+                        CommonModelMongo.deleteById(flow);
+                        ui.addMessage("deleted " + flow.id + ":"+ flow.site.code + " from RadioMetricFlow");
+                    } catch (InputException | ServerException e) {
+                        ui.addErrorMessage(e);
+                    }
+                }
+            }
+        } catch (DatabaseException | NoContentException e) {
+            ui.addErrorMessage(e);
         }
     }
 }
