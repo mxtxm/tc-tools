@@ -502,7 +502,8 @@ public class AdminSiteImport {
 
         for (Map.Entry<String, String> entry : stringMaps.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(value)) {
-                return entry.getValue().trim();
+                String s = entry.getValue();
+                return s == null ? null : s.trim();
             }
         }
         return value.trim();
@@ -564,7 +565,7 @@ public class AdminSiteImport {
             }
 
             if (obj instanceof City) {
-                ((City) obj).provinceId = StringUtil.toLong(values[3]);
+                ((City) obj).provinceId = StringUtil.toLong(values[2]);
             }
 
             long id = CommonRepoMongo.insert(obj);

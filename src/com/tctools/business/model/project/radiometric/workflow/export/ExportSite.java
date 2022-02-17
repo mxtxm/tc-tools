@@ -134,22 +134,28 @@ public class ExportSite extends ExportCommon {
         missingSectors.add("A");
         missingSectors.add("B");
         missingSectors.add("C");
-        if (flow.sectors != null) {
-            for (Sector.Viewable sector : flow.sectors) {
+
+        List<Sector.Viewable> sectors = flow.sectors;
+        if (CollectionUtil.isEmpty(sectors)) {
+            sectors = flow.site.sectors;
+        }
+        if (sectors != null) {
+            for (Sector.Viewable sector : sectors) {
                 if (sector.isEmpty()) {
                     continue;
                 }
                 sector.title = sector.title.toUpperCase();
                 sectorHeights.append("Sector ").append(sector.title).append("=").append(getValue(sector.onSiteHeight)).append("  ");
 
-                if (sector.selected != null && (sector.selected || flow.sectors.size() == 1)) {
+                if (sector.selected != null && (sector.selected || sectors.size() == 1)) {
                     selectedSector = sector.title;
                 }
 
                 if (!sector.title.equals("A") && !sector.title.equals("B") && !sector.title.equals("C") ) {
                     continue;
                 }
-                mapping.put("sAngle" + sector.title, getValue(sector.azimuth == null ? sector.height : sector.azimuth));
+
+                mapping.put("sAngle" + sector.title, getValue(sector.azimuth == null ? (Object) sector.height : (Object) sector.azimuth));
                 mapping.put("mTilt" + sector.title, getValue(sector.mechanicalTilt));
                 mapping.put("eTilt" + sector.title, getValue(sector.electricalTilt));
 
@@ -491,9 +497,9 @@ public class ExportSite extends ExportCommon {
         try {
             boolean isOld = flow.assignDateTime != null && flow.assignDateTime.isBefore(new DateTime("2021-05-20"));
 //            if (!isOld || !FileUtil.exists(filePath + filename)) {
-            if (!isOld) {
-                Docx.createFromTemplate(Param.RADIO_METRIC_SITE_TEMPLATE, filePath, filename, mapping);
-            }
+            //if (!isOld && !FileUtil.exists(filePath + filename)) {
+            Docx.createFromTemplate(Param.RADIO_METRIC_SITE_TEMPLATE, filePath, filename, mapping);
+            //}
 
             if (!FileUtil.exists(filePath + filename)) {
                 throw new ServerException("docx not created");
