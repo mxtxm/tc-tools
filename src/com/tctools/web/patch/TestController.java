@@ -1,9 +1,10 @@
 package com.tctools.web.patch;
 
 import com.tctools.business.dto.location.City;
-import com.tctools.business.dto.project.hseaudit.HseAuditQuestionnaire;
+import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.project.radiometric.complain.RadioMetricComplain;
 import com.tctools.business.dto.project.radiometric.workflow.*;
+import com.tctools.business.dto.project.radiometric.workflow.State;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.*;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
@@ -19,6 +20,7 @@ import com.vantar.locale.Locale;
 import com.vantar.locale.*;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
+import com.vantar.util.json.Json;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.slf4j.*;
@@ -52,24 +54,19 @@ public class TestController extends RouteToMethod {
 
     public static final Logger log = LoggerFactory.getLogger(TestController.class);
 
-    public void t(Params params, HttpServletResponse response) throws FinishException {
-        User user = new User();
-        QueryBuilder q = new QueryBuilder(user);
-        q.condition().equal("id", 2L);
-
-        try {
-            User u = CommonRepoMongo.getFirst(user);
-
-            log.error(">>>>>>{}", user);
-            log.error(">>>>>>{}", u);
-
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        } catch (NoContentException e) {
-            e.printStackTrace();
-        }
+    public void t(Params params, HttpServletResponse response) throws FinishException, DatabaseException, NoContentException {
+        List<Long> ids = new ArrayList<>();
+        String s = "[0, 3, 259, 4, 6, 8, 73, 9, 74, 330, 396, 397, 14, 146, 19, 87, 23, 26, 28, 351, 224, 33, 417, 34, 228, 100, 38, 39, 105, 297, 45, 110, 51, 116, 53, 118, 119, 57, 121, 380, 63]";
+        ids = Json.listFromJson(s, Long.class);
 
 
+        log.error(">>{}",ids);
+
+
+        QueryBuilder q = new QueryBuilder(new SubContractor());
+        q.condition().inNumber("id", ids);
+        List<Dto> x = CommonRepoMongo.getData(q);
+        log.error(">>{}",x);
 
         //        RadioMetricFlow flow = new RadioMetricFlow();
 //        QueryBuilder q = new QueryBuilder(flow);

@@ -321,18 +321,21 @@ public class PatchController extends RouteToMethod {
 
         Map<Long, Dto> subContractor = Services.get(ServiceDtoCache.class).getMap(SubContractor.class);
 
-        try {
+        Set<Long> subIds = new HashSet<>();
 
+        try {
             List<HseAuditQuestionnaire> flows = CommonRepoMongo.getAll(new HseAuditQuestionnaire(), "fa");
             for (HseAuditQuestionnaire f : flows) {
-                if (f.subContractorId != null && subContractor.containsKey(f.subContractorId)) {
-                    ui.addErrorMessage(f.site.code + " (" + f.id + ")").write();
+                if (f.subContractorId != null && !subContractor.containsKey(f.subContractorId)) {
+                    ui.addErrorMessage(f.site.code + " (" + f.id + ") > " + f.subContractorId).write();
+                    subIds.add(f.subContractorId);
                 }
             }
         } catch (DatabaseException | NoContentException e) {
             ui.addErrorMessage(e).write();
         }
 
+        log.error(">>>>>>>>{}", subIds);
         ui.addMessage("finished!").write();
     }
 

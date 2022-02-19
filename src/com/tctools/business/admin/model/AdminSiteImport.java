@@ -128,6 +128,7 @@ public class AdminSiteImport {
             ui.beginUploadForm()
                 .addEmptyLine()
                 .addFile(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "csv")
+                .addInput(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "csv-on-server")
                 .addTextArea(Locale.getString(AppLangKey.IMPORT_BTS_FIELD_ORDER), "fields", fields)
                 .addCheckbox("Synch all Radio Metric states", "synchallradiometric")
                 .addCheckbox("Synch all HSE Audit states", "synchallhse")
@@ -166,11 +167,19 @@ public class AdminSiteImport {
 
         try {
             // > > > UPLOAD
-            Params.Uploaded uploaded = params.upload("csv");
-            uploaded.moveTo(path);
+            boolean isXlsx;
+            String pathX = params.getString("csv-on-server");
+            if (pathX == null) {
+                Params.Uploaded uploaded = params.upload("csv");
+                uploaded.moveTo(path);
+                isXlsx = StringUtil.contains(uploaded.getOriginalFilename(), ".xlsx");
+            } else {
+                path = pathX;
+                isXlsx = StringUtil.contains(path, ".xlsx");
+            }
 
             // > > > CONVERT TO CSV IF NEEDED
-            if (StringUtil.contains(uploaded.getOriginalFilename(), ".xlsx")) {
+            if (isXlsx) {
                 ui.addMessage("xlsx > csv").write();
                 Excel.excelToCSV(path, path + ".csv", 0, fields.length);
                 FileUtil.removeFile(path);
