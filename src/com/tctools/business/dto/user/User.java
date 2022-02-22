@@ -61,6 +61,7 @@ public class User extends DtoBase implements CommonUser {
     @NoStore
     public String token;
     private boolean siginingIn;
+    private boolean changePassword;
 
 
     public String getSignature(boolean isUrl) {
@@ -94,6 +95,19 @@ public class User extends DtoBase implements CommonUser {
     }
 
     public boolean beforeUpdate() {
+        if (!changePassword) {
+            password = null;
+        }
+
+        if (StringUtil.isNotEmpty(password)) {
+            password = DigestUtils.sha1Hex(password);
+        }
+        if (firstName != null && lastName != null) {
+            fullName = firstName + ' ' + lastName;
+        }
+
+
+
         if (StringUtil.isNotEmpty(password)) {
             password = DigestUtils.sha1Hex(password);
         }
@@ -106,6 +120,11 @@ public class User extends DtoBase implements CommonUser {
     @Override
     public boolean passwordEquals(String password) {
         return this.password.equals(DigestUtils.sha1Hex(password));
+    }
+
+    @Override
+    public void setChangePasswordMode(boolean b) {
+
     }
 
     @Override

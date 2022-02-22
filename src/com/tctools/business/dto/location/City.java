@@ -4,9 +4,9 @@ import com.vantar.database.dto.*;
 import java.util.Map;
 
 // شهر
-@Index("provinceId:1")
 @Cache
 @Mongo
+@Index("provinceId:1")
 public class City extends DtoBase {
 
     public Long id;

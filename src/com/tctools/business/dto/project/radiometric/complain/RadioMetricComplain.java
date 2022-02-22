@@ -1,8 +1,6 @@
 package com.tctools.business.dto.project.radiometric.complain;
 
 import com.tctools.business.dto.location.*;
-import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
 import com.vantar.database.datatype.Location;
@@ -22,21 +20,21 @@ public class RadioMetricComplain extends DtoBase {
     public Long id;
 
     @Required
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long creatorId;
 
     // assigned > > >
     @Required
     @Default("true")
     public Boolean assignable;
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long assigneeId;
     // < < <  assigned
 
     public String ccnumber;
-    @Depends(Site.class)
+    //@Depends(Site.class)
     public Long siteId;
-    @Depends(RadioMetricFlow.class)
+    //@Depends(RadioMetricFlow.class)
     public Long workFlowId;
     @Required
     public String siteCode;
@@ -59,10 +57,10 @@ public class RadioMetricComplain extends DtoBase {
     public Location location;
 
     @Required
-    @Depends(Province.class)
+    //@Depends(Province.class)
     public Long provinceId;
     @Required
-    @Depends(City.class)
+    //@Depends(City.class)
     public Long cityId;
     @Required
     public String address;
@@ -77,9 +75,9 @@ public class RadioMetricComplain extends DtoBase {
     // < < < complainer
 
     // visit data > > >
-    @Depends(PropertyType.class)
+    //@Depends(PropertyType.class)
     public Long propertyId;
-    @Depends(PropertySection.class)
+    //@Depends(PropertySection.class)
     public Long propertySectionId;
     public Double buildingHeight;
     public Integer floorCount;

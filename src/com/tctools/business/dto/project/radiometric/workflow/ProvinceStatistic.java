@@ -1,6 +1,5 @@
 package com.tctools.business.dto.project.radiometric.workflow;
 
-import com.tctools.business.dto.location.Province;
 import com.vantar.database.dto.*;
 
 @Mongo
@@ -8,7 +7,7 @@ import com.vantar.database.dto.*;
 public class ProvinceStatistic extends DtoBase {
 
     public Long id;
-    @Depends(Province.class)
+    //@Depends(Province.class)
     public Long provinceId;
     public String provinceName;
     public Integer yearMonth;

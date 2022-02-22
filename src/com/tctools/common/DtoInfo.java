@@ -7,10 +7,10 @@ import com.tctools.business.dto.project.radiometric.complain.*;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.system.*;
-import com.tctools.business.dto.user.*;
+import com.tctools.business.dto.user.User;
 import com.vantar.database.dto.DtoDictionary;
 import com.vantar.database.query.QueryBuilder;
-import com.vantar.service.log.dto.Log;
+import com.vantar.service.log.dto.*;
 
 
 public class DtoInfo {

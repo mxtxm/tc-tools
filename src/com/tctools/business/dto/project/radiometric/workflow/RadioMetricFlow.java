@@ -37,10 +37,10 @@ public class RadioMetricFlow extends DtoBase {
     @Default("true")
     public Boolean assignable;
     @Required
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long assignorId;
     @Required
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long assigneeId;
     public List<State> state;
     public RadioMetricFlowState lastState;
@@ -54,10 +54,10 @@ public class RadioMetricFlow extends DtoBase {
 
     // location > > >
     @Required
-    @Depends(Province.class)
+    //@Depends(Province.class)
     public Long provinceId;
     @Required
-    @Depends(City.class)
+    //@Depends(City.class)
     public Long cityId;
 
     // default=Site.address technician can change after measurement

@@ -19,7 +19,7 @@ public class HseAuditQuestionnaire extends DtoBase {
 
     @Required
     public Site site;
-    @Depends(SubContractor.class)
+    //@Depends(SubContractor.class)
     public Long subContractorId;
     public HseAuditActivity activity;
 
@@ -30,9 +30,9 @@ public class HseAuditQuestionnaire extends DtoBase {
     public Boolean assignable;
     @Default("false")
     public Boolean copyable;
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long assignorId;
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long assigneeId;
     public List<State> state;
     public HseAuditFlowState lastState;

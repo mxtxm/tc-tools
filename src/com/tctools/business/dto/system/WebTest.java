@@ -3,7 +3,6 @@ package com.tctools.business.dto.system;
 import com.vantar.database.dto.*;
 import com.vantar.util.datetime.DateTime;
 
-
 @Mongo
 public class WebTest extends DtoBase {
 

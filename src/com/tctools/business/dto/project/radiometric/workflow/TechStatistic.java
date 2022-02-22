@@ -1,6 +1,5 @@
 package com.tctools.business.dto.project.radiometric.workflow;
 
-import com.tctools.business.dto.user.User;
 import com.vantar.database.dto.*;
 
 @Mongo
@@ -8,7 +7,7 @@ import com.vantar.database.dto.*;
 public class TechStatistic extends DtoBase {
 
     public Long id;
-    @Depends(User.class)
+    //@Depends(User.class)
     public Long userId;
     public String userName;
     public Integer yearMonth;
