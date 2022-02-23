@@ -255,6 +255,7 @@ public class UserModel {
         }
 
         User u = new User();
+        u.setChangePasswordMode(true);
         u.id = user.id;
         u.password = params.getString("password");
         if (StringUtil.isEmpty(u.password)) {

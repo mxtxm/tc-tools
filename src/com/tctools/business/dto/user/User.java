@@ -1,8 +1,10 @@
 package com.tctools.business.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
+import com.tctools.web.patch.TestController;
 import com.vantar.database.dto.*;
 import com.vantar.exception.AuthException;
 import com.vantar.service.auth.*;
@@ -41,6 +43,7 @@ public class User extends DtoBase implements CommonUser {
     public String email;
     public String mobile;
     public String username;
+    @JsonIgnore
     public String password;
 
     @CreateTime
@@ -53,64 +56,34 @@ public class User extends DtoBase implements CommonUser {
     @Tags("none")
     public DateTime signinT;
 
-    //public Map<String, Long> dataUpdates;
-
     @NoStore
     public String signature;
 
     @NoStore
     public String token;
-    private boolean siginingIn;
-    private boolean changePassword;
+    private boolean changePasswordMode;
 
-
-    public String getSignature(boolean isUrl) {
-        if (id == null) {
-            return null;
-        }
-        String filePath = Param.USERS_FILES + id + "-signature.jpg";
-        if (!isUrl) {
-            return filePath;
-        }
-        if (!FileUtil.exists(filePath)) {
-            return null;
-        }
-        return Param.USERS_URL + id  + "/" + id + "-signature.jpg";
-    }
 
     @Override
     public void afterFetchData() {
         signature = getSignature(true);
-        if (Thread.currentThread().getStackTrace().length > 8
-            && Thread.currentThread().getStackTrace()[7].getClassName().endsWith("ServiceDtoCache")) {
-            return;
-        }
-        if (!siginingIn) {
-            password = "";
-        }
     }
 
+    @Override
     public boolean beforeInsert() {
         return beforeUpdate();
     }
 
     public boolean beforeUpdate() {
-        if (!changePassword) {
+        if (changePasswordMode) {
+            if (StringUtil.isNotEmpty(password)) {
+                password = DigestUtils.sha1Hex(password);
+            }
+        } else {
             password = null;
         }
+        changePasswordMode = false;
 
-        if (StringUtil.isNotEmpty(password)) {
-            password = DigestUtils.sha1Hex(password);
-        }
-        if (firstName != null && lastName != null) {
-            fullName = firstName + ' ' + lastName;
-        }
-
-
-
-        if (StringUtil.isNotEmpty(password)) {
-            password = DigestUtils.sha1Hex(password);
-        }
         if (firstName != null && lastName != null) {
             fullName = firstName + ' ' + lastName;
         }
@@ -118,13 +91,16 @@ public class User extends DtoBase implements CommonUser {
     }
 
     @Override
-    public boolean passwordEquals(String password) {
-        return this.password.equals(DigestUtils.sha1Hex(password));
+    public void setChangePasswordMode(boolean mode) {
+        changePasswordMode = mode;
     }
 
     @Override
-    public void setChangePasswordMode(boolean b) {
+    public boolean passwordEquals(String password) {
 
+        TestController.log.error(">>>>>>\n{}\n{}\n{}",password,this.password,DigestUtils.sha1Hex(password));
+
+        return this.password.equals(DigestUtils.sha1Hex(password));
     }
 
     @Override
@@ -143,7 +119,7 @@ public class User extends DtoBase implements CommonUser {
     }
 
     @Override
-    public void nullPassword() {
+    public void clearPassword() {
         password = null;
     }
 
@@ -182,11 +158,6 @@ public class User extends DtoBase implements CommonUser {
         return null;
     }
 
-    @Override
-    public void setSigningIn() {
-        siginingIn = true;
-    }
-
     public static User getTemporaryRoot() {
         User dummy = new User();
         dummy.id = 1L;
@@ -214,15 +185,17 @@ public class User extends DtoBase implements CommonUser {
         throw new AuthException(AppLangKey.NO_PROJECT_ACCESS, projectType.toString());
     }
 
-    public DateTime getDataUpdate(String tag) {
-        return null;
-        //return dataUpdates == null ? null : new DateTime(dataUpdates.get(tag));
-    }
-
-    public void setDataUpdated(String tag) {
-//        if (dataUpdates == null) {
-//            dataUpdates = new HashMap<>();
-//        }
-//        dataUpdates.put(tag, DateTime.getTimestamp());
+    public String getSignature(boolean isUrl) {
+        if (id == null) {
+            return null;
+        }
+        String filePath = Param.USERS_FILES + id + "-signature.jpg";
+        if (!isUrl) {
+            return filePath;
+        }
+        if (!FileUtil.exists(filePath)) {
+            return null;
+        }
+        return Param.USERS_URL + id + "/" + id + "-signature.jpg";
     }
 }

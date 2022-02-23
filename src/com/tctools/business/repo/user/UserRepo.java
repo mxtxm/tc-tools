@@ -24,23 +24,4 @@ public class UserRepo {
         }
         throw new NoContentException();
     }
-
-    public static void setDataUpdated(Long userId, String tag) throws DatabaseException {
-        if (userId == null) {
-            return;
-        }
-        try {
-            setDataUpdated(Services.get(ServiceDtoCache.class).getDto(User.class, userId), tag);
-        } catch (ServiceException ignore) {
-
-        }
-    }
-
-    public static void setDataUpdated(User user, String tag) throws DatabaseException {
-        if (user == null) {
-            return;
-        }
-        //user.setDataUpdated(tag);
-        //CommonRepoMongo.update(user);
-    }
 }

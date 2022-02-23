@@ -3,7 +3,6 @@ package com.tctools.business.model.project.hseaudit;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.user.*;
-import com.tctools.business.repo.user.UserRepo;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.SendMessage;
@@ -113,12 +112,7 @@ public class WorkFlowModel {
 
             @Override
             public void afterWrite(Dto dto) {
-                HseAuditQuestionnaire flow = (HseAuditQuestionnaire) dto;
-                try {
-                    UserRepo.setDataUpdated(flow.assigneeId, ProjectType.HseAudit.name());
-                } catch (DatabaseException ignore) {
 
-                }
             }
         });
     }
@@ -377,7 +371,6 @@ public class WorkFlowModel {
 
         try {
             CommonRepoMongo.update(flow);
-            UserRepo.setDataUpdated(flow.assigneeId, ProjectType.HseAudit.name());
             return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.INSERT_FAIL);

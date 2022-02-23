@@ -1,10 +1,8 @@
 package com.tctools.business.model.project.hseaudit;
 
-import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.project.map.hseaudit.HseAuditMapFlow;
 import com.tctools.business.dto.user.User;
-import com.tctools.business.repo.user.UserRepo;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.business.CommonRepoMongo;
 import com.vantar.database.query.QueryData;
@@ -90,7 +88,6 @@ public class MapFlowModel {
 
         try {
             CommonRepoMongo.update(flow);
-            UserRepo.setDataUpdated(flow.assigneeId, ProjectType.HseAudit.name());
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.UPDATE_FAIL);
         }
@@ -148,7 +145,6 @@ public class MapFlowModel {
 
         try {
             CommonRepoMongo.update(flow);
-            UserRepo.setDataUpdated(assigneeId, ProjectType.HseAudit.name());
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.UPDATE_FAIL);
         }
@@ -198,7 +194,6 @@ public class MapFlowModel {
 
         try {
             CommonRepoMongo.insert(flow);
-            UserRepo.setDataUpdated(assigneeId, ProjectType.HseAudit.name());
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.UPDATE_FAIL);
         }
