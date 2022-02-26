@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
-import com.tctools.web.patch.TestController;
 import com.vantar.database.dto.*;
 import com.vantar.exception.AuthException;
 import com.vantar.service.auth.*;
@@ -12,13 +11,14 @@ import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import java.util.List;
 
 @Cache
 @Mongo
 @Storage("users")
 @Index({"username:1"})
-public class User extends DtoBase implements CommonUser {
+public class User extends DtoBase implements CommonUser, CommonUserPassword {
 
     public Long id;
 
@@ -61,7 +61,6 @@ public class User extends DtoBase implements CommonUser {
 
     @NoStore
     public String token;
-    private boolean changePasswordMode;
 
 
     @Override
@@ -75,14 +74,11 @@ public class User extends DtoBase implements CommonUser {
     }
 
     public boolean beforeUpdate() {
-        if (changePasswordMode) {
-            if (StringUtil.isNotEmpty(password)) {
-                password = DigestUtils.sha1Hex(password);
-            }
+        if (StringUtil.isNotEmpty(password)) {
+            password = DigestUtils.sha1Hex(password);
         } else {
             password = null;
         }
-        changePasswordMode = false;
 
         if (firstName != null && lastName != null) {
             fullName = firstName + ' ' + lastName;
@@ -91,15 +87,7 @@ public class User extends DtoBase implements CommonUser {
     }
 
     @Override
-    public void setChangePasswordMode(boolean mode) {
-        changePasswordMode = mode;
-    }
-
-    @Override
     public boolean passwordEquals(String password) {
-
-        TestController.log.error(">>>>>>\n{}\n{}\n{}",password,this.password,DigestUtils.sha1Hex(password));
-
         return this.password.equals(DigestUtils.sha1Hex(password));
     }
 
@@ -119,13 +107,13 @@ public class User extends DtoBase implements CommonUser {
     }
 
     @Override
-    public void clearPassword() {
-        password = null;
+    public String getPassword() {
+        return password;
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    public void setPassword(String s) {
+        password = s;
     }
 
     @Override

@@ -155,7 +155,7 @@ public class UserModel {
 
     public static ResponseMessage update(Params params, User creator) throws ServerException, InputException {
         User user = new User();
-        user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT");
+        user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT", "password");
         return CommonModelMongo.update(params, user, new CommonModel.WriteEvent() {
 
             @Override
@@ -255,7 +255,6 @@ public class UserModel {
         }
 
         User u = new User();
-        u.setChangePasswordMode(true);
         u.id = user.id;
         u.password = params.getString("password");
         if (StringUtil.isEmpty(u.password)) {
