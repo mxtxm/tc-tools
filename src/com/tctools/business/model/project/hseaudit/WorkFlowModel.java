@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class WorkFlowModel {
 
     private static final ReentrantLock lock = new ReentrantLock();
-    private static final String SMS_NOTIFY_NUMBERS = "09126214967,09129346154,09359947922,09197148361";
+    private static final String SMS_NOTIFY_NUMBERS = "09126214967,09129346154,09359947922,09197148361,09120067168";
 
 
     public static ResponseMessage submit(Params params, User user) throws ServerException, InputException, NoContentException {
