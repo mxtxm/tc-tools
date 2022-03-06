@@ -7,7 +7,7 @@ import com.tctools.business.dto.project.radiometric.complain.*;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.system.*;
-import com.tctools.business.dto.user.User;
+import com.tctools.business.dto.user.*;
 import com.vantar.database.dto.DtoDictionary;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.service.log.dto.*;
@@ -17,16 +17,30 @@ public class DtoInfo {
 
     public static void start() {
 //        DtoDictionary.setCategory("داده های پایه");
-//        DtoDictionary.add("a21", Test1.class);
-//        DtoDictionary.add("a22", Test2.class);
-//        DtoDictionary.add("a23", Test3.class);
-//        DtoDictionary.add("a24", Test4.class);
+//        DtoDictionary.add("a211", Test1.class);
+//        DtoDictionary.add("a212d", Test1A.class);
+//        DtoDictionary.add("a213s", Test1B.class);
+//        DtoDictionary.add("a214sf", Test1C.class);
+//        DtoDictionary.add("a215sg", Test1D.class);
+//        DtoDictionary.add("a226", Test2.class);
+//        DtoDictionary.add("a237", Test3.class);
+//        DtoDictionary.add("a248", Test4.class);
+//        DtoDictionary.add("a24A", Test4A.class);
 //        DtoDictionary.add("a25", Test5.class);
+//        DtoDictionary.add("a25A", Test5A.class);
 //        DtoDictionary.add("a26", Test6.class);
-//        DtoDictionary.add("a27", Test7.class);
+//        DtoDictionary.add("a263", Test6A.class);
+//        DtoDictionary.add("a275", Test7.class);
 //        DtoDictionary.add("a28", Test8.class);
-//        DtoDictionary.add("a29", Test9.class);
-//        DtoDictionary.add("a20", Test10.class);
+//        DtoDictionary.add("a282", Test8A.class);
+//        DtoDictionary.add("a293", Test9.class);
+//        DtoDictionary.add("a120", Test10.class);
+//        DtoDictionary.add("a220", Test10A.class);
+//        DtoDictionary.add("a320", Test11.class);
+//        DtoDictionary.add("a3200", Test12.class);
+//        DtoDictionary.add("a3200s", Test12A.class);
+
+
 //
 //        if (1==1)return;
 

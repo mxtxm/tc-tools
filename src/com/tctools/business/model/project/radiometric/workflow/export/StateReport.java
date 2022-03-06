@@ -70,7 +70,7 @@ public class StateReport extends ExportCommon {
 
     public static Map<String, StateStatistic> getMonthlyOverview() throws ServerException, NoContentException {
         String value = getFromCache(MONTHLY_OVERVIEW);
-        return Json.mapFromJson(value, String.class, StateStatistic.class);
+        return Json.d.mapFromJson(value, String.class, StateStatistic.class);
     }
 
     public static Map<String, StateStatistic> getMonthlyOverviewTarget() throws ServerException, NoContentException {

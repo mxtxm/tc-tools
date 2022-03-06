@@ -145,7 +145,7 @@ public class WorkFlowModel {
         String tempPath = Param.TEMP_DIR + originalFilename;
         uploaded.moveTo(tempPath);
 
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.TECHNICIAN);
+        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.TECHNICIAN);
         user.projectAccess(ProjectType.HseAudit);
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
@@ -260,7 +260,7 @@ public class WorkFlowModel {
         String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
         uploaded.moveTo(tempPath);
 
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
+        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER);
         user.projectAccess(ProjectType.HseAudit);
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();

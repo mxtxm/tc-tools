@@ -458,7 +458,7 @@ public class ConvertController extends RouteToMethod {
                 }
             });
 
-            log.error("{}", Json.toJsonPretty(idMap));
+            log.error("{}", Json.d.toJsonPretty(idMap));
 
 
             for (RadioMetricFlow f : CommonRepoMongo.getData(new RadioMetricFlow())) {
@@ -615,7 +615,7 @@ public class ConvertController extends RouteToMethod {
 
     public void d(Params params, HttpServletResponse response) {
         Map<String, String> y = extractData(params.getString("path", "/opt/tc-tools/convert/files/Regular New/98.03.19/تهران/TH1380/TH1380.docx"), null);
-        String data = Json.toJsonPretty(y);
+        String data = Json.d.toJsonPretty(y);
         log.info("{}", data);
         Response.writeString(response, "<pre>" + data);
     }

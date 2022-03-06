@@ -221,7 +221,7 @@ public class UserModel {
         String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
         uploaded.moveTo(tempPath);
 
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
+        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
 
         Long id = params.getLong("id");
         if (NumberUtil.isIdValid(id)) {

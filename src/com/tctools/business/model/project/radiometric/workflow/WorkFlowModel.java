@@ -278,7 +278,7 @@ public class WorkFlowModel {
 
 
     public static ResponseMessage measurementSubmit(Params params) throws InputException, ServerException, NoContentException, AuthException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+        Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
@@ -328,7 +328,7 @@ public class WorkFlowModel {
     }
 
     public static Object uploadImages(Params params) throws InputException, NoContentException, ServerException, AuthException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+        Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");

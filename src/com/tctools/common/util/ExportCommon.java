@@ -50,7 +50,7 @@ public class ExportCommon {
             CommonRepoMongo.delete(q);
             Settings settings = new Settings();
             settings.key = key;
-            settings.value = Json.toJson(value);
+            settings.value = Json.d.toJson(value);
             CommonRepoMongo.insert(settings);
         } catch (Exception e) {
             log.error("! {}=>{}", key, value, e);

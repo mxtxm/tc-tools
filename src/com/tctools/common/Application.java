@@ -10,13 +10,14 @@ import com.vantar.exception.ServiceException;
 import com.vantar.http.Ssl;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
+import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.service.log.LogEvent;
 import com.vantar.service.messaging.ServiceMessaging;
 import com.vantar.web.Response;
 import org.aeonbits.owner.ConfigFactory;
 import org.slf4j.*;
 import javax.servlet.*;
-import java.util.Set;
+import java.util.*;
 
 
 public class Application implements ServletContextListener {
@@ -31,6 +32,10 @@ public class Application implements ServletContextListener {
 
         log.info("> Initializing application\n\n\n");
 
+        Response.setJsonError();
+        Response.setAllowOrigin("*");
+        ServiceAuth.setUserClass(User.class);
+
         DtoInfo.start();
         log.info("loaded dto info");
 
@@ -40,8 +45,6 @@ public class Application implements ServletContextListener {
         LocaleService.start(Settings.locale());
         log.info("started localization");
 
-        Response.setJsonError();
-        Response.setAllowOrigin("*");
 
         Services.setEvents(new Services.Event() {
             @Override
@@ -56,13 +59,19 @@ public class Application implements ServletContextListener {
 
             @Override
             public void afterStart() {
-
                 // > > > messaging service
                 Services.messaging.setEvent(new ServiceMessaging.Event() {
-
                     @Override
                     public void onReceive(int type, ServiceMessaging.Message message) {
-
+                        if (type == Param.MESSAGE_DATABASE_UPDATED && "User".equals(message.getString())) {
+                            try {
+                                Services.get(ServiceAuth.class)
+                                    .updateOnlineUsers((List) Services.get(ServiceDtoCache.class).getList(User.class));
+                                log.info("> online user data updated");
+                            } catch (ServiceException e) {
+                                log.error("! failed to update online user data", e);
+                            }
+                        }
                     }
 
                     @Override
@@ -74,7 +83,7 @@ public class Application implements ServletContextListener {
                 // > > > auth service
                 try {
                     Services.get(ServiceAuth.class)
-                  /////      .restoreTokens()
+                        .restoreFromBackup()
                         .startupSignin(User.getTemporaryRoot())
                         .setEvent(username -> {
                             UserRepo repo = new UserRepo();

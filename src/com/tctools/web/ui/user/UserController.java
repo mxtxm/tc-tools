@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController extends RouteToMethod {
 
     public void usersGetRoles(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.MANAGER, Role.ENGINEER);
+        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER);
         Response.writeJson(
             response,
             user.role.equals(Role.MANAGER) ?

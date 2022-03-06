@@ -11,6 +11,4 @@ public class Test7 extends DtoBase {
     @Depends(Test1.class)
     public Long test1Id;
 
-    public Test1 test1;
-
 }

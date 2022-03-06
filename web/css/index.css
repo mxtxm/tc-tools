@@ -653,37 +653,33 @@ table.form td {
     margin: 10px;
 }
 
-.required {
-    padding: 13px 5px 0 5px;
-    font-size: 18px;
-    color: #b4100e;
-}
-
 .format {
-    padding: 10px 5px;
-    font-size: 13px;
-    color: #924f49;
-    font-family: Courier, monospace;
-}
-
-pre.format {
-    padding: 10px 5px!important;
+    padding: 1px 5px;
     font-size: 10px!important;
-    color: #924f49 !important;
+    color: #999;
     background-color: white!important;
     font-family: Courier, monospace;
 }
 
+.required {
+    padding: 5px 5px 0 5px;
+    font-size: 18px;
+    color: #ff3c3a;
+    background-color: white!important;
+}
+
 .unique {
-    padding: 10px 5px;
+    padding: 5px 5px 0 5px;
     font-size: 13px;
-    color: #c87f2f;
+    color: #5dacf3;
+    background-color: white!important;
 }
 
 .default {
-    padding: 10px 5px;
+    padding: 5px 5px 0 5px;
     font-size: 13px;
     color: #54961a;
+    background-color: white!important;
 }
 
 .delete-item {
@@ -741,4 +737,3 @@ pre.format {
 .log-col-data .description {
     font-size: 10px;
 }
-

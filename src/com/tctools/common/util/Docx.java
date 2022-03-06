@@ -41,7 +41,7 @@ public class Docx {
         FileUtil.giveAllPermissions(Docx.class.getResource("/arta/app/docx/").getPath());
 
         FileUtil.makeDirectory(filePath);
-        FileUtil.write(jsonFilePath, Json.toJson(mapping));
+        FileUtil.write(jsonFilePath, Json.d.toJson(mapping));
 
         try {
             BufferedReader input = new BufferedReader(

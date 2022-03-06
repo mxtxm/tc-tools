@@ -1,6 +1,5 @@
 package com.tctools.business.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
@@ -43,7 +42,6 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
     public String email;
     public String mobile;
     public String username;
-    @JsonIgnore
     public String password;
 
     @CreateTime
