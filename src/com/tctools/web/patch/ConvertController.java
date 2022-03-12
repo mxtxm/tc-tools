@@ -76,6 +76,7 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
+    @Access("ROOT")
     public void fixSectorOne(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -110,6 +111,7 @@ public class ConvertController extends RouteToMethod {
 
     }
 
+    @Access("ROOT")
     public void fixDate(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -163,6 +165,7 @@ public class ConvertController extends RouteToMethod {
 
     }
 
+    @Access("ROOT")
     public void mergeUser(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -216,6 +219,7 @@ public class ConvertController extends RouteToMethod {
     }
 
 
+    @Access("ROOT")
     public void changeState(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -289,6 +293,7 @@ public class ConvertController extends RouteToMethod {
 
 
 
+    @Access("ROOT")
     public void fixFileName(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.addMessage("> > >").write();
@@ -324,6 +329,7 @@ public class ConvertController extends RouteToMethod {
         processFile("/opt/tc-tools/files/radiometric/", callback);
     }
 
+    @Access("ROOT")
     public void fixAssign(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -387,6 +393,7 @@ public class ConvertController extends RouteToMethod {
         ui.addMessage("< < <").write();
     }
 
+    @Access("ROOT")
     public void fixState(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.write();
@@ -409,6 +416,7 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
+    @Access("ROOT")
     public void users(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.write();
@@ -536,6 +544,7 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
+    @Access("ROOT")
     public void log(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.write();
@@ -577,6 +586,7 @@ public class ConvertController extends RouteToMethod {
         }
     }
 
+    @Access("ROOT")
     public void fix(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         try {
@@ -613,6 +623,7 @@ public class ConvertController extends RouteToMethod {
 
     }
 
+    @Access("ROOT")
     public void d(Params params, HttpServletResponse response) {
         Map<String, String> y = extractData(params.getString("path", "/opt/tc-tools/convert/files/Regular New/98.03.19/تهران/TH1380/TH1380.docx"), null);
         String data = Json.d.toJsonPretty(y);
@@ -620,10 +631,12 @@ public class ConvertController extends RouteToMethod {
         Response.writeString(response, "<pre>" + data);
     }
 
+    @Access("ROOT")
     public void e(Params params, HttpServletResponse response) {
         log.info(docToDox(params.getString("path"), null));
     }
 
+    @Access("ROOT")
     public void createSh(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -652,6 +665,7 @@ public class ConvertController extends RouteToMethod {
             .write();
     }
 
+    @Access("ROOT")
     public void compare(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -767,6 +781,7 @@ public class ConvertController extends RouteToMethod {
         ui.addMessage("< < <").write();
     }
 
+    @Access("ROOT")
     public void index(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -1477,7 +1492,7 @@ public class ConvertController extends RouteToMethod {
                 FileUtil.move(imagePath, flow.getPath() + flow.complain.getImageFilename());
             }
 
-            return new ResponseMessage(VantarKey.INSERT_SUCCESS, complainToUpdate.workFlowId);
+            return ResponseMessage.success(VantarKey.INSERT_SUCCESS, complainToUpdate.workFlowId);
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.INSERT_FAIL);
         }
@@ -1697,6 +1712,7 @@ public class ConvertController extends RouteToMethod {
         return null;
     }
 
+    @Access("ROOT")
     public static Map<String, String> getStatusData(String csv, WebUi ui) throws IOException, CsvValidationException {
         ui.addMessage("loading status data...").write();
         String[] record;

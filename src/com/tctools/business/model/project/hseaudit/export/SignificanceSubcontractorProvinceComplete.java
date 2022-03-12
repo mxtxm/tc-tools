@@ -30,123 +30,39 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
     private static final int UN_SAFE_PERCENT_3 = 40;
 
     private static final String LANG = "fa";
-    private static Map<String, CellStyle> styles;
+    private final Map<String, CellStyle> styles = new HashMap<>(10);
 
 
-    private static void toExcel(
+    private void toExcel(
         HttpServletResponse response,
         DateTimeRange dateTimeRange,
         Result result
         ) throws ServerException {
 
-        styles = new HashMap<>(10);
+        try (Workbook wb = new XSSFWorkbook()) {
 
-        Workbook wb = new XSSFWorkbook();
-
-        // total
-        Sheet sheet = wb.createSheet("آمار کلی استان ها");
-        sheet.setRightToLeft(true);
-        sheet.setDefaultRowHeight((short) 450);
-
-        Row row1 = sheet.createRow(0);
-        setDateHeader(
-            wb, row1, 0,
-            "از تاریخ " + dateTimeRange.dateMin.formatter().getDatePersian() + "\n"
-                + "تا تاریخ " + dateTimeRange.dateMax.formatter().getDatePersian()
-        );
-
-        Row row2 = sheet.createRow(1);
-
-        sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
-
-        int firstRow = 0;
-        int lastRow = 0;
-        int firstCol = 1;
-        int lastCol = 0;
-
-        setProvinceHeader(wb, row1, firstCol, "آمار تجمیعی  استان ها");
-
-        for (String title : result.statisticTitles) {
-            setStatisticsHeader(wb, row2, ++lastCol, title);
-        }
-
-        sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
-        firstCol += result.statisticTitles.size();
-
-        int r = 1;
-        for (Map.Entry<String, QuestionStatistics> e : result.statistics.entrySet()) {
-            int c = 0;
-            Row row = sheet.createRow(++r);
-
-            String provinceName = e.getKey();
-            setContractor(wb, row, c, provinceName);
-
-            QuestionStatistics s = e.getValue();
-
-            int t = s.totalAuditCount;
-            setTotalAudit(wb, row, ++c).setCellValue(t);
-
-            setDataCell(wb, row, ++c).setCellValue(s.totalCritical);
-            setDataCell(wb, row, ++c).setCellValue(Math.round((s.totalCritical * 100.0 / t) * 100.0) / 100.0);
-
-            setDataCell(wb, row, ++c).setCellValue(s.totalMajor);
-            setDataCell(wb, row, ++c).setCellValue(Math.round((s.totalMajor * 100.0 / t) * 100.0) / 100.0);
-
-            setDataCell(wb, row, ++c).setCellValue(s.totalSafe);
-            setDataCell(wb, row, ++c).setCellValue(s.totalUnsafe);
-
-            int statusIndex;
-            String statusValue;
-            double unsafePercent = s.totalUnsafe * 100 / (double) s.totalAuditCount;
-            if (unsafePercent < UN_SAFE_PERCENT_1) {
-                statusIndex = 1;
-                statusValue = "ایمن";
-            } else if (unsafePercent < UN_SAFE_PERCENT_2) {
-                statusIndex = 2;
-                statusValue = "ناایمن";
-            } else if (unsafePercent < UN_SAFE_PERCENT_3) {
-                statusIndex = 3;
-                statusValue = "بسیار ناایمن";
-            } else {
-                statusIndex = 4;
-                statusValue = "بسیار بسیار ناایمن";
-            }
-            setStatus(wb, row, ++c, statusIndex).setCellValue(statusValue);
-        }
-
-
-        for (int i = 0 ; i < firstCol ; ++i) {
-            sheet.autoSizeColumn(i);
-        }
-        sheet.setColumnWidth(0, 60 * 256);
-        sheet.setColumnWidth(1, 18 * 256);
-        sheet.setColumnWidth(8, 23 * 256);
-
-        // per province
-        for (Map.Entry<String, QuestionStatistics> e : result.statistics.entrySet()) {
-            String provinceName = e.getKey();
-            sheet = wb.createSheet(provinceName);
+            // total
+            Sheet sheet = wb.createSheet("آمار کلی استان ها");
             sheet.setRightToLeft(true);
             sheet.setDefaultRowHeight((short) 450);
 
-            QuestionStatistics stats = e.getValue();
-
-            row1 = sheet.createRow(0);
+            Row row1 = sheet.createRow(0);
             setDateHeader(
                 wb, row1, 0,
                 "از تاریخ " + dateTimeRange.dateMin.formatter().getDatePersian() + "\n"
                     + "تا تاریخ " + dateTimeRange.dateMax.formatter().getDatePersian()
             );
-            row2 = sheet.createRow(1);
+
+            Row row2 = sheet.createRow(1);
 
             sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
 
-            firstRow = 0;
-            lastRow = 0;
-            firstCol = 1;
-            lastCol = 0;
+            int firstRow = 0;
+            int lastRow = 0;
+            int firstCol = 1;
+            int lastCol = 0;
 
-            setProvinceHeader(wb, row1, firstCol, provinceName);
+            setProvinceHeader(wb, row1, firstCol, "آمار تجمیعی  استان ها");
 
             for (String title : result.statisticTitles) {
                 setStatisticsHeader(wb, row2, ++lastCol, title);
@@ -155,31 +71,31 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
             sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
             firstCol += result.statisticTitles.size();
 
-            r = 1;
-            for (Map.Entry<String, QuestionStatistics.Statistics> entry : stats.statistics.entrySet()) {
+            int r = 1;
+            for (Map.Entry<String, QuestionStatistics> e : result.statistics.entrySet()) {
                 int c = 0;
                 Row row = sheet.createRow(++r);
 
-                String subContractorName = entry.getKey();
-                setContractor(wb, row, c, subContractorName);
+                String provinceName = e.getKey();
+                setContractor(wb, row, c, provinceName);
 
-                QuestionStatistics.Statistics s = entry.getValue();
+                QuestionStatistics s = e.getValue();
 
-                int t = s.auditCount;
+                int t = s.totalAuditCount;
                 setTotalAudit(wb, row, ++c).setCellValue(t);
 
-                setDataCell(wb, row, ++c).setCellValue(s.critical);
-                setDataCell(wb, row, ++c).setCellValue(Math.round((s.critical * 100.0 / t) * 100.0) / 100.0);
+                setDataCell(wb, row, ++c).setCellValue(s.totalCritical);
+                setDataCell(wb, row, ++c).setCellValue(Math.round((s.totalCritical * 100.0 / t) * 100.0) / 100.0);
 
-                setDataCell(wb, row, ++c).setCellValue(s.major);
-                setDataCell(wb, row, ++c).setCellValue(Math.round((s.major * 100.0 / t) * 100.0) / 100.0);
+                setDataCell(wb, row, ++c).setCellValue(s.totalMajor);
+                setDataCell(wb, row, ++c).setCellValue(Math.round((s.totalMajor * 100.0 / t) * 100.0) / 100.0);
 
-                setDataCell(wb, row, ++c).setCellValue(s.safe);
-                setDataCell(wb, row, ++c).setCellValue(s.unsafe);
+                setDataCell(wb, row, ++c).setCellValue(s.totalSafe);
+                setDataCell(wb, row, ++c).setCellValue(s.totalUnsafe);
 
                 int statusIndex;
                 String statusValue;
-                double unsafePercent = s.unsafe * 100 / (double) s.auditCount;
+                double unsafePercent = s.totalUnsafe * 100 / (double) s.totalAuditCount;
                 if (unsafePercent < UN_SAFE_PERCENT_1) {
                     statusIndex = 1;
                     statusValue = "ایمن";
@@ -196,28 +112,115 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
                 setStatus(wb, row, ++c, statusIndex).setCellValue(statusValue);
             }
 
+
             for (int i = 0 ; i < firstCol ; ++i) {
                 sheet.autoSizeColumn(i);
             }
             sheet.setColumnWidth(0, 60 * 256);
             sheet.setColumnWidth(1, 18 * 256);
-            sheet.setColumnWidth(8, 18 * 256);
-        }
+            sheet.setColumnWidth(8, 23 * 256);
 
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=assigned-"
-            + ("observation-province-" + new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
+            // per province
+            for (Map.Entry<String, QuestionStatistics> e : result.statistics.entrySet()) {
+                String provinceName = e.getKey();
+                sheet = wb.createSheet(provinceName);
+                sheet.setRightToLeft(true);
+                sheet.setDefaultRowHeight((short) 450);
 
-        try {
+                QuestionStatistics stats = e.getValue();
+
+                row1 = sheet.createRow(0);
+                setDateHeader(
+                    wb, row1, 0,
+                    "از تاریخ " + dateTimeRange.dateMin.formatter().getDatePersian() + "\n"
+                        + "تا تاریخ " + dateTimeRange.dateMax.formatter().getDatePersian()
+                );
+                row2 = sheet.createRow(1);
+
+                sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
+
+                firstRow = 0;
+                lastRow = 0;
+                firstCol = 1;
+                lastCol = 0;
+
+                setProvinceHeader(wb, row1, firstCol, provinceName);
+
+                for (String title : result.statisticTitles) {
+                    setStatisticsHeader(wb, row2, ++lastCol, title);
+                }
+
+                sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+                firstCol += result.statisticTitles.size();
+
+                r = 1;
+                for (Map.Entry<String, QuestionStatistics.Statistics> entry : stats.statistics.entrySet()) {
+                    int c = 0;
+                    Row row = sheet.createRow(++r);
+
+                    String subContractorName = entry.getKey();
+                    setContractor(wb, row, c, subContractorName);
+
+                    QuestionStatistics.Statistics s = entry.getValue();
+
+                    int t = s.auditCount;
+                    setTotalAudit(wb, row, ++c).setCellValue(t);
+
+                    setDataCell(wb, row, ++c).setCellValue(s.critical);
+                    setDataCell(wb, row, ++c).setCellValue(Math.round((s.critical * 100.0 / t) * 100.0) / 100.0);
+
+                    setDataCell(wb, row, ++c).setCellValue(s.major);
+                    setDataCell(wb, row, ++c).setCellValue(Math.round((s.major * 100.0 / t) * 100.0) / 100.0);
+
+                    setDataCell(wb, row, ++c).setCellValue(s.safe);
+                    setDataCell(wb, row, ++c).setCellValue(s.unsafe);
+
+                    int statusIndex;
+                    String statusValue;
+                    double unsafePercent = s.unsafe * 100 / (double) s.auditCount;
+                    if (unsafePercent < UN_SAFE_PERCENT_1) {
+                        statusIndex = 1;
+                        statusValue = "ایمن";
+                    } else if (unsafePercent < UN_SAFE_PERCENT_2) {
+                        statusIndex = 2;
+                        statusValue = "ناایمن";
+                    } else if (unsafePercent < UN_SAFE_PERCENT_3) {
+                        statusIndex = 3;
+                        statusValue = "بسیار ناایمن";
+                    } else {
+                        statusIndex = 4;
+                        statusValue = "بسیار بسیار ناایمن";
+                    }
+                    setStatus(wb, row, ++c, statusIndex).setCellValue(statusValue);
+                }
+
+                for (int i = 0 ; i < firstCol ; ++i) {
+                    sheet.autoSizeColumn(i);
+                }
+                sheet.setColumnWidth(0, 60 * 256);
+                sheet.setColumnWidth(1, 18 * 256);
+                sheet.setColumnWidth(8, 18 * 256);
+            }
+
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=assigned-"
+                + ("observation-province-" + new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
+
             wb.write(response.getOutputStream());
-            wb.close();
         } catch (IOException e) {
             log.error("", e);
             throw new ServerException(AppLangKey.EXPORT_FAIL);
+        } finally {
+            try {
+                response.flushBuffer();
+                response.getOutputStream().close();
+            } catch (IOException ignore) {
+
+            }
         }
     }
 
-    public static void outputAggregate(Params params, HttpServletResponse response)
+    public void outputAggregate(Params params, HttpServletResponse response)
         throws InputException, NoContentException, ServerException {
 
         DateTimeRange dateTimeRange = params.getDateTimeRange("from", "to");
@@ -420,49 +423,49 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         }
     }
 
-    private static void setDateHeader(Workbook wb, Row row, int col, String value) {
+    private void setDateHeader(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleDateHeader(wb));
         cell.setCellValue(StringUtil.replace(value, '-', '/'));
     }
 
-    private static void setProvinceHeader(Workbook wb, Row row, int col, String value) {
+    private void setProvinceHeader(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleProvinceHeader(wb));
         cell.setCellValue(value);
     }
 
-    private static void setStatisticsHeader(Workbook wb, Row row, int col, String value) {
+    private void setStatisticsHeader(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleStatisticsHeader(wb));
         cell.setCellValue(value);
     }
 
-    private static void setContractor(Workbook wb, Row row, int col, String value) {
+    private void setContractor(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleQuestion(wb));
         cell.setCellValue(value);
     }
 
-    private static Cell setTotalAudit(Workbook wb, Row row, int col) {
+    private Cell setTotalAudit(Workbook wb, Row row, int col) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleTotalAudit(wb));
         return cell;
     }
 
-    private static Cell setStatus(Workbook wb, Row row, int col, int s) {
+    private Cell setStatus(Workbook wb, Row row, int col, int s) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleStatus(wb, s));
         return cell;
     }
 
-    private static Cell setDataCell(Workbook wb, Row row, int col) {
+    private Cell setDataCell(Workbook wb, Row row, int col) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleDataCell(wb));
         return cell;
     }
 
-    private static CellStyle getCellStyleDateHeader(Workbook workbook) {
+    private CellStyle getCellStyleDateHeader(Workbook workbook) {
         CellStyle style = styles.get("d");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -480,7 +483,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleProvinceHeader(Workbook workbook) {
+    private CellStyle getCellStyleProvinceHeader(Workbook workbook) {
         CellStyle style = styles.get("p");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -498,7 +501,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleStatisticsHeader(Workbook workbook) {
+    private CellStyle getCellStyleStatisticsHeader(Workbook workbook) {
         CellStyle style = styles.get("s");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -516,7 +519,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleQuestion(Workbook workbook) {
+    private CellStyle getCellStyleQuestion(Workbook workbook) {
         CellStyle style = styles.get("q");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -534,7 +537,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleTotalAudit(Workbook workbook) {
+    private CellStyle getCellStyleTotalAudit(Workbook workbook) {
         CellStyle style = styles.get("tq");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -552,7 +555,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleDataCell(Workbook workbook) {
+    private CellStyle getCellStyleDataCell(Workbook workbook) {
         CellStyle style = styles.get("ce");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -570,7 +573,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleStatus(Workbook workbook, int status) {
+    private CellStyle getCellStyleStatus(Workbook workbook, int status) {
         CellStyle style = styles.get("st" + status);
         if (style == null) {
             style = workbook.createCellStyle();
@@ -599,7 +602,7 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
         return style;
     }
 
-    private static void setFont(Workbook workbook, CellStyle style, Short size, boolean bold) {
+    private void setFont(Workbook workbook, CellStyle style, Short size, boolean bold) {
         Font font = workbook.createFont();
         font.setBold(bold);
         font.setFontName("B Mitra");

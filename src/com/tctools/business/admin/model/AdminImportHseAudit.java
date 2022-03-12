@@ -18,7 +18,6 @@ import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.apache.poi.ss.usermodel.*;
-import org.slf4j.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.*;
@@ -28,191 +27,189 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AdminImportHseAudit {
 
-    private static final Logger log = LoggerFactory.getLogger(AdminImportHseAudit.class);
-
-
     // done work probably deprecated
     public static void work(Params params, HttpServletResponse response) throws FinishException {
-        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+        try (Params.Uploaded uploaded = params.upload("file")) {
+            WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
-        if (!params.contains("f")) {
-            ui.beginUploadForm()
-                .addFile(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "file")
-                .addEmptyLine()
-                .addSubmit(Locale.getString(VantarKey.ADMIN_IMPORT))
-                .finish();
-            return;
-        }
-
-        Map<Integer, HseAuditQuestion> questions = new HashMap<>();
-        try {
-            for (HseAuditQuestion q : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
-                questions.put(q.order, q);
-            }
-        } catch (ServiceException e) {
-            ui.addErrorMessage(e);
-            return;
-        }
-
-        String filepath = FileUtil.getTempFilename();
-        Params.Uploaded uploaded = params.upload("file");
-        uploaded.moveTo(filepath);
-
-        Workbook wb;
-        try {
-            FileInputStream inputStream = new FileInputStream(filepath);
-            wb = WorkbookFactory.create(inputStream);
-        } catch (IOException e) {
-            log.error("!", e);
-            return;
-        }
-
-        Sheet sheet = wb.getSheetAt(0);
-
-        AtomicInteger i = new AtomicInteger(0);
-        sheet.rowIterator().forEachRemaining((cells) -> {
-            i.incrementAndGet();
-            if (i.get() < 2) {
+            if (!params.contains("f")) {
+                ui.beginUploadForm()
+                    .addFile(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "file")
+                    .addEmptyLine()
+                    .addSubmit(Locale.getString(VantarKey.ADMIN_IMPORT))
+                    .finish();
                 return;
             }
-            HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-            QueryBuilder q = new QueryBuilder(flow);
-            String siteCode = cells.getCell(4).getStringCellValue().toUpperCase();
-            q.condition().equal("site.code", siteCode);
+
+            Map<Integer, HseAuditQuestion> questions = new HashMap<>();
             try {
-                List<Dto> flows = CommonRepoMongo.getData(q);
-                if (flows.size() != 1) {
-                    ui.addErrorMessage(siteCode + ": " + flows.size() + " items found!").write();
+                for (HseAuditQuestion q : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
+                    questions.put(q.order, q);
+                }
+            } catch (ServiceException e) {
+                ui.addErrorMessage(e);
+                return;
+            }
+
+            String filepath = FileUtil.getTempFilename();
+            uploaded.moveTo(filepath);
+
+            Workbook wb;
+            try {
+                FileInputStream inputStream = new FileInputStream(filepath);
+                wb = WorkbookFactory.create(inputStream);
+            } catch (IOException e) {
+                Admin.log.error("!", e);
+                return;
+            }
+
+            Sheet sheet = wb.getSheetAt(0);
+
+            AtomicInteger i = new AtomicInteger(0);
+            sheet.rowIterator().forEachRemaining((cells) -> {
+                i.incrementAndGet();
+                if (i.get() < 2) {
                     return;
                 }
-                flow = (HseAuditQuestionnaire) flows.get(0);
-            } catch (DatabaseException e) {
-                ui.addErrorMessage(e).write();
-                return;
-            } catch (NoContentException e) {
-                ui.addErrorMessage(siteCode + ": no data").write();
-                return;
-            }
-
-            boolean addState = flow.lastState != HseAuditFlowState.Approved;
-
-            try {
-                flow.auditDateTime = new DateTime("13" + StringUtil.replace(cells.getCell(1).getStringCellValue(), '.', '-'));
-            } catch (DateTimeException e) {
-                ui.addErrorMessage("! invalid date : " + cells.getCell(1).getStringCellValue());
-            }
-
-            flow.assigneeId = getUserId(cells.getCell(6).getStringCellValue());
-            flow.subContractorId = getContractorId(cells.getCell(5).getStringCellValue());
-
-            try {
-                flow.activity = HseAuditActivity.valueOf(StringUtil.remove(cells.getCell(7).getStringCellValue(), ' '));
-            } catch (Exception e) {
-                ui.addErrorMessage("! invalid activity : " + cells.getCell(7).getStringCellValue());
-            }
-
-            if (flow.assigneeId == null) {
-                ui.addErrorMessage("! assignee not exists : " + cells.getCell(6).getStringCellValue());
-                return;
-            }
-            if (flow.subContractorId == null) {
-                ui.addErrorMessage("! sub contractor not exists : " + cells.getCell(5).getStringCellValue());
-                return;
-            }
-
-            flow.criticalNoCount = ((Number) cells.getCell(14).getNumericCellValue()).intValue();
-            flow.majorNoCount = ((Number) cells.getCell(15).getNumericCellValue()).intValue();
-            flow.minorNoCount = ((Number) cells.getCell(16).getNumericCellValue()).intValue();
-
-            String supervisor = cells.getCell(9).getStringCellValue(); //73
-            String climbers = cells.getCell(10).getStringCellValue(); // 9
-            String employees = cells.getCell(11).getStringCellValue(); // 11
-
-            flow.answers = new ArrayList<>();
-
-            for (int k = 1; k < 13; ++k) {
-                HseAuditQuestion question = questions.get(k);
-                if (question == null) {
-                    continue;
+                HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
+                QueryBuilder q = new QueryBuilder(flow);
+                String siteCode = cells.getCell(4).getStringCellValue().toUpperCase();
+                q.condition().equal("site.code", siteCode);
+                try {
+                    List<Dto> flows = CommonRepoMongo.getData(q);
+                    if (flows.size() != 1) {
+                        ui.addErrorMessage(siteCode + ": " + flows.size() + " items found!").write();
+                        return;
+                    }
+                    flow = (HseAuditQuestionnaire) flows.get(0);
+                } catch (DatabaseException e) {
+                    ui.addErrorMessage(e).write();
+                    return;
+                } catch (NoContentException e) {
+                    ui.addErrorMessage(siteCode + ": no data").write();
+                    return;
                 }
-                HseAuditAnswer answer = new HseAuditAnswer();
-                answer.questionId = question.id;
-                answer.question = question;
-                flow.answers.add(answer);
-            }
 
-            for (int k = 13, m = 17; k <= 77; k+=2, ++m) {
-                HseAuditQuestion question = questions.get(k);
+                boolean addState = flow.lastState != HseAuditFlowState.Approved;
 
-                if (k == 73) {
+                try {
+                    flow.auditDateTime = new DateTime("13" + StringUtil.replace(cells.getCell(1).getStringCellValue(), '.', '-'));
+                } catch (DateTimeException e) {
+                    ui.addErrorMessage("! invalid date : " + cells.getCell(1).getStringCellValue());
+                }
+
+                flow.assigneeId = getUserId(cells.getCell(6).getStringCellValue());
+                flow.subContractorId = getContractorId(cells.getCell(5).getStringCellValue());
+
+                try {
+                    flow.activity = HseAuditActivity.valueOf(StringUtil.remove(cells.getCell(7).getStringCellValue(), ' '));
+                } catch (Exception e) {
+                    ui.addErrorMessage("! invalid activity : " + cells.getCell(7).getStringCellValue());
+                }
+
+                if (flow.assigneeId == null) {
+                    ui.addErrorMessage("! assignee not exists : " + cells.getCell(6).getStringCellValue());
+                    return;
+                }
+                if (flow.subContractorId == null) {
+                    ui.addErrorMessage("! sub contractor not exists : " + cells.getCell(5).getStringCellValue());
+                    return;
+                }
+
+                flow.criticalNoCount = ((Number) cells.getCell(14).getNumericCellValue()).intValue();
+                flow.majorNoCount = ((Number) cells.getCell(15).getNumericCellValue()).intValue();
+                flow.minorNoCount = ((Number) cells.getCell(16).getNumericCellValue()).intValue();
+
+                String supervisor = cells.getCell(9).getStringCellValue(); //73
+                String climbers = cells.getCell(10).getStringCellValue(); // 9
+                String employees = cells.getCell(11).getStringCellValue(); // 11
+
+                flow.answers = new ArrayList<>();
+
+                for (int k = 1; k < 13; ++k) {
+                    HseAuditQuestion question = questions.get(k);
+                    if (question == null) {
+                        continue;
+                    }
                     HseAuditAnswer answer = new HseAuditAnswer();
                     answer.questionId = question.id;
                     answer.question = question;
                     flow.answers.add(answer);
-                    continue;
                 }
 
-                String v;
+                for (int k = 13, m = 17; k <= 77; k += 2, ++m) {
+                    HseAuditQuestion question = questions.get(k);
+
+                    if (k == 73) {
+                        HseAuditAnswer answer = new HseAuditAnswer();
+                        answer.questionId = question.id;
+                        answer.question = question;
+                        flow.answers.add(answer);
+                        continue;
+                    }
+
+                    String v;
+                    try {
+                        v = cells.getCell(m).getStringCellValue();
+                    } catch (IllegalStateException e) {
+                        v = Integer.toString(new Double(cells.getCell(m).getNumericCellValue()).intValue());
+                    }
+
+                    HseAuditAnswer answer = new HseAuditAnswer();
+
+                    answer.questionId = question.id;
+                    answer.question = question;
+                    if (v.equals("1")) {
+                        answer.answer = HseAuditAnswerOption.Yes;
+                    } else if (v.equals("0")) {
+                        answer.answer = HseAuditAnswerOption.No;
+                    } else {
+                        answer.answer = HseAuditAnswerOption.NA;
+                    }
+                    flow.answers.add(answer);
+                }
+
+                flow.assignorId = 1L;
+                flow.lastState = HseAuditFlowState.Approved;
+                flow.lastStateDateTime = flow.auditDateTime;
+                flow.assignDateTime = flow.lastStateDateTime;
+                flow.scheduledDateTimeFrom = flow.lastStateDateTime;
+                flow.scheduledDateTimeTo = flow.lastStateDateTime;
+                flow.auditDateTime = flow.lastStateDateTime;
+
+                if (flow.state == null) {
+                    flow.state = new ArrayList<>();
+                }
+
+                if (addState) {
+                    State state = new State();
+                    state.dateTime = flow.lastStateDateTime;
+                    state.state = HseAuditFlowState.Planned;
+                    state.userId = 1L;
+                    flow.state.add(state);
+
+                    state = new State();
+                    state.dateTime = flow.lastStateDateTime;
+                    state.state = HseAuditFlowState.Completed;
+                    state.userId = flow.assigneeId;
+                    flow.state.add(state);
+
+                    state = new State();
+                    state.dateTime = flow.lastStateDateTime;
+                    state.state = HseAuditFlowState.Approved;
+                    state.userId = 1L;
+                    flow.state.add(state);
+                }
                 try {
-                    v = cells.getCell(m).getStringCellValue();
-                } catch (IllegalStateException e) {
-                    v = Integer.toString(new Double(cells.getCell(m).getNumericCellValue()).intValue());
+                    CommonRepoMongo.update(flow);
+                    ui.addMessage("Inserted : " + flow.site.code);
+                } catch (DatabaseException e) {
+                    ui.addErrorMessage(e);
                 }
+            });
 
-                HseAuditAnswer answer = new HseAuditAnswer();
-
-                answer.questionId = question.id;
-                answer.question = question;
-                if (v.equals("1")) {
-                    answer.answer = HseAuditAnswerOption.Yes;
-                } else if (v.equals("0")) {
-                    answer.answer = HseAuditAnswerOption.No;
-                } else {
-                    answer.answer = HseAuditAnswerOption.NA;
-                }
-                flow.answers.add(answer);
-            }
-
-            flow.assignorId = 1L;
-            flow.lastState = HseAuditFlowState.Approved;
-            flow.lastStateDateTime = flow.auditDateTime;
-            flow.assignDateTime = flow.lastStateDateTime;
-            flow.scheduledDateTimeFrom = flow.lastStateDateTime;
-            flow.scheduledDateTimeTo = flow.lastStateDateTime;
-            flow.auditDateTime = flow.lastStateDateTime;
-
-            if (flow.state == null) {
-                flow.state = new ArrayList<>();
-            }
-
-            if (addState) {
-                State state = new State();
-                state.dateTime = flow.lastStateDateTime;
-                state.state = HseAuditFlowState.Planned;
-                state.userId = 1L;
-                flow.state.add(state);
-
-                state = new State();
-                state.dateTime = flow.lastStateDateTime;
-                state.state = HseAuditFlowState.Completed;
-                state.userId = flow.assigneeId;
-                flow.state.add(state);
-
-                state = new State();
-                state.dateTime = flow.lastStateDateTime;
-                state.state = HseAuditFlowState.Approved;
-                state.userId = 1L;
-                flow.state.add(state);
-            }
-            try {
-                CommonRepoMongo.update(flow);
-                ui.addMessage("Inserted : " + flow.site.code);
-            } catch (DatabaseException e) {
-                ui.addErrorMessage(e);
-            }
-        });
-
-        ui.finish();
+            ui.finish();
+        }
     }
 
     private static Long getUserId(String name) {

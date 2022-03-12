@@ -69,7 +69,7 @@ public class ExportController extends RouteToMethod {
     @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricReportWavecontrolExcel(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
-        ExportWaveControl.excel(params, response);
+        new ExportWaveControl().excel(params, response);
     }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})

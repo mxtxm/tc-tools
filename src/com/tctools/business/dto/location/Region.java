@@ -3,7 +3,6 @@ package com.tctools.business.dto.location;
 import com.vantar.database.dto.*;
 import java.util.Map;
 
-// منطقه
 @Cache
 @Mongo
 public class Region extends DtoBase {

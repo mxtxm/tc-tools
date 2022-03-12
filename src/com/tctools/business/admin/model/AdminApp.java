@@ -3,7 +3,7 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.*;
+import com.vantar.admin.model.AdminData;
 import com.vantar.database.dto.Dto;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
@@ -11,13 +11,13 @@ import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.util.file.FileUtil;
 import com.vantar.web.Params;
-import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 
 public class AdminApp {
 
-    static {
-        AdminData.event = new AdminData.Event() {
+    public static AdminData.Event getAdminDataEvent() {
+        return new AdminData.Event() {
             @Override
             public void beforeInsert(Dto dto) {
 
@@ -60,28 +60,24 @@ public class AdminApp {
         };
     }
 
-    public static void setTitle() {
-        Admin.appTitle = Locale.getString(AppLangKey.APP_TITLE);
-    }
-
-    public static void extendMenu(Params params) {
+    public static void extendMenu(Params params, Map<String, String> menu) {
         try {
             if (Services.get(ServiceAuth.class).hasAccess(params, Role.MANAGER)) {
-                Admin.menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
+                menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
             }
         } catch (ServiceException ignore) {
 
         }
 
-        Admin.menu.put(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), "/admin/image/browse");
-        Admin.menu.put("Tools", "/admin/tools/index");
+        menu.put(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), "/admin/image/browse");
+        menu.put("Tools", "/admin/tools/index");
     }
 
-    public static void extendMonitoringLinks() {
+    public static void extendShortcuts(Params params, Map<String, List<String>> shortcuts) {
 
     }
 
-    public static void extendShortcuts() {
+    public static void extendMonitoringLinks(Map<String, List<String>> links) {
 
     }
 
@@ -96,9 +92,5 @@ public class AdminApp {
         FileUtil.makeDirectory("/opt/tc-tools/files/radiometric/");
         FileUtil.makeDirectory("/opt/tc-tools/files/temp/");
         FileUtil.makeDirectory("/opt/tc-tools/files/user/");
-    }
-
-    public static void index(Params params, HttpServletResponse response) {
-
     }
 }

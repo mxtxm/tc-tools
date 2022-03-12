@@ -1,6 +1,7 @@
 package com.tctools.web.ui.location;
 
 import com.tctools.business.model.location.ProvinceModel;
+import com.vantar.exception.*;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ProvinceController extends RouteToMethod {
 
-    public void provincesGet(Params params, HttpServletResponse response) {
+    public void provincesGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, ProvinceModel.getAll(params));
     }
 

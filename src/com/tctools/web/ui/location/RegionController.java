@@ -1,6 +1,7 @@
 package com.tctools.web.ui.location;
 
 import com.tctools.business.model.location.RegionModel;
+import com.vantar.exception.*;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class RegionController extends RouteToMethod {
 
-    public void regionsGet(Params params, HttpServletResponse response) {
+    public void regionsGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, RegionModel.getAll(params));
     }
 

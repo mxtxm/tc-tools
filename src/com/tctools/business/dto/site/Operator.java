@@ -9,8 +9,8 @@ public class Operator extends DtoBase {
 
     public Long id;
 
-    @com.vantar.database.dto.Localized
     @Required
+    @com.vantar.database.dto.Localized
     public Map<String, String> name;
 
 

@@ -3,7 +3,6 @@ package com.tctools.business.dto.site;
 import com.vantar.database.dto.*;
 import java.util.Map;
 
-// وضعیت SHARE بودن با دیگر اپراتورها
 @Cache
 @Mongo
 public class BtsShare extends DtoBase {

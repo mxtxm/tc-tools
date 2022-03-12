@@ -6,7 +6,7 @@ import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.SendMessage;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -113,7 +113,7 @@ public class Assigning {
                 );
             }
 
-            return new ResponseMessage(VantarKey.INSERT_SUCCESS, complainToUpdate.workFlowId);
+            return ResponseMessage.success(VantarKey.INSERT_SUCCESS, complainToUpdate.workFlowId);
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.INSERT_FAIL);
         }
@@ -164,7 +164,7 @@ public class Assigning {
             throw new ServerException(VantarKey.UPDATE_FAIL);
         }
 
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
     }
 
     public static ResponseMessage assignRemove(Params params, User remover) throws InputException, ServerException, NoContentException {
@@ -194,7 +194,7 @@ public class Assigning {
             } catch (DatabaseException e) {
                 throw new ServerException(VantarKey.FETCH_FAIL);
             }
-            return new ResponseMessage(VantarKey.DELETE_SUCCESS);
+            return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
         }
 
         flow.setNullProperties("assigneeId", "assignorId", "assignDateTime", "measurementDateTime");
@@ -213,11 +213,6 @@ public class Assigning {
         state.assigneeName = assignee.fullName;
         flow.state.add(state);
 
-        try {
-            CommonRepoMongo.update(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+        return CommonModelMongo.update(flow);
     }
 }

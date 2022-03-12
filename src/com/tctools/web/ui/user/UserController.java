@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController extends RouteToMethod {
 
     public void usersGetRoles(Params params, HttpServletResponse response) throws AuthException, ServiceException {
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER);
+        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
         Response.writeJson(
             response,
             user.role.equals(Role.MANAGER) ?
@@ -52,32 +52,32 @@ public class UserController extends RouteToMethod {
         Response.writeJson(response, UserModel.getUserById(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void usersAll(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         Response.writeJson(response, UserModel.getAll(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void usersAllKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         Response.writeJson(response, UserModel.getAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void usersTechniciansGet(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         Response.writeJson(response, UserModel.getTechnicians(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void usersTechniciansKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         Response.writeJson(response, UserModel.getTechniciansAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void usersAcTechniciansKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
         Response.writeJson(response, UserModel.getAcTechniciansAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void userInsert(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
         Response.writeJson(response, UserModel.insert(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
@@ -87,7 +87,7 @@ public class UserController extends RouteToMethod {
         Response.writeJson(response, UserModel.update(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void userDelete(Params params, HttpServletResponse response) throws InputException, ServerException {
         Response.writeJson(response, UserModel.delete(params));
     }

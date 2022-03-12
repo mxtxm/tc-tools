@@ -18,25 +18,25 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ReportController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void radioMetricStateAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.stateAggregate());
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void radioMetricProvinceAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.provinceAudit());
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void radioMetricUsersDoneAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.usersDoneAggregate(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
     public void radioMetricUserDoneAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.userDoneAggregate(params));

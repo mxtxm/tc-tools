@@ -20,7 +20,7 @@
     padding: 0;
     border: 0;
     outline: 0;
-    vertical-align: middle;
+    vertical-align: baseline;
     background: transparent;
     font-family: IranianSans, Lato, Helvetica, Arial, sans-serif;
     font-size: 13px;
@@ -190,6 +190,7 @@ textarea.small {
 input[type='checkbox'] {
     width: 15px;
     height: 15px;
+    vertical-align: middle!important;
 }
 
 .box {
@@ -206,7 +207,7 @@ table {
 }
 
 table, table * {
-    vertical-align: middle;
+    vertical-align: baseline;
 }
 
 td.label {
@@ -230,12 +231,14 @@ td. {
 
 td.option {
     width: 40px;
+    vertical-align: baseline;
 }
 
 td div {
     height: 30px;
     overflow: auto;
     overflow-wrap: break-word;
+    vertical-align: baseline;
 }
 
 .row {
@@ -273,7 +276,7 @@ td div {
 .list td {
     border-bottom: 1px solid #eaeaea;
     padding: 10px;
-    vertical-align: middle;
+    vertical-align: baseline;
     line-height: 160%;
 }
 
@@ -736,4 +739,40 @@ table.form td {
 }
 .log-col-data .description {
     font-size: 10px;
+}
+
+
+
+
+
+.box-content {
+    padding: 7px;
+    margin: 7px;
+    border-top: 1px solid #cccccc;
+    vertical-align: baseline;
+}
+
+.box-content a {
+    padding: 0 10px;
+}
+
+.box-content span {
+    vertical-align: baseline;
+}
+
+.box-content input {
+    margin: 0;
+}
+
+#delete-container {
+    padding: 30px 10px;
+}
+
+#delete-container div {
+    padding: 3px 0;
+}
+
+.delete-option {
+    width: 24px!important;
+    vertical-align: baseline!important;
 }

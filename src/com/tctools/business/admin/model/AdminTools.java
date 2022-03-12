@@ -246,39 +246,41 @@ public class AdminTools {
     }
 
     public static void radiometricTemplates(Params params, HttpServletResponse response) throws FinishException {
-        WebUi ui = Admin.getUi("Radiometric templates", params, response, false);
+        try (Params.Uploaded file = params.upload("file")) {
+            WebUi ui = Admin.getUi("Radiometric templates", params, response, false);
 
-        Params.Uploaded file = params.upload("file");
-        if (file != null && file.isUploaded() && !file.isIoError()) {
-            file.moveTo("/opt/tc-tools/templates/radiometric/site-radiometric.docx");
-            ui.addMessage("uploaded successfully").write();
-            return;
+            if (file != null && file.isUploaded() && !file.isIoError()) {
+                file.moveTo("/opt/tc-tools/templates/radiometric/site-radiometric.docx");
+                ui.addMessage("uploaded successfully").write();
+                return;
+            }
+
+            ui.addLink("site-radiometric.docx", "/admin/tools/radiometric/templates/docx");
+            ui.beginUploadForm();
+            ui.addFile("New template", "file");
+            ui.addSubmit();
+            ui.write();
         }
-
-        ui.addLink("site-radiometric.docx", "/admin/tools/radiometric/templates/docx");
-        ui.beginUploadForm();
-        ui.addFile("New template", "file");
-        ui.addSubmit();
-        ui.write();
     }
 
     public static void signature(Params params, HttpServletResponse response) throws FinishException {
-        WebUi ui = Admin.getUi("User signature", params, response, false);
+        try (Params.Uploaded file = params.upload("file")) {
+            WebUi ui = Admin.getUi("User signature", params, response, false);
 
-        Params.Uploaded file = params.upload("file");
-        if (file != null && file.isUploaded() && !file.isIoError()) {
-            file.moveTo("/opt/tc-tools/files/user/" + file.getOriginalFilename());
-            ui.addMessage("uploaded successfully");
+            if (file != null && file.isUploaded() && !file.isIoError()) {
+                file.moveTo("/opt/tc-tools/files/user/" + file.getOriginalFilename());
+                ui.addMessage("uploaded successfully");
+            }
+
+            ui.beginUploadForm();
+            ui.addMessage("Filename example: 49-signature.jpg");
+            ui.addFile("File", "file");
+            ui.addSubmit();
+
+            drawSignatures(ui);
+
+            ui.write();
         }
-
-        ui.beginUploadForm();
-        ui.addMessage("Filename example: 49-signature.jpg");
-        ui.addFile("File", "file");
-        ui.addSubmit();
-
-        drawSignatures(ui);
-
-        ui.write();
     }
 
     private static void drawSignatures(WebUi ui) {

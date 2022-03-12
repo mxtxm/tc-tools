@@ -26,119 +26,122 @@ import java.util.*;
 public class SignificanceMonth extends ExportCommon {
 
     private static final String LANG = "fa";
-    private static Map<String, CellStyle> styles;
+    private final Map<String, CellStyle> styles = new HashMap<>(10);
 
 
-    private static void toExcel(
+    private void toExcel(
         HttpServletResponse response,
         DateTimeRange dateTimeRange,
         Result result
         ) throws ServerException {
 
-        styles = new HashMap<>(10);
+        try (Workbook wb = new XSSFWorkbook()) {
+            Sheet sheet = wb.createSheet("Critical & Major per month");
+            sheet.setRightToLeft(true);
 
-        Workbook wb = new XSSFWorkbook();
-        Sheet sheet = wb.createSheet("Critical & Major per month");
-        sheet.setRightToLeft(true);
+            Row row1 = sheet.createRow(0);
+            setDateHeader(
+                wb, row1, 0,
+                "از تاریخ " + dateTimeRange.dateMin.formatter().getDatePersian() + "\n"
+                + "تا تاریخ " + dateTimeRange.dateMax.formatter().getDatePersian()
+            );
+            Row row2 = sheet.createRow(1);
 
-        Row row1 = sheet.createRow(0);
-        setDateHeader(
-            wb, row1, 0,
-            "از تاریخ " + dateTimeRange.dateMin.formatter().getDatePersian() + "\n"
-            + "تا تاریخ " + dateTimeRange.dateMax.formatter().getDatePersian()
-        );
-        Row row2 = sheet.createRow(1);
+            sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
 
-        sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
-
-        int firstRow = 0;
-        int lastRow = 0;
-        int firstCol = 1;
-        int lastCol = 0;
-
-        for (ProvinceOrder provinceOrder : result.provinceOrdered) {
-            setProvinceHeader(wb, row1, firstCol, provinceOrder.name);
-
-            for (String title : result.statisticTitles) {
-                setStatisticsHeader(wb, row2, ++lastCol, title);
-            }
-
-            sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
-            firstCol += result.statisticTitles.size();
-        }
-
-        int r = 1;
-        for (Map.Entry<String, SignificanceStatistics> entry : result.significanceStatistics.entrySet()) {
-            int c = 0;
-            Row row = sheet.createRow(++r);
-            setContractor(wb, row, c, entry.getKey());
+            int firstRow = 0;
+            int lastRow = 0;
+            int firstCol = 1;
+            int lastCol = 0;
 
             for (ProvinceOrder provinceOrder : result.provinceOrdered) {
-                SignificanceStatistics.Statistics s = entry.getValue().statistics.get(provinceOrder.name);
+                setProvinceHeader(wb, row1, firstCol, provinceOrder.name);
 
-                int t = s.provinceAuditCount;
-                setTotalAudit(wb, row, ++c, Integer.toString(t));
+                for (String title : result.statisticTitles) {
+                    setStatisticsHeader(wb, row2, ++lastCol, title);
+                }
 
-                setDataCell(wb, row, ++c, Integer.toString(s.critical));
-                setDataCell(wb, row, ++c, Double.toString(
-                    Math.round((s.critical * 100.0 / t) * 100.0) / 100.0
-                ));
-
-                setDataCell(wb, row, ++c, Integer.toString(s.major));
-                setDataCell(wb, row, ++c, Double.toString(
-                    Math.round((s.major * 100.0 / t) * 100.0) / 100.0
-                ));
+                sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+                firstCol += result.statisticTitles.size();
             }
-        }
 
-        // set totals
-        int totalAuditCount = 0;
-        int totalSafe = 0;
-        int totalUnsafe = 0;
-        for (SignificanceStatistics s : result.significanceStatistics.values()) {
-            totalAuditCount += s.totalAuditCount;
-            totalSafe += s.totalSafe;
-            totalUnsafe += s.totalUnsafe;
-        }
+            int r = 1;
+            for (Map.Entry<String, SignificanceStatistics> entry : result.significanceStatistics.entrySet()) {
+                int c = 0;
+                Row row = sheet.createRow(++r);
+                setContractor(wb, row, c, entry.getKey());
+
+                for (ProvinceOrder provinceOrder : result.provinceOrdered) {
+                    SignificanceStatistics.Statistics s = entry.getValue().statistics.get(provinceOrder.name);
+
+                    int t = s.provinceAuditCount;
+                    setTotalAudit(wb, row, ++c, Integer.toString(t));
+
+                    setDataCell(wb, row, ++c, Integer.toString(s.critical));
+                    setDataCell(wb, row, ++c, Double.toString(
+                        Math.round((s.critical * 100.0 / t) * 100.0) / 100.0
+                    ));
+
+                    setDataCell(wb, row, ++c, Integer.toString(s.major));
+                    setDataCell(wb, row, ++c, Double.toString(
+                        Math.round((s.major * 100.0 / t) * 100.0) / 100.0
+                    ));
+                }
+            }
+
+            // set totals
+            int totalAuditCount = 0;
+            int totalSafe = 0;
+            int totalUnsafe = 0;
+            for (SignificanceStatistics s : result.significanceStatistics.values()) {
+                totalAuditCount += s.totalAuditCount;
+                totalSafe += s.totalSafe;
+                totalUnsafe += s.totalUnsafe;
+            }
 
 
 
-        ++r;
-        Row row = sheet.createRow(++r);
-        setDataCell(wb, row, 0, "تعداد کل بازرسی");
-        setDataCell(wb, row, 1, Integer.toString(totalAuditCount));
+            ++r;
+            Row row = sheet.createRow(++r);
+            setDataCell(wb, row, 0, "تعداد کل بازرسی");
+            setDataCell(wb, row, 1, Integer.toString(totalAuditCount));
 
-        row = sheet.createRow(++r);
-        setDataCell(wb, row, 0, "تعداد کل سایت های ایمن");
-        setDataCell(wb, row, 1, Integer.toString(totalSafe));
-        setDataCell(wb, row, 2, Math.round((totalSafe * 100.0 / totalAuditCount) * 100.0) / 100.0 + "%");
+            row = sheet.createRow(++r);
+            setDataCell(wb, row, 0, "تعداد کل سایت های ایمن");
+            setDataCell(wb, row, 1, Integer.toString(totalSafe));
+            setDataCell(wb, row, 2, Math.round((totalSafe * 100.0 / totalAuditCount) * 100.0) / 100.0 + "%");
 
-        row = sheet.createRow(++r);
-        setDataCell(wb, row, 0, "تعداد کل سایت های ناایمن");
-        setDataCell(wb, row, 1, Integer.toString(totalUnsafe));
-        setDataCell(wb, row, 2, Math.round((totalUnsafe * 100.0 / totalAuditCount) * 100.0) / 100.0 + "%");
+            row = sheet.createRow(++r);
+            setDataCell(wb, row, 0, "تعداد کل سایت های ناایمن");
+            setDataCell(wb, row, 1, Integer.toString(totalUnsafe));
+            setDataCell(wb, row, 2, Math.round((totalUnsafe * 100.0 / totalAuditCount) * 100.0) / 100.0 + "%");
 
 
 
-        for (int i = 0 ; i < firstCol ; ++i) {
-            sheet.autoSizeColumn(i);
-        }
-        sheet.setColumnWidth(0, 50 * 256);
+            for (int i = 0 ; i < firstCol ; ++i) {
+                sheet.autoSizeColumn(i);
+            }
+            sheet.setColumnWidth(0, 50 * 256);
 
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=assigned-"
-            + ("observation-province-" + new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=assigned-"
+                + ("observation-province-" + new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
 
-        try {
             wb.write(response.getOutputStream());
-            wb.close();
         } catch (IOException e) {
             log.error("", e);
             throw new ServerException(AppLangKey.EXPORT_FAIL);
+        } finally {
+            try {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+            } catch (IOException ignore) {
+
+            }
         }
     }
 
-    public static void outputAggregate(Params params, HttpServletResponse response)
+    public void outputAggregate(Params params, HttpServletResponse response)
         throws InputException, NoContentException, ServerException {
 
         DateTimeRange dateTimeRange = params.getDateTimeRange("from", "to");
@@ -332,43 +335,43 @@ public class SignificanceMonth extends ExportCommon {
         }
     }
 
-    private static void setDateHeader(Workbook wb, Row row, int col, String value) {
+    private void setDateHeader(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleDateHeader(wb));
         cell.setCellValue(StringUtil.replace(value, '-', '/'));
     }
 
-    private static void setProvinceHeader(Workbook wb, Row row, int col, String value) {
+    private void setProvinceHeader(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleProvinceHeader(wb));
         cell.setCellValue(value);
     }
 
-    private static void setStatisticsHeader(Workbook wb, Row row, int col, String value) {
+    private void setStatisticsHeader(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleStatisticsHeader(wb));
         cell.setCellValue(value);
     }
 
-    private static void setContractor(Workbook wb, Row row, int col, String value) {
+    private void setContractor(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleQuestion(wb));
         cell.setCellValue(value);
     }
 
-    private static void setTotalAudit(Workbook wb, Row row, int col, String value) {
+    private void setTotalAudit(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleTotalAudit(wb));
         cell.setCellValue(value);
     }
 
-    private static void setDataCell(Workbook wb, Row row, int col, String value) {
+    private void setDataCell(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleDataCell(wb));
         cell.setCellValue(value);
     }
 
-    private static CellStyle getCellStyleDateHeader(Workbook workbook) {
+    private CellStyle getCellStyleDateHeader(Workbook workbook) {
         CellStyle style = styles.get("d");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -386,7 +389,7 @@ public class SignificanceMonth extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleProvinceHeader(Workbook workbook) {
+    private CellStyle getCellStyleProvinceHeader(Workbook workbook) {
         CellStyle style = styles.get("p");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -404,7 +407,7 @@ public class SignificanceMonth extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleStatisticsHeader(Workbook workbook) {
+    private CellStyle getCellStyleStatisticsHeader(Workbook workbook) {
         CellStyle style = styles.get("s");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -422,7 +425,7 @@ public class SignificanceMonth extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleQuestion(Workbook workbook) {
+    private CellStyle getCellStyleQuestion(Workbook workbook) {
         CellStyle style = styles.get("q");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -440,7 +443,7 @@ public class SignificanceMonth extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleTotalAudit(Workbook workbook) {
+    private CellStyle getCellStyleTotalAudit(Workbook workbook) {
         CellStyle style = styles.get("tq");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -458,7 +461,7 @@ public class SignificanceMonth extends ExportCommon {
         return style;
     }
 
-    private static CellStyle getCellStyleDataCell(Workbook workbook) {
+    private CellStyle getCellStyleDataCell(Workbook workbook) {
         CellStyle style = styles.get("ce");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -476,7 +479,7 @@ public class SignificanceMonth extends ExportCommon {
         return style;
     }
 
-    private static void setFont(Workbook workbook, CellStyle style, Short size, boolean bold) {
+    private void setFont(Workbook workbook, CellStyle style, Short size, boolean bold) {
         Font font = workbook.createFont();
         font.setBold(bold);
         font.setFontName("B Mitra");
@@ -485,7 +488,7 @@ public class SignificanceMonth extends ExportCommon {
     }
 
 
-    public static List<String> getMonthsBetween(String d1, String d2) {
+    public List<String> getMonthsBetween(String d1, String d2) {
         String[] sp1 = StringUtil.split(d1, StringUtil.contains(d1, '/') ? '/' : '-');
         String[] sp2 = StringUtil.split(d2, StringUtil.contains(d2, '/') ? '/' : '-');
 

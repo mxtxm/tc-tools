@@ -4,7 +4,7 @@ import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.project.map.hseaudit.HseAuditMapFlow;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.query.QueryData;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -86,12 +86,7 @@ public class MapFlowModel {
         flow.assignDateTime = flow.lastStateDateTime;
         flow.state.add(new State(flow.lastState, flow.lastStateDateTime, assignor));
 
-        try {
-            CommonRepoMongo.update(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+        return CommonModelMongo.update(flow);
     }
 
     public static ResponseMessage removeAssign(Params params, User remover) throws InputException, ServerException, NoContentException {
@@ -143,13 +138,7 @@ public class MapFlowModel {
             "isFailed"
         );
 
-        try {
-            CommonRepoMongo.update(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
-
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+        return CommonModelMongo.update(flow);
     }
 
     public static ResponseMessage createChild(Params params) throws InputException, ServerException, NoContentException {
@@ -192,12 +181,6 @@ public class MapFlowModel {
         flow.state = new ArrayList<>();
         flow.state.add(new State(flow.lastState, flow.lastStateDateTime));
 
-        try {
-            CommonRepoMongo.insert(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
-
-        return new ResponseMessage(VantarKey.INSERT_SUCCESS, flow.getId());
+        return CommonModelMongo.insert(flow);
     }
 }

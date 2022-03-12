@@ -54,14 +54,14 @@ public class ComplainController extends RouteToMethod {
         Response.writeJson(response, ComplainModel.assigned(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricComplainAssign(Params params, HttpServletResponse response) throws InputException, ServerException, NoContentException, AuthException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assignComplain(params, user));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricComplainAssignRemove(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException, NoContentException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);

@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 public class PageNotFound extends RouteToMethod {
 
     public void notFound(Params params, HttpServletResponse response) {
-        LogEvent.info(PageNotFound.class, params.getCurrentUrl());
-        Response.notFound(response, "404 Page not found: " + params.getCurrentUrl());
+        String requestedLocation = (String) params.request.getAttribute("javax.servlet.forward.request_uri");
+        LogEvent.info(PageNotFound.class, requestedLocation);
+        Response.notFound(response, "404 Page not found: " + requestedLocation);
     }
 }

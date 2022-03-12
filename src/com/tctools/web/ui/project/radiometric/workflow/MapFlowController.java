@@ -41,7 +41,7 @@ public class MapFlowController extends RouteToMethod {
         Response.writeJson(response, Assigning.assignRemove(params, user));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
     public void radioMetricUpdateMeasurementLocation(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, MapFlowModel.updateSpotLocation(params));

@@ -20,10 +20,9 @@ import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
-import com.vantar.util.object.*;
+import com.vantar.util.object.ClassUtil;
 import com.vantar.util.string.*;
 import com.vantar.web.*;
-import org.slf4j.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 
 public class AdminSiteImport {
 
-    private static final Logger log = LoggerFactory.getLogger(AdminSiteImport.class);
     private static Map<String, String> stringMaps;
     private static Map<String, Long> codeIdMap;
     protected static Set<String> siteCodes;
@@ -170,9 +168,10 @@ public class AdminSiteImport {
             boolean isXlsx;
             String pathX = params.getString("csv-on-server");
             if (pathX == null) {
-                Params.Uploaded uploaded = params.upload("csv");
-                uploaded.moveTo(path);
-                isXlsx = StringUtil.contains(uploaded.getOriginalFilename(), ".xlsx");
+                try (Params.Uploaded uploaded = params.upload("csv")) {
+                    uploaded.moveTo(path);
+                    isXlsx = StringUtil.contains(uploaded.getOriginalFilename(), ".xlsx");
+                }
             } else {
                 path = pathX;
                 isXlsx = StringUtil.contains(path, ".xlsx");
@@ -431,7 +430,7 @@ public class AdminSiteImport {
 
                 List<ValidationError> validationErrors = site.validate(Dto.Action.INSERT);
                 if (validationErrors != null && !validationErrors.isEmpty()) {
-                    log.error("! validation error site not added {} > {}", site.code, validationErrors);
+                    Admin.log.error("! validation error site not added {} > {}", site.code, validationErrors);
                     ui.addErrorMessage("ERROR " + site.code + " > " + ValidationError.toString(validationErrors)).write();
                     continue;
                 }
@@ -460,7 +459,7 @@ public class AdminSiteImport {
 
                     ++recordCount;
                 } catch (DatabaseException | NoContentException e) {
-                    log.error("! unexpected error ({})", site, e);
+                    Admin.log.error("! unexpected error ({})", site, e);
                     ui.addErrorMessage(e).write();
                 }
             }
@@ -483,6 +482,10 @@ public class AdminSiteImport {
         }
 
         removeRemovedSited(ui);
+
+        stringMaps = null;
+        codeIdMap = null;
+        siteCodes = null;
 
         ui.addMessage("Finished! " + recordCount + " took " + ((System.currentTimeMillis() - t1) / 1000 / 60 / 60) + " minutes").finish();
     }
@@ -527,7 +530,7 @@ public class AdminSiteImport {
         } catch (NoContentException e) {
             ui.addMessage("no sites in database");
         } catch (DatabaseException e) {
-            log.error("! error loading sites", e);
+            Admin.log.error("! error loading sites", e);
             ui.addErrorMessage("can not load sites");
         }
     }
@@ -581,10 +584,10 @@ public class AdminSiteImport {
             ui.addMessage(
                 Locale.getString(AppLangKey.ADDED, obj.getClass().getSimpleName(), "(" + id + ") " + values[0])
             ).write();
-            log.warn("! inserted new({}) > {}", obj.getClass().getSimpleName(), values[0]);
+            Admin.log.warn("! inserted new({}) > {}", obj.getClass().getSimpleName(), values[0]);
             return id;
         } catch (Exception e) {
-            log.error("! failed insert ({}, {})", obj.getClass().getSimpleName(), values[0], e);
+            Admin.log.error("! failed insert ({}, {})", obj.getClass().getSimpleName(), values[0], e);
             ui.addErrorMessage(e).write();
             return null;
         }
@@ -648,7 +651,7 @@ public class AdminSiteImport {
                         CommonModelMongo.deleteById(site);
                         ui.addMessage("deleted " + site.code + " from Site");
                     } catch (InputException | ServerException e) {
-                        log.error("! can not delete {}", site);
+                        Admin.log.error("! can not delete {}", site);
                         ui.addErrorMessage(e);
                     }
                 }

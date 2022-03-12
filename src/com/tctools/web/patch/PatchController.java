@@ -46,6 +46,7 @@ public class PatchController extends RouteToMethod {
      * 20 Jan 2022
      * update radiometric sectors omni and directional with site data
      */
+    @Access("ROOT")
     public void fixOmni(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         ui.addMessage("start...").write();
@@ -137,6 +138,7 @@ public class PatchController extends RouteToMethod {
      * 22 aug 2021
      * find missing radiometric records with existing folder
      */
+    @Access("ROOT")
     public void missingRadiometric(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -223,6 +225,7 @@ public class PatchController extends RouteToMethod {
      * 24 aug 2021
      * find radiometric records that stored selected sector not matches calculated selected sector then fix to calculated
      */
+    @Access("ROOT")
     public void invalidSelectedSectorFix(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -293,6 +296,7 @@ public class PatchController extends RouteToMethod {
      * 2 sep 2021
      * find hse records that dont have sub contractor
      */
+    @Access("ROOT")
     public void invalidQuestionnaireNoSubcontractor(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
@@ -316,6 +320,7 @@ public class PatchController extends RouteToMethod {
      * 7 jan 2022
      * find hse records that dont have sub contractor
      */
+    @Access("ROOT")
     public void invalidQuestionnaireMissingSubcontractor(Params params, HttpServletResponse response) throws FinishException, ServiceException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 

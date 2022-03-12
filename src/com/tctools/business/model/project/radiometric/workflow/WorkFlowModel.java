@@ -133,7 +133,7 @@ public class WorkFlowModel {
         for (Long id : ids) {
             updateState(id, RadioMetricFlowState.Completed, user, params.getString("comments"));
         }
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS, ((Number) ids.size()).longValue());
+        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS, ((Number) ids.size()).longValue());
     }
 
     private static ResponseMessage updateState(Long flowId, RadioMetricFlowState state, User user, String comment)
@@ -189,7 +189,7 @@ public class WorkFlowModel {
 
         try {
             CommonRepoMongo.update(flow);
-            return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+            return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.INSERT_FAIL);
         }
@@ -270,7 +270,7 @@ public class WorkFlowModel {
 
         CommonModelMongo.update(flow);
 
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
     }
 
 
@@ -278,7 +278,7 @@ public class WorkFlowModel {
 
 
     public static ResponseMessage measurementSubmit(Params params) throws InputException, ServerException, NoContentException, AuthException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+        Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN, Role.VENDOR);
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
@@ -310,7 +310,7 @@ public class WorkFlowModel {
             throw new InputException(errors);
         }
 
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS, success);
+        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS, success);
     }
 
     private static void setDeviceData(RadioMetricFlow flow) {
@@ -328,7 +328,7 @@ public class WorkFlowModel {
     }
 
     public static Object uploadImages(Params params) throws InputException, NoContentException, ServerException, AuthException {
-        Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN);
+        Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN, Role.VENDOR);
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
@@ -351,7 +351,7 @@ public class WorkFlowModel {
         }
 
         CommonModelMongo.update(flow);
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS, success);
+        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS, success);
     }
 
     private static void uploadImages(Params params, RadioMetricFlow flow, Map<String, Object> success, List<ValidationError> errors) {
@@ -366,60 +366,62 @@ public class WorkFlowModel {
         , Map<String, Object> success, List<ValidationError> errors) {
 
         String key = Param.FILE_UPLOAD + "-" + StringUtil.replace(imageType.toLowerCase(), ' ', '-');
-        Params.Uploaded uploaded = params.upload(key);
-        if (!uploaded.isUploaded() || uploaded.isIoError()) {
-            return;
-        }
+        try (Params.Uploaded uploaded = params.upload(key)) {
+            if (!uploaded.isUploaded() || uploaded.isIoError()) {
+                return;
+            }
 
-        if (!uploaded.isType("jpeg")) {
-            errors.add(new ValidationError(key, VantarKey.FILE_TYPE, "jpeg"));
-            return;
-        }
-        if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
-            errors.add(
-                new ValidationError(
-                    key,
-                    VantarKey.FILE_SIZE,
-                    Param.FILE_IMAGE_MIN_SIZE/1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE/1024 + "KB"
-                )
-            );
-            return;
-        }
+            if (!uploaded.isType("jpeg")) {
+                errors.add(new ValidationError(key, VantarKey.FILE_TYPE, "jpeg"));
+                return;
+            }
+            if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
+                errors.add(
+                    new ValidationError(
+                        key,
+                        VantarKey.FILE_SIZE,
+                        Param.FILE_IMAGE_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE / 1024 + "KB"
+                    )
+                );
+                return;
+            }
 
-        uploaded.moveTo(path);
-        success.put(key, pathToUrl(path));
+            uploaded.moveTo(path);
+            success.put(key, pathToUrl(path));
+        }
     }
 
     private static void applyMeasurement(Params params, String height, RadioMetricFlow flow,
         Map<String, Object> success, List<ValidationError> errors) throws ServerException {
 
         String key = Param.FILE_UPLOAD + "-" + height;
-        Params.Uploaded uploaded = params.upload(key);
-        if (!uploaded.isUploaded() || uploaded.isIoError()) {
-            return;
+        try (Params.Uploaded uploaded = params.upload(key)) {
+            if (!uploaded.isUploaded() || uploaded.isIoError()) {
+                return;
+            }
+
+            //if (!uploaded.isType("csv")) {
+            //    log.error(">>>{}",height);
+            //    errors.add(new ValidationError(key, VantarKey.FILE_TYPE, "csv"));
+            //}
+            if (uploaded.getSize() < Param.FILE_MEASURE_CSV_MIN_SIZE || uploaded.getSize() > Param.FILE_MEASURE_CSV_MAX_SIZE) {
+                errors.add(
+                    new ValidationError(
+                        key,
+                        VantarKey.FILE_SIZE,
+                        Param.FILE_MEASURE_CSV_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_MEASURE_CSV_MAX_SIZE / 1024 + "KB"
+                    )
+                );
+            }
+
+            String path = RadioMetricFlow.getMeasurementPath(flow.site.code, flow.id, height, false, false);
+            uploaded.moveTo(path);
+            success.put(key, pathToUrl(path));
+
+            Measurement.applyCsv(path, flow, height, errors);
+            Measurement.createOkExcel(path);
+            WorkFlowModel.setNearestSector(flow);
         }
-
-        //if (!uploaded.isType("csv")) {
-        //    log.error(">>>{}",height);
-        //    errors.add(new ValidationError(key, VantarKey.FILE_TYPE, "csv"));
-        //}
-        if (uploaded.getSize() < Param.FILE_MEASURE_CSV_MIN_SIZE || uploaded.getSize() > Param.FILE_MEASURE_CSV_MAX_SIZE) {
-            errors.add(
-                new ValidationError(
-                    key,
-                    VantarKey.FILE_SIZE,
-                    Param.FILE_MEASURE_CSV_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_MEASURE_CSV_MAX_SIZE / 1024 + "KB"
-                )
-            );
-        }
-
-        String path = RadioMetricFlow.getMeasurementPath(flow.site.code, flow.id, height, false, false);
-        uploaded.moveTo(path);
-        success.put(key, pathToUrl(path));
-
-        Measurement.applyCsv(path, flow, height, errors);
-        Measurement.createOkExcel(path);
-        WorkFlowModel.setNearestSector(flow);
     }
 
     private static double getAzimuth(Location centerPt, Location targetPt) {
@@ -543,7 +545,7 @@ public class WorkFlowModel {
         }
 
         CommonModelMongo.update(flow);
-        return new ResponseMessage(VantarKey.DELETE_SUCCESS);
+        return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
     }
 
     private static ResponseMessage deleteImageComplain(Long complainId, String path) throws ServerException, InputException {
@@ -586,6 +588,6 @@ public class WorkFlowModel {
             }
         }
 
-        return new ResponseMessage(VantarKey.DELETE_SUCCESS);
+        return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
    }
 }

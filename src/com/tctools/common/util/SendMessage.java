@@ -17,7 +17,7 @@ public class SendMessage {
 
 
     public static void sendSms(String mobile, String message) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>(5);
         params.put("message", message);
         params.put("sender", SMS_SENDER);
         params.put("receptor", mobile);

@@ -32,4 +32,16 @@ $(window).on("load", function () {
         }
         $('#asjson').val(JSON.stringify(x));
     });
+
+    let t = $("#total");
+    t.on("click", function () {
+        let isChecked = t.attr("data-ischecked");
+        if (isChecked === 'y') {
+            $(".delete-check").removeAttr('checked')
+        } else {
+            $(".delete-check").attr('checked', 'checked')
+        }
+        t.attr("data-ischecked", isChecked === 'y' ? 'n' : 'y');
+    });
+
 });

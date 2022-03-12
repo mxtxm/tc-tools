@@ -17,7 +17,6 @@ public class ProjectModel {
     }
 
     public static ResponseMessage update(Params params) throws InputException, ServerException {
-        //params.set("action", Dto.Action.UPDATE_ALL_COLS);
         return CommonModelMongo.updateJson(params, new Project());
     }
 

@@ -3,7 +3,6 @@ package com.tctools.business.dto.site;
 import com.vantar.database.dto.*;
 import java.util.Map;
 
-// نوع نصب
 @Cache
 @Mongo
 public class BtsInstall extends DtoBase {

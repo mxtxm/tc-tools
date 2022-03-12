@@ -2,7 +2,7 @@ package com.tctools.business.model.project.radiometric.workflow;
 
 import com.tctools.business.dto.project.map.radiometric.RadioMetricMapFlow;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.query.QueryData;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -47,12 +47,7 @@ public class MapFlowModel {
             throw new InputException(VantarKey.INVALID_VALUE, "RadioMetricFlow.spotLocation");
         }
 
-        try {
-            CommonRepoMongo.update(flow);
-            return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
+        return CommonModelMongo.update(flow);
     }
 
 }

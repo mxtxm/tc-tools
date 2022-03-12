@@ -109,7 +109,6 @@ function post(url, data, auth, lang, success, fail) {
         type: "POST",
         data: data,
         dataType: "json",
-
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -136,51 +135,6 @@ function post(url, data, auth, lang, success, fail) {
     });
 }
 
-function postFile(url, data, auth, lang, success, fail, file) {
-    loading(true);
-    var formData = new FormData();
-    if (file) {
-        formData.append("file", file);
-    }
-    $.each(data, function (k, v) {
-        formData.append(k, v);
-    });
-
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: formData,
-        async: true,
-        cache: false,
-        contentType: false,
-        processData: false,
-        timeout: 60000,
-
-        beforeSend: function(request) {
-            if (auth) {
-                request.setRequestHeader("X-Auth-Token", auth);
-            }
-            if (lang) {
-                request.setRequestHeader("X-Lang", lang);
-            }
-        },
-        success: function (msg) {
-            loading(false);
-            if (xhr.status === 204) {
-                data = "";
-            }
-            if (typeof success === "function") {
-                success(data, xhr.status);
-            }
-        },
-        error: function (xhr) {
-            loading(false);
-            if (typeof fail === "function") {
-                fail(xhr.responseJSON, xhr.status);
-            }
-        }
-    });
-}
 
 function postJson(url, data, auth, lang, success, fail) {
     loading(true);
@@ -252,6 +206,55 @@ function getSynched(url, data, auth, lang, success, fail) {
     return x;
 }
 
+function postFile(url, data, files, auth, lang, success, fail) {
+    loading(true);
+
+    let formData = new FormData();
+    if (typeof files === 'object') {
+        $.each(files, function (k, v) {
+            formData.append(k, v);
+        });
+    } else  {
+        formData.append("file", files);
+    }
+    $.each(data, function (k, v) {
+        formData.append(k, v);
+    });
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        async: true,
+        cache: false,
+        contentType: false,
+        processData: false,
+        timeout: 600000,
+        beforeSend: function(request) {
+            if (auth) {
+                request.setRequestHeader("X-Auth-Token", auth);
+            }
+            if (lang) {
+                request.setRequestHeader("X-Lang", lang);
+            }
+        },
+        success: function (data, status, xhr) {
+            loading(false);
+            if (xhr.status === 204) {
+                data = "";
+            }
+            if (typeof success === "function") {
+                success(data, xhr.status);
+            }
+        },
+        error: function (xhr) {
+            loading(false);
+            if (typeof fail === "function") {
+                fail(xhr.responseJSON, xhr.status);
+            }
+        }
+    });
+}
 
 function postSynch(url, data, auth, lang, success, fail) {
     loading(true);
@@ -379,7 +382,6 @@ function objectToHtml(obj, cls) {
 }
 
 function searchToHtml(obj, cls) {
-
     if (typeof obj.length === 'number' && !(obj.propertyIsEnumerable('length')) && typeof obj.splice === 'function') {
         let html = "";
         let l = obj.length;

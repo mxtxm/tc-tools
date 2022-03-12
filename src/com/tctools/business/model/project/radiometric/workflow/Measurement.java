@@ -46,8 +46,7 @@ public class Measurement {
         DateTime startDateTime = null;
         DateTime endDateTime = null;
 
-        try {
-            CSVReader reader = new CSVReader(new FileReader(csvPath));
+        try (CSVReader reader = new CSVReader(new FileReader(csvPath))) {
             while ((record = reader.readNext()) != null) {
                 ++i;
                 switch (i) {
@@ -213,78 +212,73 @@ public class Measurement {
         FileUtil.removeFile(okTempFilename);
         FileUtil.removeFile(okFilename);
 
-        XSSFWorkbook workbook;
         try {
             Excel.csvToExcel(csvPath, okTempFilename);
-            workbook = new XSSFWorkbook(okTempFilename);
         } catch (IOException e) {
             log.error("! {}", csvPath, e);
             throw new ServerException(e);
         }
 
-        int r = 9;
-        XSSFSheet sheet = workbook.getSheetAt(0);
-        Row row = sheet.getRow(r);
-        Cell cell = row.createCell(8);
-        cell.setCellValue("E²");
+        try (
+            XSSFWorkbook workbook = new XSSFWorkbook(okTempFilename);
+            FileOutputStream out = new FileOutputStream(new File(okFilename))
+        ) {
 
-        for (r = 9 ; r < 369 ; ++r) {
-            row = sheet.getRow(r);
-            cell = row.createCell(8);
-            cell.setCellFormula("D" + (r+1) + "*D" + (r+1));
-        }
+            int r = 9;
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            Row row = sheet.getRow(r);
+            Cell cell = row.createCell(8);
+            cell.setCellValue("E²");
 
-        row = sheet.createRow(++r);
-        cell = row.createCell(0);
-        cell.setCellValue("E² Average");
-        cell = row.createCell(1);
-        cell.setCellFormula("AVERAGE(I10:I370)");
+            for (r = 9 ; r < 369 ; ++r) {
+                row = sheet.getRow(r);
+                cell = row.createCell(8);
+                cell.setCellFormula("D" + (r+1) + "*D" + (r+1));
+            }
 
-        row = sheet.createRow(++r);
-        cell = row.createCell(0);
-        cell.setCellValue("E Average");
-        cell = row.createCell(1);
-        cell.setCellFormula("SQRT(B371)");
+            row = sheet.createRow(++r);
+            cell = row.createCell(0);
+            cell.setCellValue("E² Average");
+            cell = row.createCell(1);
+            cell.setCellFormula("AVERAGE(I10:I370)");
 
-        row = sheet.createRow(++r);
-        cell = row.createCell(0);
-        cell.setCellValue("S Average [W/m²]");
-        cell = row.createCell(1);
-        cell.setCellFormula("B371/377");
+            row = sheet.createRow(++r);
+            cell = row.createCell(0);
+            cell.setCellValue("E Average");
+            cell = row.createCell(1);
+            cell.setCellFormula("SQRT(B371)");
 
-        row = sheet.createRow(++r);
-        cell = row.createCell(0);
-        cell.setCellValue("S Average [uW/cm²]");
-        cell = row.createCell(1);
-        cell.setCellFormula("100*B373");
+            row = sheet.createRow(++r);
+            cell = row.createCell(0);
+            cell.setCellValue("S Average [W/m²]");
+            cell = row.createCell(1);
+            cell.setCellFormula("B371/377");
 
-        row = sheet.createRow(++r);
-        cell = row.createCell(0);
-        cell.setCellValue("Rounded S Average [W/cm²]");
-        cell = row.createCell(1);
-        cell.setCellFormula("ROUND(B374,3)");
+            row = sheet.createRow(++r);
+            cell = row.createCell(0);
+            cell.setCellValue("S Average [uW/cm²]");
+            cell = row.createCell(1);
+            cell.setCellFormula("100*B373");
 
-        row = sheet.createRow(++r);
-        cell = row.createCell(0);
-        cell.setCellValue("Rounded S Average [W/cm²]/4.4");
-        cell = row.createCell(1);
-        cell.setCellFormula("ROUND(B375/4.4,3)");
+            row = sheet.createRow(++r);
+            cell = row.createCell(0);
+            cell.setCellValue("Rounded S Average [W/cm²]");
+            cell = row.createCell(1);
+            cell.setCellFormula("ROUND(B374,3)");
 
-        FileUtil.removeFile(okTempFilename);
+            row = sheet.createRow(++r);
+            cell = row.createCell(0);
+            cell.setCellValue("Rounded S Average [W/cm²]/4.4");
+            cell = row.createCell(1);
+            cell.setCellFormula("ROUND(B375/4.4,3)");
 
-        try {
-            FileOutputStream out = new FileOutputStream(new File(okFilename));
+            FileUtil.removeFile(okTempFilename);
+
             workbook.write(out);
-            out.close();
         } catch (Exception e) {
             log.error("! {}", csvPath, e);
             throw new ServerException(e);
         } finally {
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                log.error("! {}", csvPath, e);
-            }
             FileUtil.removeFile(okTempFilename);
         }
     }

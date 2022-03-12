@@ -1,6 +1,7 @@
 package com.tctools.web.ui.location;
 
 import com.tctools.business.model.location.LocationTypeModel;
+import com.vantar.exception.*;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class LocationTypeController extends RouteToMethod {
 
-    public void locationTypeGet(Params params, HttpServletResponse response) {
+    public void locationTypeGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, LocationTypeModel.getAll(params));
     }
 

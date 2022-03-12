@@ -2,6 +2,7 @@ package com.tctools.business.model.project.hseaudit;
 
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.hseaudit.*;
+import com.tctools.business.dto.system.Settings;
 import com.tctools.business.dto.user.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
@@ -23,12 +24,10 @@ import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 public class WorkFlowModel {
 
-    private static final ReentrantLock lock = new ReentrantLock();
     private static final String SMS_NOTIFY_NUMBERS = "09126214967,09129346154,09359947922,09197148361,09120067168";
 
 
@@ -118,45 +117,55 @@ public class WorkFlowModel {
     }
 
     public static ResponseMessage imageUpload(Params params) throws ServerException, InputException, AuthException {
-        Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD);
+        try (Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD)) {
 
-        if (!uploaded.isUploaded() || uploaded.isIoError()) {
-            throw new InputException(VantarKey.REQUIRED, "file");
-        }
+            if (!uploaded.isUploaded() || uploaded.isIoError()) {
+                throw new InputException(VantarKey.REQUIRED, "file");
+            }
 
-        List<ValidationError> errors = new ArrayList<>();
-        if (!uploaded.isType("jpeg")) {
-            errors.add(new ValidationError("file", VantarKey.FILE_TYPE, "jpeg"));
-        }
-        if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
-            errors.add(
-                new ValidationError(
-                    "file",
-                    VantarKey.FILE_SIZE,
-                    Param.FILE_IMAGE_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE / 1024 + "KB"
-                )
+            List<ValidationError> errors = new ArrayList<>();
+            if (!uploaded.isType("jpeg")) {
+                errors.add(new ValidationError("file", VantarKey.FILE_TYPE, "jpeg"));
+            }
+            if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
+                errors.add(
+                    new ValidationError(
+                        "file",
+                        VantarKey.FILE_SIZE,
+                        Param.FILE_IMAGE_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE / 1024 + "KB"
+                    )
+                );
+            }
+            if (!errors.isEmpty()) {
+                throw new InputException(errors);
+            }
+
+            String originalFilename = uploaded.getOriginalFilename();
+            String tempPath = Param.TEMP_DIR + originalFilename;
+            uploaded.moveTo(tempPath);
+
+            User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.TECHNICIAN, Role.VENDOR);
+            user.projectAccess(ProjectType.HseAudit);
+
+            HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
+            flow.id = params.getLong("id");
+            if (NumberUtil.isIdInvalid(flow.id)) {
+                throw new InputException(VantarKey.INVALID_ID, "id (questionnaireId)");
+            }
+
+            String destinationPath = imageUploadDb(params, flow, originalFilename, user, tempPath, uploaded);
+
+            return ResponseMessage.success(
+                VantarKey.UPDATE_SUCCESS,
+                StringUtil.replace(destinationPath, Param.HSE_AUDIT_FILES, Param.HSE_AUDIT_URL)
             );
         }
-        if (!errors.isEmpty()) {
-            throw new InputException(errors);
-        }
+    }
 
-        String originalFilename = uploaded.getOriginalFilename();
-        String tempPath = Param.TEMP_DIR + originalFilename;
-        uploaded.moveTo(tempPath);
-
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.TECHNICIAN);
-        user.projectAccess(ProjectType.HseAudit);
-
-        HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (questionnaireId)");
-        }
+    private static synchronized String imageUploadDb(Params params, HseAuditQuestionnaire flow, String originalFilename
+        , User user, String tempPath, Params.Uploaded uploaded) throws ServerException, InputException {
 
         String destinationPath = null;
-
-        lock.lock();
         try {
             flow = CommonRepoMongo.getById(flow, params.getLang());
             if (flow.answers == null) {
@@ -207,27 +216,35 @@ public class WorkFlowModel {
             notifyFailed(flow);
 
         } catch (DatabaseException e) {
-            LogEvent.error("AppImageUpload", "db error", flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
+            LogEvent.error("AppImageUpload", "db error",
+                flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
             throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (NoContentException e) {
-            LogEvent.error("AppImageUpload", "invalid id (no data)", flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
+            LogEvent.error("AppImageUpload", "invalid id (no data)",
+                flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
             throw new InputException(AppLangKey.UNKNOWN_FILE, originalFilename);
-        } finally {
-            lock.unlock();
         }
-
-        return new ResponseMessage(
-            VantarKey.UPDATE_SUCCESS,
-            StringUtil.replace(destinationPath, Param.HSE_AUDIT_FILES, Param.HSE_AUDIT_URL)
-        );
+        return destinationPath;
     }
 
     private static void notifyFailed(HseAuditQuestionnaire flow) {
         if (!(flow.lastState == HseAuditFlowState.Completed && flow.isFailed)) {
             return;
         }
+
+        String numbers;
+        Settings settings = new Settings();
+        QueryBuilder q = new QueryBuilder(settings);
+        q.condition().equal("key", Settings.HSE_SMS);
+        try {
+            settings = CommonModelMongo.getFirst(q);
+            numbers = settings.value;
+        } catch (ServerException | NoContentException e) {
+            numbers = SMS_NOTIFY_NUMBERS;
+        }
+
         SendMessage.sendSms(
-            SMS_NOTIFY_NUMBERS,
+            numbers,
             flow.site.code + "عدم رعایت اصول ایمنی در سایت "
                 + "\nCritical: " + CollectionUtil.join(flow.criticalNoQuestions, ", ")
                 + "\nMajor: " + CollectionUtil.join(flow.majorNoQuestions, ", ")
@@ -235,68 +252,66 @@ public class WorkFlowModel {
     }
 
     public static ResponseMessage imageUploadDirect(Params params) throws ServerException, InputException, AuthException {
-        Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD);
-        if (!uploaded.isUploaded() || uploaded.isIoError()) {
-            throw new InputException(VantarKey.REQUIRED, "file");
-        }
+        try (Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD)) {
+            if (!uploaded.isUploaded() || uploaded.isIoError()) {
+                throw new InputException(VantarKey.REQUIRED, "file");
+            }
 
-        List<ValidationError> errors = new ArrayList<>();
-        if (!uploaded.isType("jpeg")) {
-            errors.add(new ValidationError("file", VantarKey.FILE_TYPE, "jpeg"));
-        }
-        if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
-            errors.add(
-                new ValidationError(
-                    "file",
-                    VantarKey.FILE_SIZE,
-                    Param.FILE_IMAGE_MIN_SIZE/1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE/1024 + "KB"
-                )
+            List<ValidationError> errors = new ArrayList<>();
+            if (!uploaded.isType("jpeg")) {
+                errors.add(new ValidationError("file", VantarKey.FILE_TYPE, "jpeg"));
+            }
+            if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
+                errors.add(
+                    new ValidationError(
+                        "file",
+                        VantarKey.FILE_SIZE,
+                        Param.FILE_IMAGE_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE / 1024 + "KB"
+                    )
+                );
+            }
+            if (!errors.isEmpty()) {
+                throw new InputException(errors);
+            }
+
+            String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
+            uploaded.moveTo(tempPath);
+
+            User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
+            user.projectAccess(ProjectType.HseAudit);
+
+            HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
+            flow.id = params.getLong("id");
+            Long questionId = params.getLong("questionId");
+            if (NumberUtil.isIdInvalid(flow.id) || NumberUtil.isIdInvalid(questionId)) {
+                throw new InputException(VantarKey.INVALID_ID, "id (questionnaireId) / questionId");
+            }
+
+            String destinationPath = null;
+
+            try {
+                flow = CommonRepoMongo.getById(flow, params.getLang());
+                if (flow.answers == null) {
+                    throw new InputException(VantarKey.REQUIRED, "answers in db");
+                }
+                for (HseAuditAnswer answer : flow.answers) {
+                    if (questionId.equals(answer.questionId)) {
+                        destinationPath = answer.getNextImagePath(flow);
+                        FileUtil.move(tempPath, destinationPath);
+                        break;
+                    }
+                }
+            } catch (DatabaseException e) {
+                throw new ServerException(VantarKey.FETCH_FAIL);
+            } catch (NoContentException e) {
+                throw new InputException(AppLangKey.UNKNOWN_FILE, uploaded.getOriginalFilename());
+            }
+
+            return ResponseMessage.success(
+                VantarKey.UPDATE_SUCCESS,
+                StringUtil.replace(destinationPath, Param.HSE_AUDIT_FILES, Param.HSE_AUDIT_URL)
             );
         }
-        if (!errors.isEmpty()) {
-            throw new InputException(errors);
-        }
-
-        String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
-        uploaded.moveTo(tempPath);
-
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER);
-        user.projectAccess(ProjectType.HseAudit);
-
-        HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow.id = params.getLong("id");
-        Long questionId = params.getLong("questionId");
-        if (NumberUtil.isIdInvalid(flow.id) || NumberUtil.isIdInvalid(questionId)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (questionnaireId) / questionId");
-        }
-
-        String destinationPath = null;
-
-        lock.lock();
-        try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
-            if (flow.answers == null) {
-                throw new InputException(VantarKey.REQUIRED, "answers in db");
-            }
-            for (HseAuditAnswer answer : flow.answers) {
-                if (questionId.equals(answer.questionId)) {
-                    destinationPath = answer.getNextImagePath(flow);
-                    FileUtil.move(tempPath, destinationPath);
-                    break;
-                }
-            }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        } catch (NoContentException e) {
-            throw new InputException(AppLangKey.UNKNOWN_FILE, uploaded.getOriginalFilename());
-        } finally {
-            lock.unlock();
-        }
-
-        return new ResponseMessage(
-            VantarKey.UPDATE_SUCCESS,
-            StringUtil.replace(destinationPath, Param.HSE_AUDIT_FILES, Param.HSE_AUDIT_URL)
-        );
     }
 
     public static ResponseMessage delete(Params params) throws InputException, ServerException {
@@ -371,7 +386,7 @@ public class WorkFlowModel {
 
         try {
             CommonRepoMongo.update(flow);
-            return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+            return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.INSERT_FAIL);
         }
@@ -424,7 +439,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.REQUIRED, "path");
         }
         FileUtil.removeFile(StringUtil.replace(path, Param.HSE_AUDIT_URL, Param.HSE_AUDIT_FILES));
-        return new ResponseMessage(VantarKey.DELETE_SUCCESS);
+        return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
     }
 
 

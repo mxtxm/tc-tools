@@ -1,6 +1,7 @@
 package com.tctools.web.ui.location;
 
 import com.tctools.business.model.location.DistrictModel;
+import com.vantar.exception.*;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class DistrictController extends RouteToMethod {
 
-    public void districtsGet(Params params, HttpServletResponse response) {
+    public void districtsGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, DistrictModel.getAll());
     }
 

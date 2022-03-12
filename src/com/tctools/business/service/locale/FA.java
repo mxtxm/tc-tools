@@ -6,32 +6,11 @@ import java.util.*;
 
 public class FA implements Translation {
 
-    private static final Map<LangKey, String> tokens = new HashMap<>();
-    private static final Map<String, String> tokensString = new HashMap<>(1);
+    private static final Map<LangKey, String> tokens;
     private static final String LANG_KEY = "fa";
 
     static {
-        tokens.put(AppLangKey.APP_TITLE, "جعبه ابزار مخابراتی");
-
-        tokens.put(AppLangKey.MOBILE_OR_EMAIL_IS_REQUIRED, "شماره موبایل یا ایمیل باید وارد شود");
-        tokens.put(AppLangKey.SIGNUP_SUCCESS, "کاربر با موفقیت ساخته شد");
-        tokens.put(AppLangKey.SIGNIN_SUCCESS, "کاربر با موفقیت وارد شد");
-        tokens.put(AppLangKey.INVALID_ROLE, "نقض کاربر نادرست است");
-        tokens.put(AppLangKey.VERIFICATION_TOKEN_SENT, "کد اهراز هویت فرستاده شد {0}");
-
-        tokens.put(AppLangKey.SIGNUP_MOBILE_VERIFICATION_TOKEN_MESSAGE, "کد اهراز هویت جعبه ابزار مخابراتی:\n{0}");
-        tokens.put(AppLangKey.MOBILE_VERIFICATION_TOKEN_MESSAGE, "کد اهراز هویت جعبه ابزار مخابراتی:\n{0}");
-        tokens.put(AppLangKey.MOBILE_SUCCESSFULLY_VERIFIED, "شماره موبایل با موفقیت تایید شد");
-        tokens.put(AppLangKey.MOBILE_NOT_VERIFIED, "شماره موبایل تایید نشد");
-
-        tokens.put(AppLangKey.SIGNUP_EMAIL_VERIFICATION_TOKEN_MESSAGE, "کد اهراز هویت جعبه ابزار مخابراتی:\n{0}");
-        tokens.put(AppLangKey.EMAIL_VERIFICATION_TOKEN_MESSAGE, "کد اهراز هویت جعبه ابزار مخابراتی:\n{0}");
-        tokens.put(AppLangKey.EMAIL_SUCCESSFULLY_VERIFIED, "ایمیل با موفقیت تایید شد");
-        tokens.put(AppLangKey.EMAIL_NOT_VERIFIED, "ایمیل تایید نشد");
-
-        tokens.put(AppLangKey.SIGNIN_SMS_VERIFICATION_TOKEN_MESSAGE, "کد ورود جعبه ابزار مخابراتی:\n{0}");
-        tokens.put(AppLangKey.SIGNIN_EMAIL_VERIFICATION_TOKEN_MESSAGE, "کد ورود جعبه ابزار مخابراتی:\n{0}");
-
+        tokens = new HashMap<>(40);
         tokens.put(AppLangKey.IMPORT_SITE_DATA, "ایمپورت داده های سایت ها");
         tokens.put(AppLangKey.SYNCH_RADIO_METRIC, "یکسان سازی داده های پرتوسنجی با سایتها");
         tokens.put(AppLangKey.SYNCH_HSE_AUDIT, "یکسان سازی داده های پرتوسنجی با سایتها");
@@ -50,10 +29,7 @@ public class FA implements Translation {
         tokens.put(AppLangKey.GPS_DATA_MISSING_CSV_DATA, "فاقد اطلاعات GPS است");
         tokens.put(AppLangKey.DUPLICATE, "تکراری > {0} : {1}");
 
-        tokens.put(AppLangKey.ADMIN_WEBSERVICES, "وب سرویس ها");
-        tokens.put(AppLangKey.ADMIN_MAP, "نقشه");
         tokens.put(AppLangKey.ADMIN_IMAGE_BROWSE, "عکس ها");
-        tokens.put(AppLangKey.ROLE, "نقش کاربر");
 
         tokens.put(AppLangKey.INVALID_LOCATION, "ظول و عرض جغرافیایی نادرست است");
 
@@ -70,7 +46,7 @@ public class FA implements Translation {
         tokens.put(AppLangKey.ADMIN_FIX, "ترمیم داده ها");
 
         tokens.put(AppLangKey.EXPORT_FAIL, "اکسپورت دچار خطا شد");
-        tokens.put(AppLangKey.NOT_POSSIBLE, "عملیات قابل انجام نیست");
+        tokens.put(AppLangKey.SIGNIN_SUCCESS, "ورود موفق");
     }
 
     @Override
@@ -85,6 +61,6 @@ public class FA implements Translation {
 
     @Override
     public String getString(String key) {
-        return tokensString.get(key);
+        return null;
     }
 }

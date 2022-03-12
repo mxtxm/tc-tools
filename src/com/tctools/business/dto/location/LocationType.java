@@ -3,7 +3,6 @@ package com.tctools.business.dto.location;
 import com.vantar.database.dto.*;
 import java.util.Map;
 
-// تعلق مکانی طراحی
 @Cache
 @Mongo
 public class LocationType extends DtoBase {

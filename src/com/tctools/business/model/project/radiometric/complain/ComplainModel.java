@@ -96,32 +96,33 @@ public class ComplainModel {
     }
 
     private static void uploadImage(Params params, RadioMetricComplain complain) throws InputException {
-        Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD);
-        if (uploaded == null || !uploaded.isUploaded()) {
-            return;
-        }
-        if (uploaded.isIoError()) {
-            throw new InputException(VantarKey.IO_ERROR);
-        }
+        try (Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD)) {
+            if (uploaded == null || !uploaded.isUploaded()) {
+                return;
+            }
+            if (uploaded.isIoError()) {
+                throw new InputException(VantarKey.IO_ERROR);
+            }
 
-        List<ValidationError> errors = new ArrayList<>(2);
-        if (!uploaded.isType("png")) {
-            errors.add(new ValidationError(Param.FILE_UPLOAD, VantarKey.FILE_TYPE, "png"));
-        }
-        if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
-            errors.add(
-                new ValidationError(
-                    Param.FILE_UPLOAD,
-                    VantarKey.FILE_SIZE,
-                    Param.FILE_IMAGE_MIN_SIZE/1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE/1024 + "KB"
-                )
-            );
-        }
-        if (!errors.isEmpty()) {
-            throw new InputException(errors);
-        }
+            List<ValidationError> errors = new ArrayList<>(2);
+            if (!uploaded.isType("png")) {
+                errors.add(new ValidationError(Param.FILE_UPLOAD, VantarKey.FILE_TYPE, "png"));
+            }
+            if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
+                errors.add(
+                    new ValidationError(
+                        Param.FILE_UPLOAD,
+                        VantarKey.FILE_SIZE,
+                        Param.FILE_IMAGE_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE / 1024 + "KB"
+                    )
+                );
+            }
+            if (!errors.isEmpty()) {
+                throw new InputException(errors);
+            }
 
-        uploaded.moveTo(complain.getImageFilePath(false));
+            uploaded.moveTo(complain.getImageFilePath(false));
+        }
     }
 
     public static ResponseMessage delete(Params params) throws InputException, ServerException {
@@ -150,7 +151,7 @@ public class ComplainModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
-        return new ResponseMessage(VantarKey.DELETE_SUCCESS);
+        return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
     }
 
     /**

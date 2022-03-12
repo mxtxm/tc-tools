@@ -1,6 +1,7 @@
 package com.tctools.web.ui.location;
 
 import com.tctools.business.model.location.CityModel;
+import com.vantar.exception.*;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class CityController extends RouteToMethod {
 
-    public void citiesGet(Params params, HttpServletResponse response) {
+    public void citiesGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, CityModel.getAll(params));
     }
 

@@ -3,7 +3,6 @@ package com.tctools.business.dto.site;
 import com.vantar.database.dto.*;
 import java.util.Map;
 
-// تیپ سایت
 @Cache
 @Mongo
 public class SiteType extends DtoBase {

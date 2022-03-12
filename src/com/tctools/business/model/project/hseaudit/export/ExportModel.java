@@ -26,17 +26,15 @@ import java.util.*;
 public class ExportModel {
 
     public static final Logger log = LoggerFactory.getLogger(TestController.class);
-    private static Map<String, CellStyle> styles;
+    private final Map<String, CellStyle> styles = new HashMap<>(10);
 
 
-    public static void auditData(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
+    public void auditData(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
         HseAuditQuestionnaire.Viewable flow = new HseAuditQuestionnaire.Viewable();
         flow.id = params.getLong("id");
         if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id");
         }
-
-        styles = new HashMap<>(10);
 
         try {
             flow = CommonRepoMongo.getById(flow, params.getLang());
@@ -138,8 +136,7 @@ public class ExportModel {
     }
 
 
-    public static void dailyReport(Params params, HttpServletResponse response) throws ServerException {
-        styles = new HashMap<>(10);
+    public void dailyReport(Params params, HttpServletResponse response) throws ServerException {
 
         // <cell, questionId>
         Map<Integer, Long> t = new HashMap<>();
@@ -182,153 +179,155 @@ public class ExportModel {
         t.put(45, 35L);
         t.put(46, 36L); // < < < q36
 
-        Workbook wb;
-        try {
+        try (
             FileInputStream inputStream = new FileInputStream(new File(Param.HSE_AUDIT_DAILY_TEMPLATE));
-            wb = WorkbookFactory.create(inputStream);
-        } catch (IOException e) {
-            log.error("!", e);
-            throw new ServerException(AppLangKey.EXPORT_FAIL);
-        }
+            Workbook wb = WorkbookFactory.create(inputStream)
+            ) {
 
-        Sheet sheet = wb.getSheetAt(0);
+            Sheet sheet = wb.getSheetAt(0);
 
-        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
-        q.condition().in("lastState", HseAuditFlowState.Approved, HseAuditFlowState.PreApproved);
-        List<Dto> items;
-        try {
-            items = CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        } catch (NoContentException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
-
-        int i = 1;
-        for (Dto dto : items) {
-            HseAuditQuestionnaire.Viewable flow = (HseAuditQuestionnaire.Viewable) dto;
-
-            if (flow.answers == null || flow.answers.isEmpty()) {
-                log.error("!!! no answers {} > {}", flow.id, flow.site.code);
-                continue;
+            QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
+            q.condition().in("lastState", HseAuditFlowState.Approved, HseAuditFlowState.PreApproved);
+            List<Dto> items;
+            try {
+                items = CommonRepoMongo.getData(q, params.getLang());
+            } catch (DatabaseException e) {
+                log.error("!", e);
+                throw new ServerException(VantarKey.FETCH_FAIL);
+            } catch (NoContentException e) {
+                throw new ServerException(VantarKey.FETCH_FAIL);
             }
 
-            Row row = sheet.createRow(i + 1);
+            int i = 1;
+            for (Dto dto : items) {
+                HseAuditQuestionnaire.Viewable flow = (HseAuditQuestionnaire.Viewable) dto;
 
-            Cell cell = row.createCell(0); // A
-            cell.setCellStyle(getCellStyleIndex(wb));
-            cell.setCellValue(i);
-
-            setData(wb, row, 1, flow.auditDateTime == null ? "" : flow.auditDateTime.formatter().getDatePersian()); // B
-            if (flow.site != null) {
-                setData(wb, row, 2, flow.site.province == null ? "" : flow.site.province.name); // C
-                setData(wb, row, 3, flow.site.city == null ? "" : flow.site.city.name); // D
-                setData(wb, row, 4, flow.site.code); // E
-            }
-            setData(wb, row, 5, flow.subContractor == null ? "" : flow.subContractor.name); // F
-
-            setData(wb, row, 6, flow.assignee == null ? "" : flow.assignee.fullName); // G
-            setData(wb, row, 7, flow.activity == null ? "" : flow.activity.toString()); // H
-            setData(wb, row, 8, ""); // I project
-            setData(wb, row, 12, flow.activity == null ? "" : flow.activity.toString()); // M action
-            setData(wb, row, 13, ""); // N description
-
-            // O(14) P(15) Q(16) > FAILED NUMBERS
-            int criticalNo = 0;
-            int majorNo = 0;
-            int minorNo = 0;
-
-            // R:AX > QUESTIONS
-            Map<Long, HseAuditAnswer> answers = new HashMap<>(flow.answers.size());
-            for (HseAuditAnswer answer : flow.answers) {
-                answers.put(answer.questionId, answer);
-            }
-
-            for (Map.Entry<Integer, Long> entry : t.entrySet()) {
-                Integer cellNo = entry.getKey();
-                Long questionId = entry.getValue();
-                HseAuditAnswer answer = answers.get(questionId);
-
-                if (answer == null) {
+                if (flow.answers == null || flow.answers.isEmpty()) {
+                    log.error("!!! no answers {} > {}", flow.id, flow.site.code);
                     continue;
                 }
 
-                Cell c = row.createCell(cellNo);
+                Row row = sheet.createRow(i + 1);
 
-                String v;
-                if (answer.question.questionType == HseAuditQuestionType.TextOnly) {
-                    v = answer.comments;
-                } else if (answer.question.questionType == HseAuditQuestionType.Option) {
+                Cell cell = row.createCell(0); // A
+                cell.setCellStyle(getCellStyleIndex(wb));
+                cell.setCellValue(i);
 
-                    if (answer.question.significance == HseAuditQuestionSignificance.Critical) {
-                        c.setCellStyle(getCellStyleCritical(wb));
-                        if (answer.answer == HseAuditAnswerOption.No) {
-                            ++criticalNo;
-                        }
-                    } else if (answer.question.significance == HseAuditQuestionSignificance.Major) {
-                        c.setCellStyle(getCellStyleMajor(wb));
-                        if (answer.answer == HseAuditAnswerOption.No) {
-                            ++majorNo;
-                        }
-                    } else if (answer.question.significance == HseAuditQuestionSignificance.Minor) {
-                        c.setCellStyle(getCellStyleMinor(wb));
-                        if (answer.answer == HseAuditAnswerOption.No) {
-                            ++minorNo;
-                        }
-                    }
-
-                    if (answer.answer == HseAuditAnswerOption.Yes) {
-                        v = "1";
-                    } else if (answer.answer == HseAuditAnswerOption.No) {
-                        v = "0";
-                    } else {
-                        v = "NA";
-                    }
-                } else {
-                    v = "";
+                setData(wb, row, 1, flow.auditDateTime == null ? "" : flow.auditDateTime.formatter().getDatePersian()); // B
+                if (flow.site != null) {
+                    setData(wb, row, 2, flow.site.province == null ? "" : flow.site.province.name); // C
+                    setData(wb, row, 3, flow.site.city == null ? "" : flow.site.city.name); // D
+                    setData(wb, row, 4, flow.site.code); // E
                 }
-                c.setCellValue(v);
+                setData(wb, row, 5, flow.subContractor == null ? "" : flow.subContractor.name); // F
+
+                setData(wb, row, 6, flow.assignee == null ? "" : flow.assignee.fullName); // G
+                setData(wb, row, 7, flow.activity == null ? "" : flow.activity.toString()); // H
+                setData(wb, row, 8, ""); // I project
+                setData(wb, row, 12, flow.activity == null ? "" : flow.activity.toString()); // M action
+                setData(wb, row, 13, ""); // N description
+
+                // O(14) P(15) Q(16) > FAILED NUMBERS
+                int criticalNo = 0;
+                int majorNo = 0;
+                int minorNo = 0;
+
+                // R:AX > QUESTIONS
+                Map<Long, HseAuditAnswer> answers = new HashMap<>(flow.answers.size());
+                for (HseAuditAnswer answer : flow.answers) {
+                    answers.put(answer.questionId, answer);
+                }
+
+                for (Map.Entry<Integer, Long> entry : t.entrySet()) {
+                    Integer cellNo = entry.getKey();
+                    Long questionId = entry.getValue();
+                    HseAuditAnswer answer = answers.get(questionId);
+
+                    if (answer == null) {
+                        continue;
+                    }
+
+                    Cell c = row.createCell(cellNo);
+
+                    String v;
+                    if (answer.question.questionType == HseAuditQuestionType.TextOnly) {
+                        v = answer.comments;
+                    } else if (answer.question.questionType == HseAuditQuestionType.Option) {
+
+                        if (answer.question.significance == HseAuditQuestionSignificance.Critical) {
+                            c.setCellStyle(getCellStyleCritical(wb));
+                            if (answer.answer == HseAuditAnswerOption.No) {
+                                ++criticalNo;
+                            }
+                        } else if (answer.question.significance == HseAuditQuestionSignificance.Major) {
+                            c.setCellStyle(getCellStyleMajor(wb));
+                            if (answer.answer == HseAuditAnswerOption.No) {
+                                ++majorNo;
+                            }
+                        } else if (answer.question.significance == HseAuditQuestionSignificance.Minor) {
+                            c.setCellStyle(getCellStyleMinor(wb));
+                            if (answer.answer == HseAuditAnswerOption.No) {
+                                ++minorNo;
+                            }
+                        }
+
+                        if (answer.answer == HseAuditAnswerOption.Yes) {
+                            v = "1";
+                        } else if (answer.answer == HseAuditAnswerOption.No) {
+                            v = "0";
+                        } else {
+                            v = "NA";
+                        }
+                    } else {
+                        v = "";
+                    }
+                    c.setCellValue(v);
+                }
+
+                cell = row.createCell(14);
+                if (criticalNo >= Param.HSE_CRITICAL_FAIL_THRESHOLD) {
+                    cell.setCellStyle(getCellStyleFailed(wb));
+                }
+                cell.setCellValue(criticalNo);
+
+                cell = row.createCell(15);
+                if (majorNo >= Param.HSE_MAJOR_FAIL_THRESHOLD) {
+                    cell.setCellStyle(getCellStyleFailed(wb));
+                }
+                cell.setCellValue(majorNo);
+
+                cell = row.createCell(16);
+                cell.setCellValue(minorNo);
+
+                ++i;
             }
 
-            cell = row.createCell(14);
-            if (criticalNo >= Param.HSE_CRITICAL_FAIL_THRESHOLD) {
-                cell.setCellStyle(getCellStyleFailed(wb));
-            }
-            cell.setCellValue(criticalNo);
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=daily-report-"
+                + (new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
 
-            cell = row.createCell(15);
-            if (majorNo >= Param.HSE_MAJOR_FAIL_THRESHOLD) {
-                cell.setCellStyle(getCellStyleFailed(wb));
-            }
-            cell.setCellValue(majorNo);
-
-            cell = row.createCell(16);
-            cell.setCellValue(minorNo);
-
-            ++i;
-        }
-
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=daily-report-"
-            + (new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
-
-        try {
             wb.write(response.getOutputStream());
-            wb.close();
+
         } catch (IOException e) {
             log.error("", e);
             throw new ServerException(AppLangKey.EXPORT_FAIL);
+        } finally {
+            try {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+            } catch (IOException ignore) {
+
+            }
         }
     }
 
-    private static void setData(Workbook wb, Row row, int col, String value) {
+    private void setData(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleNormal(wb));
         cell.setCellValue(value);
     }
 
-    private static CellStyle getCellStyleNormal(Workbook wb) {
+    private CellStyle getCellStyleNormal(Workbook wb) {
         CellStyle style = styles.get("getCellStyleNormal");
         if (style == null) {
             style = wb.createCellStyle();
@@ -343,7 +342,7 @@ public class ExportModel {
         return style;
     }
 
-    private static CellStyle getCellStyleIndex(Workbook workbook) {
+    private CellStyle getCellStyleIndex(Workbook workbook) {
         CellStyle style = styles.get("getCellStyleIndex");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -360,7 +359,7 @@ public class ExportModel {
         return style;
     }
 
-    private static CellStyle getCellStyleCritical(Workbook workbook) {
+    private CellStyle getCellStyleCritical(Workbook workbook) {
         CellStyle style = styles.get("getCellStyleCritical");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -377,7 +376,7 @@ public class ExportModel {
         return style;
     }
 
-    private static CellStyle getCellStyleMajor(Workbook workbook) {
+    private CellStyle getCellStyleMajor(Workbook workbook) {
         CellStyle style = styles.get("getCellStyleMajor");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -394,7 +393,7 @@ public class ExportModel {
         return style;
     }
 
-    private static CellStyle getCellStyleMinor(Workbook workbook) {
+    private CellStyle getCellStyleMinor(Workbook workbook) {
         CellStyle style = styles.get("getCellStyleMinor");
         if (style == null) {
             style = workbook.createCellStyle();
@@ -411,7 +410,7 @@ public class ExportModel {
         return style;
     }
 
-    private static CellStyle getCellStyleFailed(Workbook workbook) {
+    private CellStyle getCellStyleFailed(Workbook workbook) {
         CellStyle style = styles.get("getCellStyleFailed");
         if (style == null) {
             style = workbook.createCellStyle();

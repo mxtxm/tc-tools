@@ -43,21 +43,20 @@ public class Docx {
         FileUtil.makeDirectory(filePath);
         FileUtil.write(jsonFilePath, Json.d.toJson(mapping));
 
-        try {
+        try (
             BufferedReader input = new BufferedReader(
                 new InputStreamReader(
                     Runtime.getRuntime()
                         .exec(command)
                         .getErrorStream()
                 )
-            );
-
+            )
+        ) {
             StringBuilder output = new StringBuilder();
             String line;
             while ((line = input.readLine()) != null) {
                 output.append(line).append("\n");
             }
-            input.close();
             log.info("command={}\n\noutput={}\n\n", command, output);
 
             if (output.length() > 0) {

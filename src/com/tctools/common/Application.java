@@ -1,7 +1,7 @@
 package com.tctools.common;
 
 import com.tctools.business.dto.user.User;
-import com.tctools.business.repo.user.UserRepo;
+import com.tctools.business.model.user.AuthModel;
 import com.tctools.business.service.locale.LocaleService;
 import com.vantar.admin.model.AdminDocument;
 import com.vantar.common.Settings;
@@ -27,23 +27,24 @@ public class Application implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent e) {
-        Settings.setConfig(Config.class, ConfigFactory.create(Config.class));
-        Settings.setTune(Tune.class, ConfigFactory.create(Tune.class));
-
         log.info("> Initializing application\n\n\n");
 
+        Settings.setConfig(Config.class, ConfigFactory.create(Config.class));
+        Settings.setTune(Tune.class, ConfigFactory.create(Tune.class));
+        log.info(" >> settings set");
+
         Response.setJsonError();
+        log.info(" >> error responses set to be JSON");
         Response.setAllowOrigin("*");
+        log.info(" >> allowed origin = '*'");
         ServiceAuth.setUserClass(User.class);
 
         DtoInfo.start();
-        log.info("loaded dto info");
-
+        log.info(" >> dto info loaded");
         Ssl.disable();
-        log.info("disabled SSL connection checking");
-
+        log.info(" >> disabled SSL connection checking");
         LocaleService.start(Settings.locale());
-        log.info("started localization");
+        log.info(" >> localization started");
 
 
         Services.setEvents(new Services.Event() {
@@ -62,12 +63,13 @@ public class Application implements ServletContextListener {
                 // > > > messaging service
                 Services.messaging.setEvent(new ServiceMessaging.Event() {
                     @Override
+                    @SuppressWarnings({"unchecked", "rawtypes"})
                     public void onReceive(int type, ServiceMessaging.Message message) {
                         if (type == Param.MESSAGE_DATABASE_UPDATED && "User".equals(message.getString())) {
                             try {
                                 Services.get(ServiceAuth.class)
                                     .updateOnlineUsers((List) Services.get(ServiceDtoCache.class).getList(User.class));
-                                log.info("> online user data updated");
+                                log.info(" >> online user data updated");
                             } catch (ServiceException e) {
                                 log.error("! failed to update online user data", e);
                             }
@@ -85,12 +87,9 @@ public class Application implements ServletContextListener {
                     Services.get(ServiceAuth.class)
                         .restoreFromBackup()
                         .startupSignin(User.getTemporaryRoot())
-                        .setEvent(username -> {
-                            UserRepo repo = new UserRepo();
-                            return repo.getUserForAuth(username);
-                        });
+                        .setEvent(AuthModel::getUserForAuth);
                 } catch (ServiceException e) {
-                    log.error("! > > > ", e);
+                    log.error("! ", e);
                 }
             }
 

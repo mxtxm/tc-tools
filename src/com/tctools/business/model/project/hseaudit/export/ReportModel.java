@@ -122,7 +122,7 @@ public class ReportModel {
         data.put("total", d);
     }
 
-
+    // todo: what is this?
     public static Map<String, Integer> answerCount() throws ServerException {
         Map<String, Integer> data = new HashMap<>();
 

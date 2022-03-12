@@ -7,6 +7,7 @@ import com.vantar.database.dto.*;
 public class Settings extends DtoBase {
 
     public static final String KEY_ARAS_UPDATE = "aras-update";
+    public static final String HSE_SMS = "hse-sms";
 
     public Long id;
 

@@ -195,53 +195,53 @@ public class UserModel {
     }
 
     public static ResponseMessage signatureSubmit(Params params) throws InputException, AuthException, ServiceException {
-        Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD);
-
-        if (!uploaded.isUploaded() || uploaded.isIoError()) {
-            throw new InputException(uploaded.getError());
-        }
-
-        List<ValidationError> errors = new ArrayList<>(2);
-        if (!uploaded.isType("jpeg", "png")) {
-            errors.add(new ValidationError(Param.FILE_UPLOAD, VantarKey.FILE_TYPE, "jpeg, png"));
-        }
-        if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
-            errors.add(
-                new ValidationError(
-                    Param.FILE_UPLOAD,
-                    VantarKey.FILE_SIZE,
-                    Param.FILE_IMAGE_MIN_SIZE/1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE/1024 + "KB"
-                )
-            );
-        }
-        if (!errors.isEmpty()) {
-            throw new InputException(errors);
-        }
-
-        String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
-        uploaded.moveTo(tempPath);
-
-        User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
-
-        Long id = params.getLong("id");
-        if (NumberUtil.isIdValid(id)) {
-            if (user.role == Role.MANAGER || user.role == Role.ADMIN || user.role == Role.ROOT) {
-                user.id = id;
-            } else {
-                throw new AuthException(VantarKey.NO_ACCESS);
+        try (Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD)) {
+            if (!uploaded.isUploaded() || uploaded.isIoError()) {
+                throw new InputException(uploaded.getError());
             }
+
+            List<ValidationError> errors = new ArrayList<>(2);
+            if (!uploaded.isType("jpeg", "png")) {
+                errors.add(new ValidationError(Param.FILE_UPLOAD, VantarKey.FILE_TYPE, "jpeg, png"));
+            }
+            if (uploaded.getSize() < Param.FILE_IMAGE_MIN_SIZE || uploaded.getSize() > Param.FILE_IMAGE_MAX_SIZE) {
+                errors.add(
+                    new ValidationError(
+                        Param.FILE_UPLOAD,
+                        VantarKey.FILE_SIZE,
+                        Param.FILE_IMAGE_MIN_SIZE / 1024 + "KB ~ " + Param.FILE_IMAGE_MAX_SIZE / 1024 + "KB"
+                    )
+                );
+            }
+            if (!errors.isEmpty()) {
+                throw new InputException(errors);
+            }
+
+            String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
+            uploaded.moveTo(tempPath);
+
+            User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.TECHNICIAN);
+
+            Long id = params.getLong("id");
+            if (NumberUtil.isIdValid(id)) {
+                if (user.role == Role.MANAGER || user.role == Role.ADMIN || user.role == Role.ROOT) {
+                    user.id = id;
+                } else {
+                    throw new AuthException(VantarKey.NO_ACCESS);
+                }
+            }
+
+            FileUtil.move(tempPath, user.getSignature(false));
+
+            return ResponseMessage.success(VantarKey.UPDATE_SUCCESS, user.getSignature(true));
         }
-
-        FileUtil.move(tempPath, user.getSignature(false));
-
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS, user.getSignature(true));
     }
 
     public static ResponseMessage signatureExists(User user) {
         return
             FileUtil.exists(user.getSignature(false)) ?
-                new ResponseMessage(AppLangKey.SIGNATURE_EXISTS, user.getSignature(true)) :
-                new ResponseMessage(AppLangKey.SIGNATURE_NOT_EXISTS, "");
+                ResponseMessage.success(AppLangKey.SIGNATURE_EXISTS, user.getSignature(true)) :
+                ResponseMessage.success(AppLangKey.SIGNATURE_NOT_EXISTS, "");
     }
 
     public static ResponseMessage changePassword(Params params, User user) throws InputException, ServerException, AuthException {
@@ -276,6 +276,6 @@ public class UserModel {
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.UPDATE_FAIL);
         }
-        return new ResponseMessage(VantarKey.UPDATE_SUCCESS);
+        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
     }
 }

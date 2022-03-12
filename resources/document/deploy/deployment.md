@@ -110,6 +110,8 @@ UTF8 EN and FA locales must be installed/enabled on the OS.
     >> browse http://172.26.8.122:8080/admin
     >> if everything is OK then admin dashboard will show up. ROOT access will be available for a short period of time to
     >> startup the system for first time.
+    >> goto menu "Advanced" > factory reset
+    >> or goto menu "Advanced" > restore a backup
     
 ## deploy on ubuntu (upgrades)
 
