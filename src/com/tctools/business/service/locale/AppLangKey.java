@@ -1,0 +1,44 @@
+package com.tctools.business.service.locale;
+
+import com.vantar.locale.LangKey;
+
+
+public enum AppLangKey implements LangKey {
+    IMPORT_SITE_DATA,
+    SYNCH_HSE_AUDIT,
+    SYNCH_HSE_AUDIT_WORK,
+    SYNCH_RADIO_METRIC,
+    IMPORT_BTS_FILE,
+    IMPORT_BTS_FIELD_ORDER,
+
+    ADDED,
+    UPDATED,
+
+    INVALID_SITE,
+    INVALID_ASSIGNEE,
+    DUPLICATE,
+
+    INVALID_STATE,
+    INVALID_MEASURE_CSV_DATA,
+    GPS_DATA_MISSING_CSV_DATA,
+
+    ADMIN_IMAGE_BROWSE,
+
+    INVALID_LOCATION,
+
+    SIGNATURE_EXISTS,
+    SIGNATURE_NOT_EXISTS,
+
+    NO_PROJECT_ACCESS,
+    UNKNOWN_FILE,
+
+    DOCX_CREATE_ERROR,
+
+    ADMIN_IMPORT_EXPORT,
+    ADMIN_EXPORT,
+    ADMIN_FIX,
+
+    EXPORT_FAIL,
+    SIGNIN_SUCCESS,
+}
+
