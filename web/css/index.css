@@ -776,3 +776,7 @@ table.form td {
     width: 24px!important;
     vertical-align: baseline!important;
 }
+
+p.link {
+    padding-left: 20px;
+}
