@@ -274,6 +274,10 @@ public class QuestionSubcontractor extends ExportCommon {
         // <option-name>
         public Set<String> extraOptions = new HashSet<>(10);
 
+        public QuestionStatistics() {
+
+        }
+
         public QuestionStatistics(List<Long> subContractorIds) {
             try {
                 for (SubContractor subContractor : Services.get(ServiceDtoCache.class).getList(SubContractor.class)) {

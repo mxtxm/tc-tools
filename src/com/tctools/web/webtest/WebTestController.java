@@ -18,6 +18,6 @@ public class WebTestController extends RouteToMethod {
     }
 
     public void web(Params params, HttpServletResponse response) {
-        Response.showTemplate(params, response, "/templates/webtest.jsp");
+        Response.showTemplate(params, response, "/templates/web-test.jsp");
     }
 }
