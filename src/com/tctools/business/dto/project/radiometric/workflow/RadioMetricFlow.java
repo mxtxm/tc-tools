@@ -110,6 +110,9 @@ public class RadioMetricFlow extends DtoBase {
     public Boolean isMeasurementGpsDataAvailable170;
     public Boolean isMeasurementTimeAcceptable170;
 
+
+    public Boolean isMwCm2;
+
     // Density min (µw/cm2)
     public Double densityMin100;
     // Density max(µw/cm2)

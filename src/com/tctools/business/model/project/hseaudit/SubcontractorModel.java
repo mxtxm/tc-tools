@@ -2,9 +2,9 @@ package com.tctools.business.model.project.hseaudit;
 
 import com.tctools.business.dto.project.hseaudit.SubContractor;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.*;
+import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.number.NumberUtil;
@@ -16,17 +16,7 @@ import java.util.*;
 public class SubcontractorModel {
 
     public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new SubContractor(), new SubContractor.Viewable());
-
-        try {
-            return CommonRepoMongo.search(queryData, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.searchX(params, new SubContractor(), new SubContractor.Viewable());
     }
 
     public static SubContractor.Viewable get(Params params) throws ServerException, NoContentException, InputException {

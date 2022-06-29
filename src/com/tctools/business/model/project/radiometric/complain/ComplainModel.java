@@ -8,7 +8,7 @@ import com.tctools.common.Param;
 import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.*;
+import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.log.LogEvent;
@@ -223,34 +223,35 @@ public class ComplainModel {
     }
 
     public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new RadioMetricComplain(), new RadioMetricComplain.Viewable());
-
-        try {
-            return CommonRepoMongo.search(queryData, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.searchX(params, new RadioMetricComplain(), new RadioMetricComplain.Viewable());
     }
 
-    public static Object assignable(Params params) throws ServerException, NoContentException {
+    public static Object assignable(Params params) throws ServerException, NoContentException, InputException {
         return getAssignQuery(params, true);
     }
 
-    public static Object assigned(Params params) throws ServerException, NoContentException {
+    public static Object assigned(Params params) throws ServerException, NoContentException, InputException {
         return getAssignQuery(params, false);
     }
 
-    private static Object getAssignQuery(Params params, boolean assignable) throws ServerException, NoContentException {
-        QueryBuilder q = new QueryBuilder(new RadioMetricComplain(), new RadioMetricComplain.Viewable());
-        q.condition().equal("assignable", assignable);
-        try {
-            return CommonRepoMongo.search(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+    private static Object getAssignQuery(Params params, boolean assignable) throws ServerException, NoContentException, InputException {
+        return CommonModelMongo.searchX(params, new RadioMetricComplain(), new RadioMetricComplain.Viewable()
+            , new CommonModel.QueryEvent() {
+                @Override
+                public void beforeQuery(QueryBuilder q) {
+                    q.condition().equal("assignable", assignable);
+                }
+
+                @Override
+                public void afterSetData(Dto dto) {
+
+                }
+
+                @Override
+                public void afterSetData(Dto dto, List<?> list) {
+
+                }
+            }
+        );
     }
 }

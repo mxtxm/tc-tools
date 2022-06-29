@@ -10,7 +10,7 @@ import com.tctools.common.util.SendMessage;
 import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.*;
+import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
@@ -189,7 +189,7 @@ public class WorkFlowModel {
             }
 
             for (HseAuditAnswer answer : flow.answers) {
-                if (answer.imageName != null && StringUtil.containsIgnoreCase(answer.imageName, originalFilename)) {
+                if (answer.imageName != null && StringUtil.containsCi(answer.imageName, originalFilename)) {
                     destinationPath = answer.getNextImagePath(flow);
                     FileUtil.move(tempPath, destinationPath);
                     break;
@@ -200,7 +200,7 @@ public class WorkFlowModel {
                 }
                 boolean brk = false;
                 for (String imageName : answer.imageNames) {
-                    if (imageName != null && StringUtil.containsIgnoreCase(imageName, originalFilename)) {
+                    if (imageName != null && StringUtil.containsCi(imageName, originalFilename)) {
                         destinationPath = answer.getNextImagePath(flow);
                         FileUtil.move(tempPath, destinationPath);
                         brk = true;
@@ -393,16 +393,7 @@ public class WorkFlowModel {
     }
 
     public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
-        try {
-            return CommonRepoMongo.search(queryData, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.searchX(params, new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
     }
 
     public static List<HseAuditQuestionnaire.ViewableTiny> getAssigned(Params params, User user) throws ServerException, NoContentException {

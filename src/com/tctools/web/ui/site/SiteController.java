@@ -36,17 +36,17 @@ public class SiteController extends RouteToMethod {
     }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void siteGet(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
-        Response.writeJson(response, SiteModel.get(params));
+    public void siteGet(Params params, HttpServletResponse response) throws VantarException {
+        Response.writeJson(response, SiteModel.getByIdOrCode(params));
     }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
-    public void sitesSearch(Params params, HttpServletResponse response) throws ServerException, NoContentException, InputException {
+    public void sitesSearch(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, SiteModel.search(params));
     }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void sitesAutocomplete(Params params, HttpServletResponse response) throws ServerException {
+    public void sitesAutocomplete(Params params, HttpServletResponse response) throws ServerException, NoContentException {
         Response.writeJson(response, SiteModel.autoComplete(params));
     }
 

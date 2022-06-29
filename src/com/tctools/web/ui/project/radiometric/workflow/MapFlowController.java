@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MapFlowController extends RouteToMethod {
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
-    public void radioMetricFlowsSearchMap(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException, AuthException {
+    public void radioMetricFlowsSearchMap(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, MapFlowModel.searchForMap(params));
     }

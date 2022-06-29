@@ -2,8 +2,9 @@ package com.tctools.business.model.project.radiometric.workflow;
 
 import com.tctools.business.dto.project.map.radiometric.RadioMetricMapFlow;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.business.*;
-import com.vantar.database.query.QueryData;
+import com.vantar.business.CommonModelMongo;
+import com.vantar.database.dto.Dto;
+import com.vantar.database.query.PageData;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.number.NumberUtil;
@@ -13,24 +14,20 @@ import java.util.*;
 
 public class MapFlowModel {
 
-    @SuppressWarnings({"unchecked"})
-    public static List<RadioMetricMapFlow> searchForMap(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new RadioMetricFlow(), new RadioMetricFlow.ViewableTiny());
+    public static List<RadioMetricMapFlow> searchForMap(Params params) throws VantarException {
+        PageData data = CommonModelMongo.search(
+            params,
+            new RadioMetricFlow(),
+            new RadioMetricFlow.ViewableTiny()
+        );
 
-        List<RadioMetricMapFlow> items = new ArrayList<>();
-        try {
-            for (RadioMetricFlow.ViewableTiny flow : (List<RadioMetricFlow.ViewableTiny>) CommonRepoMongo.search(queryData, params.getLang())) {
-                if (flow.site.location == null || flow.site.location.isEmpty()) {
-                    continue;
-                }
-                items.add(new RadioMetricMapFlow(flow));
+        List<RadioMetricMapFlow> items = new ArrayList<>(data.data.size());
+        for (Dto dto : data.data) {
+            RadioMetricFlow.ViewableTiny flow = (RadioMetricFlow.ViewableTiny) dto;
+            if (flow.site.location == null || flow.site.location.isEmpty()) {
+                continue;
             }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
+            items.add(new RadioMetricMapFlow(flow));
         }
         return items;
     }
@@ -46,8 +43,6 @@ public class MapFlowModel {
         if (flow.spotLocation == null || !flow.spotLocation.isValid()) {
             throw new InputException(VantarKey.INVALID_VALUE, "RadioMetricFlow.spotLocation");
         }
-
         return CommonModelMongo.update(flow);
     }
-
 }

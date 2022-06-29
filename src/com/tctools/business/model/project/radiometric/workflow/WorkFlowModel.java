@@ -6,24 +6,31 @@ import com.tctools.business.dto.site.Sector;
 import com.tctools.business.dto.user.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
+import com.tctools.common.util.Docx;
 import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.*;
+import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
+import com.vantar.util.json.Json;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
+import org.slf4j.*;
+import java.io.*;
 import java.util.*;
 
 
 public class WorkFlowModel {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkFlowModel.class);
+
 
     public static ResponseMessage delete(Params params) throws InputException, ServerException {
         return CommonModelMongo.delete(params, new RadioMetricFlow(), new CommonModel.WriteEvent() {
@@ -203,16 +210,7 @@ public class WorkFlowModel {
     }
 
     public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new RadioMetricFlow(), new RadioMetricFlow.Viewable());
-        try {
-            return CommonRepoMongo.search(queryData, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.searchX(params, new RadioMetricFlow(), new RadioMetricFlow.Viewable());
     }
 
     public static RadioMetricFlow.Viewable get(Params params) throws ServerException, NoContentException, InputException {
@@ -386,7 +384,51 @@ public class WorkFlowModel {
             }
 
             uploaded.moveTo(path);
+            if (imageType.equals(RadioMetricPhotoType.TowerView.name())) {
+                resize(path, 750, 999);
+            }
             success.put(key, pathToUrl(path));
+        }
+    }
+
+    public static void resize(String filePath, int x, int y) {
+        String jsonFilePath = Param.TEMP_DIR + filePath + NumberUtil.random(1, 1000) + ".json";
+        String command = "php -d memory_limit=512M " + Docx.class.getResource("/arta/app/docx/").getPath()
+            + "resize.php "
+            + jsonFilePath;
+
+        FileUtil.giveAllPermissions(Docx.class.getResource("/arta/app/docx/").getPath());
+
+        Map<String, Object> mapping = new HashMap<>(5);
+        mapping.put("f", filePath);
+        mapping.put("x", x);
+        mapping.put("y", y);
+        FileUtil.write(jsonFilePath, Json.d.toJson(mapping));
+
+        try (
+            BufferedReader input = new BufferedReader(
+                new InputStreamReader(
+                    Runtime.getRuntime()
+                        .exec(command)
+                        .getErrorStream()
+                )
+            )
+        ) {
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = input.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+            log.info("command={}\n\noutput={}\n\n", command, output);
+
+            if (output.length() > 0) {
+                throw new ServerException(output.toString());
+            }
+
+        } catch (Exception e) {
+            log.error("! {} < {}", filePath, mapping, e);
+        } finally {
+            FileUtil.removeFile(jsonFilePath);
         }
     }
 

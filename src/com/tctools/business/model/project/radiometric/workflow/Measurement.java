@@ -79,6 +79,7 @@ public class Measurement {
                         break;
                     // #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,
                     case 9:
+                        flow.isMwCm2 = record[3].contains("mW/cm2");
                         break;
                     // RECORDS FOR: #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,,
                     default:
@@ -151,9 +152,11 @@ public class Measurement {
         flow.setPropertyValue("isMeasurementGpsDataAvailable" + height, isMeasurementGpsDataAvailable);
         flow.setPropertyValue("isMeasurementRecordCountAcceptable" + height, measurementCount == MEASUREMENT_COUNT);
 
-        densityMin = vmToWcm2(densityMin);
-        densityMax = vmToWcm2(densityMax);
-        avg = vmToWcm2(avg);
+        if (!flow.isMwCm2) {
+            densityMin = vmToWcm2(densityMin);
+            densityMax = vmToWcm2(densityMax);
+            avg = vmToWcm2(avg);
+        }
 
         double calculatedAvg = measurementCount == 0 ?
             0 : ModelUtil.round(((sumValue2 / measurementCount) / 377) * 100, ROUND_TO_DECIMALS);

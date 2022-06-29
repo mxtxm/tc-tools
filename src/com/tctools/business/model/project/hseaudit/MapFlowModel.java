@@ -5,43 +5,34 @@ import com.tctools.business.dto.project.map.hseaudit.HseAuditMapFlow;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.business.*;
-import com.vantar.database.query.QueryData;
+import com.vantar.database.dto.Dto;
+import com.vantar.database.query.PageData;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
-import org.slf4j.*;
 import java.util.*;
 
 
 public class MapFlowModel {
 
-    private static final Logger log = LoggerFactory.getLogger(WorkFlowModel.class);
-
-    @SuppressWarnings({"unchecked"})
     public static List<HseAuditMapFlow> searchForMap(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.ViewableTiny());
+        PageData data = CommonModelMongo.search(
+            params,
+            new HseAuditQuestionnaire(),
+            new HseAuditQuestionnaire.ViewableTiny()
+        );
 
-        List<HseAuditMapFlow> items = new ArrayList<>();
-
-        try {
-            for (HseAuditQuestionnaire.ViewableTiny flow : (List<HseAuditQuestionnaire.ViewableTiny>) CommonRepoMongo.search(queryData, params.getLang())) {
-                if (flow.site.location == null || flow.site.location.isEmpty()) {
-                    continue;
-                }
-                items.add(new HseAuditMapFlow(flow));
+        List<HseAuditMapFlow> items = new ArrayList<>(data.data.size());
+        for (Dto dto : data.data) {
+            HseAuditQuestionnaire.ViewableTiny flow = (HseAuditQuestionnaire.ViewableTiny) dto;
+            if (flow.site.location == null || flow.site.location.isEmpty()) {
+                continue;
             }
-        } catch (DatabaseException e) {
-            log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
+            items.add(new HseAuditMapFlow(flow));
         }
-
         return items;
     }
 
@@ -101,8 +92,6 @@ public class MapFlowModel {
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
-
-        Long assigneeId = flow.assigneeId;
 
         flow.assignable = true;
         flow.copyable = false;

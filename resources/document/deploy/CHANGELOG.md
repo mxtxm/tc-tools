@@ -18,7 +18,16 @@ TH1262
 * complain: agar planned nabashad delete nakonad
 * complain state dashte bashad
 * moghe zip kardan axe complain toosh nist
-* 
+    * hast
+
+* vendore > radio metric >  terminate approve return
+* dashboard > complete verify approve darhar mah trend
+
+*obversation report betavanad chand soal bezarad
+    excel
+
+
+
 var g = [
         'rgba(255, 0, 0, 0)',
         'rgba(255, 255, 0, 0.9)',
@@ -44,7 +53,9 @@ var g = [
         });
 
 
- 
+## 2022-06-30 2.0.2 ##
+* add: detect measurement log file unit (isMwCm2 or vm)
+
 
 ## 2022-03-13 2.0.1 ##
 * fix: search bug

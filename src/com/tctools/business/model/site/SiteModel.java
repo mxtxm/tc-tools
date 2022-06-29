@@ -30,40 +30,30 @@ public class SiteModel {
         return CommonModelMongo.delete(params, new Site());
     }
 
-    public static Site.Viewable get(Params params) throws ServerException, NoContentException, InputException {
-        Site.Viewable site = new Site.Viewable();
-        site.id = params.getLong("id");
-        site.code = params.getString("code");
-
-        if (NumberUtil.isIdInvalid(site.id) && StringUtil.isEmpty(site.code)) {
+    public static Site.Viewable getByIdOrCode(Params params) throws VantarException {
+        Long id = params.getLong("id");
+        String code = params.getString("code");
+        if (NumberUtil.isIdInvalid(id) && StringUtil.isEmpty(code)) {
             throw new InputException(AppLangKey.INVALID_SITE);
         }
 
-        try {
-            return CommonRepoMongo.getFirst(site, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
+        QueryBuilder q = new QueryBuilder(new Site.Viewable());
+        if (id != null) {
+            q.condition().equal("id", id);
+        } else {
+            q.condition().equal("code", code);
         }
+        return CommonModelMongo.getFirst(params, q);
     }
 
-    public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
-        }
-        queryData.setDto(new Site(), new Site.Viewable());
-
-        try {
-            return CommonRepoMongo.search(queryData, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+    public static Object search(Params params) throws VantarException {
+        return CommonModelMongo.searchX(params, new Site(), new Site.Viewable());
     }
 
     public static List<Site.ViewableTiny> autoComplete(Params params) throws ServerException {
         String code = params.getString("code");
         if (StringUtil.isEmpty(code) || code.length() < 3) {
-            return new ArrayList<>();
+            return new ArrayList<>(1);
         }
 
         QueryBuilder q = new QueryBuilder(new Site(), new Site.ViewableTiny());
@@ -71,11 +61,9 @@ public class SiteModel {
         q.condition().like("code", code);
 
         try {
-            return CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
+            return CommonModelMongo.getData(params, q);
         } catch (NoContentException e) {
-            return new ArrayList<>();
+            return new ArrayList<>(1);
         }
     }
 
@@ -91,7 +79,7 @@ public class SiteModel {
         q.condition(QueryOperator.AND).near("location", location, params.getDouble("radius", DEFAULT_NEAR_SITE_RADIUS_METER));
 
         try {
-            List<Site.Viewable> items = CommonRepoMongo.getData(q, params.getLang());
+            List<Site.Viewable> items = CommonModelMongo.getData(params, q);
             if (exclude) {
                 for (int i = 0, l = items.size(); i < l; ++i) {
                     Site.Viewable item = items.get(i);
@@ -102,10 +90,8 @@ public class SiteModel {
                 }
             }
             return items;
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (NoContentException e) {
-            return new ArrayList<>();
+            return new ArrayList<>(1);
         }
     }
 

@@ -92,7 +92,7 @@ public class HseAuditQuestionnaire extends DtoBase {
 
     @Override
     public boolean beforeUpdate() {
-        if (lastState == HseAuditFlowState.Planned && scheduledDateTimeTo != null && scheduledDateTimeTo.isBefore(new DateTime())) {
+        if (lastState == HseAuditFlowState.Planned && scheduledDateTimeTo != null && scheduledDateTimeTo.isBeforeOrEqual(new DateTime())) {
             lastState = HseAuditFlowState.Expired;
         }
         assignable = isAssignable(lastState);
@@ -225,7 +225,7 @@ public class HseAuditQuestionnaire extends DtoBase {
 
         @Override
         public void afterFetchData() {
-            if (lastState == HseAuditFlowState.Planned && scheduledDateTimeTo != null && scheduledDateTimeTo.isBefore(new DateTime())) {
+            if (lastState == HseAuditFlowState.Planned && scheduledDateTimeTo != null && scheduledDateTimeTo.isBeforeOrEqual(new DateTime())) {
                 lastState = HseAuditFlowState.Expired;
                 assignable = true;
                 copyable = true;
@@ -303,7 +303,7 @@ public class HseAuditQuestionnaire extends DtoBase {
 
         @Override
         public void afterFetchData() {
-            if (lastState == HseAuditFlowState.Planned && scheduledDateTimeTo != null && scheduledDateTimeTo.isBefore(new DateTime())) {
+            if (lastState == HseAuditFlowState.Planned && scheduledDateTimeTo != null && scheduledDateTimeTo.isBeforeOrEqual(new DateTime())) {
                 lastState = HseAuditFlowState.Expired;
                 assignable = true;
                 copyable = true;

@@ -13,6 +13,7 @@ import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.number.NumberUtil;
+import com.vantar.util.object.ObjectUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import javax.servlet.http.HttpServletResponse;
@@ -63,7 +64,6 @@ public class ExportSite extends ExportCommon {
 
             String dir = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id;
             FileUtil.zip(dir, zipTempDir + zipFile, filename -> !filename.endsWith(".jpg.png"));
-
         }
         response.setContentType("application/zip");
         Response.download(response, zipTempDir + zipFile, zipFile);
@@ -136,7 +136,7 @@ public class ExportSite extends ExportCommon {
         missingSectors.add("C");
 
         List<Sector.Viewable> sectors = flow.sectors;
-        if (CollectionUtil.isEmpty(sectors)) {
+        if (ObjectUtil.isEmpty(sectors)) {
             sectors = flow.site.sectors;
         }
         if (sectors != null) {
