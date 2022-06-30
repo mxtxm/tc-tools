@@ -55,10 +55,13 @@ var g = [
 
 ## 2022-06-30 2.0.2 ##
 * add: detect measurement log file unit (isMwCm2 or vm)
+* fix: search date bug
+
 
 
 ## 2022-03-13 2.0.1 ##
 * fix: search bug
+
 
 
 ## 2022-03-11 2.0.0 ##

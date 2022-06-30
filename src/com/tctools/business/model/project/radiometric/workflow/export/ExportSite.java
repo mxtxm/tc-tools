@@ -63,18 +63,6 @@ public class ExportSite extends ExportCommon {
             }
 
             String dir = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id;
-//
-//            log.error(">>>>>>>>{}\n{}", dir, zipTempDir + zipFile);
-//
-//            FileUtil.zip(dir, zipTempDir + zipFile, new FileUtil.BeforeZipCallback() {
-//                @Override
-//                public boolean accept(String s) {
-//                    log.error(">>>>>>>>{}", s);
-//
-//                    return true;
-//                }
-//            });
-
             FileUtil.zip(dir, zipTempDir + zipFile, filename -> !filename.endsWith(".jpg.png"));
         }
         response.setContentType("application/zip");

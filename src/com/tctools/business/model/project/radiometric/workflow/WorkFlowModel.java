@@ -11,7 +11,7 @@ import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryBuilder;
+import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
@@ -209,8 +209,9 @@ public class WorkFlowModel {
         return StringUtil.replace(path, Param.RADIO_METRIC_FILES, Param.RADIO_METRIC_URL);
     }
 
-    public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        return CommonModelMongo.searchX(params, new RadioMetricFlow(), new RadioMetricFlow.Viewable());
+    public static PageData search(Params params) throws ServerException, NoContentException, InputException {
+        log.error("ll");
+        return CommonModelMongo.search(params, new RadioMetricFlow(), new RadioMetricFlow.Viewable());
     }
 
     public static RadioMetricFlow.Viewable get(Params params) throws ServerException, NoContentException, InputException {
