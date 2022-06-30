@@ -11,23 +11,6 @@ import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-//todo ERROR 10:42:50 RouteToMethod.java:73 ! unhandled error
-//    java.lang.IllegalArgumentException: This Style does not belong to the supplied Workbook Styles Source. Are you trying to assign a style from one workbook to the cell of a different workbook?
-//    at org.apache.poi.xssf.usermodel.XSSFCellStyle.verifyBelongsToStylesSource(XSSFCellStyle.java:123) ~[poi-ooxml-5.0.0.jar:5.0.0]
-//    at org.apache.poi.xssf.usermodel.XSSFCell.setCellStyle(XSSFCell.java:646) ~[poi-ooxml-5.0.0.jar:5.0.0]
-//    at com.tctools.business.model.project.radiometric.workflow.export.ExportWaveControl.setHeader(ExportWaveControl.java:237) ~[classes/:?]
-//    at com.tctools.business.model.project.radiometric.workflow.export.ExportWaveControl.excel(ExportWaveControl.java:63) ~[classes/:?]
-//    at com.tctools.web.ui.project.radiometric.workflow.ExportController.radioMetricReportWavecontrolExcel(ExportController.java:44) ~[classes/:?]
-//    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
-//    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:?]
-//    at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
-//    at java.lang.reflect.Method.invoke(Method.java:566) ~[?:?]
-//    at com.vantar.web.RouteToMethod.service(RouteToMethod.java:49) [classes/:?]
-//    at javax.servlet.http.HttpServlet.service(HttpServlet.java:741) [tomcat9-servlet-api-9.0.31.jar:?]
-//    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231) [tomcat9-catalina-9.0.31.jar:9.0.31]
-//    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) [tomcat9-catalina-9.0.31.jar:9.0.31]
-//    at org.apache.tomcat.websocket.se
-
 @WebServlet({
     "/ui/radio/metric/site/docx",
     "/ui/radio/metric/site/zip",
