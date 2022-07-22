@@ -42,6 +42,7 @@ function get(url, data, auth, lang, success, fail) {
         type: "GET",
         data: data,
         dataType: "json",
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -75,6 +76,7 @@ function getString(url, data, auth, lang, success, fail) {
         url: url,
         type: "GET",
         data: data,
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -109,6 +111,7 @@ function post(url, data, auth, lang, success, fail) {
         type: "POST",
         data: data,
         dataType: "json",
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -144,6 +147,7 @@ function postJson(url, data, auth, lang, success, fail) {
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json; charset=utf-8",
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -178,6 +182,7 @@ function getSynched(url, data, auth, lang, success, fail) {
         type: "GET",
         data: data ? data : {},
         async: false,
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -229,7 +234,7 @@ function postFile(url, data, files, auth, lang, success, fail) {
         cache: false,
         contentType: false,
         processData: false,
-        timeout: 600000,
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -265,6 +270,7 @@ function postSynch(url, data, auth, lang, success, fail) {
         data: data,
         dataType: "json",
         async: false,
+        timeout: 10800000,
         beforeSend: function(request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
@@ -346,7 +352,7 @@ function objectToHtml(obj, cls) {
     if (Array.isArray(obj)) {
         let html = "<table" + (cls ? " class='" + cls + "'" : "") + ">";
         let l = obj.length;
-        if (l == 0) {
+        if (l === 0) {
             return "empty";
         }
         for (let i=0; i<l; ++i) {

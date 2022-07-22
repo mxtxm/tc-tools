@@ -65,28 +65,55 @@ public class SignificanceMonth extends ExportCommon {
                 firstCol += result.statisticTitles.size();
             }
 
+
+            Map<Integer, Double> totals = new HashMap<>(100);
+            Set<Integer> percents = new HashSet<>(100);
+
             int r = 1;
             for (Map.Entry<String, SignificanceStatistics> entry : result.significanceStatistics.entrySet()) {
                 int c = 0;
                 Row row = sheet.createRow(++r);
-                setContractor(wb, row, c, entry.getKey());
+                setPane(wb, row, c, entry.getKey());
 
                 for (ProvinceOrder provinceOrder : result.provinceOrdered) {
                     SignificanceStatistics.Statistics s = entry.getValue().statistics.get(provinceOrder.name);
 
                     int t = s.provinceAuditCount;
                     setTotalAudit(wb, row, ++c, Integer.toString(t));
+                    Double v = totals.get(c);
+                    totals.put(c, v == null ? t : (v + t));
 
                     setDataCell(wb, row, ++c, Integer.toString(s.critical));
+                    v = totals.get(c);
+                    totals.put(c, v == null ? s.critical : (v + s.critical));
                     setDataCell(wb, row, ++c, Double.toString(
                         Math.round((s.critical * 100.0 / t) * 100.0) / 100.0
                     ));
+                    v = totals.get(c);
+                    totals.put(c, v == null ? (s.critical * 100.0 / t) : (v + (s.critical * 100.0 / t)));
+                    percents.add(c);
 
                     setDataCell(wb, row, ++c, Integer.toString(s.major));
+                    v = totals.get(c);
+                    totals.put(c, v == null ? s.major : (v + s.major));
                     setDataCell(wb, row, ++c, Double.toString(
                         Math.round((s.major * 100.0 / t) * 100.0) / 100.0
                     ));
+                    v = totals.get(c);
+                    totals.put(c, v == null ? (s.major * 100.0 / t) : (v + (s.major * 100.0 / t)));
+                    percents.add(c);
                 }
+            }
+
+            Row row = sheet.createRow(++r);
+            int d = r - 2;
+            setPane(wb, row, 0, "جمع");
+            for (Map.Entry<Integer, Double> entry : totals.entrySet()) {
+                double v = entry.getValue();
+                if (percents.contains(entry.getKey())) {
+                    v = Math.round((v / d) * 10.d) / 10.d;
+                }
+                setDataCell(wb, row, entry.getKey(), Double.toString(v));
             }
 
             // set totals
@@ -102,7 +129,7 @@ public class SignificanceMonth extends ExportCommon {
 
 
             ++r;
-            Row row = sheet.createRow(++r);
+            row = sheet.createRow(++r);
             setDataCell(wb, row, 0, "تعداد کل بازرسی");
             setDataCell(wb, row, 1, Integer.toString(totalAuditCount));
 
@@ -353,7 +380,7 @@ public class SignificanceMonth extends ExportCommon {
         cell.setCellValue(value);
     }
 
-    private void setContractor(Workbook wb, Row row, int col, String value) {
+    private void setPane(Workbook wb, Row row, int col, String value) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(getCellStyleQuestion(wb));
         cell.setCellValue(value);

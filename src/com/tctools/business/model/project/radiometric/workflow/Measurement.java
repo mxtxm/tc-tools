@@ -144,9 +144,9 @@ public class Measurement {
             isMeasurementGpsDataAvailable = false;
         }
 
-        if (!isMeasurementGpsDataAvailable) {
-            errors.add(new ValidationError(Param.FILE_UPLOAD + height, AppLangKey.GPS_DATA_MISSING_CSV_DATA));
-        }
+//        if (!isMeasurementGpsDataAvailable) {
+//            errors.add(new ValidationError(Param.FILE_UPLOAD + height, AppLangKey.GPS_DATA_MISSING_CSV_DATA));
+//        }
 
         flow.setPropertyValue("isMeasurementTimeAcceptable" + height, isMeasurementTimeAcceptable);
         flow.setPropertyValue("isMeasurementGpsDataAvailable" + height, isMeasurementGpsDataAvailable);
@@ -172,7 +172,7 @@ public class Measurement {
         flow.setPropertyValue("radiationStatus" + height, RadioMetricRadiationStatus.Compatible);
 
         // > > > validation
-        Set<String> msg = new HashSet<>();
+        Set<String> msg = new HashSet<>(10);
         if (flow.validationMessage != null) {
             for (String m : StringUtil.splitToSet(flow.validationMessage, '\n')) {
                 if (!m.startsWith(height + ":")) {

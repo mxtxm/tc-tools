@@ -6,7 +6,7 @@ import com.tctools.business.service.locale.LocaleService;
 import com.vantar.admin.model.AdminDocument;
 import com.vantar.common.Settings;
 import com.vantar.database.nosql.mongo.MongoConnection;
-import com.vantar.exception.ServiceException;
+import com.vantar.exception.*;
 import com.vantar.http.Ssl;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
@@ -86,9 +86,9 @@ public class Application implements ServletContextListener {
                 try {
                     Services.get(ServiceAuth.class)
                         .restoreFromBackup()
-                        .startupSignin(User.getTemporaryRoot())
-                        .setEvent(AuthModel::getUserForAuth);
-                } catch (ServiceException e) {
+                        .setEvent(AuthModel::getUserForAuth)
+                        .startupSignin(User.getTemporaryRoot());
+                } catch (ServiceException | AuthException e) {
                     log.error("! ", e);
                 }
             }

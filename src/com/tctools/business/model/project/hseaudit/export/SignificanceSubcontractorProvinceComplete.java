@@ -71,6 +71,13 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
             sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
             firstCol += result.statisticTitles.size();
 
+            int totalAuditCount = 0;
+            int totalCritical = 0;
+            double totalCriticalP = 0;
+            int totalMajor = 0;
+            double totalMajorP = 0;
+            int totalSafe = 0;
+            int totalUnsafe = 0;
             int r = 1;
             for (Map.Entry<String, QuestionStatistics> e : result.statistics.entrySet()) {
                 int c = 0;
@@ -83,15 +90,22 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
 
                 int t = s.totalAuditCount;
                 setTotalAudit(wb, row, ++c).setCellValue(t);
+                totalAuditCount += t;
 
                 setDataCell(wb, row, ++c).setCellValue(s.totalCritical);
+                totalCritical += s.totalCritical;
                 setDataCell(wb, row, ++c).setCellValue(Math.round((s.totalCritical * 100.0 / t) * 100.0) / 100.0);
+                totalCriticalP += s.totalCritical * 100.0 / t;
 
                 setDataCell(wb, row, ++c).setCellValue(s.totalMajor);
+                totalMajor += s.totalMajor;
                 setDataCell(wb, row, ++c).setCellValue(Math.round((s.totalMajor * 100.0 / t) * 100.0) / 100.0);
+                totalMajorP += s.totalMajor * 100.0 / t;
 
                 setDataCell(wb, row, ++c).setCellValue(s.totalSafe);
+                totalSafe += s.totalSafe;
                 setDataCell(wb, row, ++c).setCellValue(s.totalUnsafe);
+                totalUnsafe += s.totalUnsafe;
 
                 int statusIndex;
                 String statusValue;
@@ -111,6 +125,20 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
                 }
                 setStatus(wb, row, ++c, statusIndex).setCellValue(statusValue);
             }
+            Row rowT = sheet.createRow(++r);
+            int rr = r - 2;
+            setDataCell(wb, rowT, 0).setCellValue("جمع");
+            setDataCell(wb, rowT, 1).setCellValue(Integer.toString(totalAuditCount));
+            setDataCell(wb, rowT, 2).setCellValue(Integer.toString(totalCritical));
+            setDataCell(wb, rowT, 3).setCellValue(Double.toString(
+                Math.round((totalCriticalP / rr) * 100.0) / 100.0
+            ));
+            setDataCell(wb, rowT, 4).setCellValue(Integer.toString(totalMajor));
+            setDataCell(wb, rowT, 5).setCellValue(Double.toString(
+                Math.round((totalMajorP / rr) * 100.0) / 100.0
+            ));
+            setDataCell(wb, rowT, 6).setCellValue(Integer.toString(totalSafe));
+            setDataCell(wb, rowT, 7).setCellValue(Integer.toString(totalUnsafe));
 
 
             for (int i = 0 ; i < firstCol ; ++i) {
@@ -153,6 +181,14 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
                 sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
                 firstCol += result.statisticTitles.size();
 
+
+                totalAuditCount = 0;
+                totalCritical = 0;
+                totalCriticalP = 0;
+                totalMajor = 0;
+                totalMajorP = 0;
+                totalSafe = 0;
+                totalUnsafe = 0;
                 r = 1;
                 for (Map.Entry<String, QuestionStatistics.Statistics> entry : stats.statistics.entrySet()) {
                     int c = 0;
@@ -165,15 +201,22 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
 
                     int t = s.auditCount;
                     setTotalAudit(wb, row, ++c).setCellValue(t);
+                    totalAuditCount += t;
 
                     setDataCell(wb, row, ++c).setCellValue(s.critical);
+                    totalCritical += s.critical;
                     setDataCell(wb, row, ++c).setCellValue(Math.round((s.critical * 100.0 / t) * 100.0) / 100.0);
+                    totalCriticalP += s.critical * 100.0 / t;
 
                     setDataCell(wb, row, ++c).setCellValue(s.major);
+                    totalMajor += s.major;
                     setDataCell(wb, row, ++c).setCellValue(Math.round((s.major * 100.0 / t) * 100.0) / 100.0);
+                    totalMajorP += s.major * 100.0 / t;
 
                     setDataCell(wb, row, ++c).setCellValue(s.safe);
+                    totalSafe += s.safe;
                     setDataCell(wb, row, ++c).setCellValue(s.unsafe);
+                    totalUnsafe += s.unsafe;
 
                     int statusIndex;
                     String statusValue;
@@ -193,6 +236,21 @@ public class SignificanceSubcontractorProvinceComplete extends ExportCommon {
                     }
                     setStatus(wb, row, ++c, statusIndex).setCellValue(statusValue);
                 }
+                rowT = sheet.createRow(++r);
+                rr = r - 2;
+                setDataCell(wb, rowT, 0).setCellValue("جمع");
+                setDataCell(wb, rowT, 1).setCellValue(Integer.toString(totalAuditCount));
+                setDataCell(wb, rowT, 2).setCellValue(Integer.toString(totalCritical));
+                setDataCell(wb, rowT, 3).setCellValue(Double.toString(
+                    Math.round((totalCriticalP / rr) * 100.0) / 100.0
+                ));
+                setDataCell(wb, rowT, 4).setCellValue(Integer.toString(totalMajor));
+                setDataCell(wb, rowT, 5).setCellValue(Double.toString(
+                    Math.round((totalMajorP / rr) * 100.0) / 100.0
+                ));
+                setDataCell(wb, rowT, 6).setCellValue(Integer.toString(totalSafe));
+                setDataCell(wb, rowT, 7).setCellValue(Integer.toString(totalUnsafe));
+
 
                 for (int i = 0 ; i < firstCol ; ++i) {
                     sheet.autoSizeColumn(i);

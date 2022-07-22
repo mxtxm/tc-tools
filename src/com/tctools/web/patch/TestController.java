@@ -2,6 +2,7 @@ package com.tctools.web.patch;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
+import com.tctools.common.util.ModelUtil;
 import com.vantar.exception.*;
 import com.vantar.util.json.*;
 import com.vantar.web.*;
@@ -11,7 +12,6 @@ import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.*;
 
 
 @WebServlet({
@@ -44,18 +44,7 @@ public class TestController extends RouteToMethod {
     }
 
     public void index(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
-
-        List<String> a1 = new ArrayList<>();
-        a1.add("a1");
-        a1.add("a12");
-        a1.add("a13");
-        List<String> a2 = a1;
-        a1 = new ArrayList<>();
-        a1.add("b1");
-        a1.add("b2");
-        a1.add("b3");
-
-        log.error(">>>{}\n\n{}",a1,a2);
+        log.error(">>>{}\n\n{}", ModelUtil.round(.002213312,2),ModelUtil.round(.000000000000002213312,5));
 
 
         if (1==1)return;

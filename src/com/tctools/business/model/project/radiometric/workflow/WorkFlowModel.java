@@ -210,7 +210,6 @@ public class WorkFlowModel {
     }
 
     public static PageData search(Params params) throws ServerException, NoContentException, InputException {
-        log.error("ll");
         return CommonModelMongo.search(params, new RadioMetricFlow(), new RadioMetricFlow.Viewable());
     }
 

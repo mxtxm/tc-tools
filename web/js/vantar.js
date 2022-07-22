@@ -44,4 +44,17 @@ $(window).on("load", function () {
         t.attr("data-ischecked", isChecked === 'y' ? 'n' : 'y');
     });
 
+    $(".vtx").each(function () {
+        let t = $(this);
+        t.on("dblclick", function () {
+            if (t.hasClass("extended")) {
+                t.height("50px");
+                t.removeClass("extended");
+            } else {
+                t.height(t[0].scrollHeight);
+                t.addClass("extended");
+            }
+        });
+    });
+
 });

@@ -13,7 +13,7 @@
         <p>
             <select id="base-url">
                 <option value="http://localhost:8081">http://localhost:8081</option>
-                <option value="http://185.208.181.61:8083">http://185.208.181.61:8083</option>
+                <option value="http://www.cel.ictrc.ac.ir:8080">http://www.cel.ictrc.ac.ir:8080</option>
             </select>
         </p>
         <p id="auth-form">
@@ -38,8 +38,8 @@
 
         <div id="file-container">
             <div>
-                <input id="file-key" placeholder="file-key"/>
-                <button type="button" id="file-add-row">add upload</button>
+                <input id="file-key" placeholder="FILE KEY"/>
+                <button type="button" id="file-add-row">add</button>
             </div>
             <div id="files"></div>
         </div>
@@ -77,6 +77,13 @@ let preTests = [],
     tests = [],
     requestCount = 1;
 
+function working(isWorking) {
+    $("#working").remove();
+    if (isWorking) {
+        $("#right-pane").prepend("<p id='working'>please wait...</p>");
+    }
+}
+
 $(window).on("load", function () {
 
 
@@ -92,11 +99,16 @@ $(window).on("load", function () {
 
 
     $('#file-add-row').on("click", function () {
+        const key = $("#file-key").val();
+        if (!key) {
+            return
+        }
         $("#files").append(
             '<div>' +
-            '<input class="file-select" id="' + $("#file-key").val() + '" type="file" placeholder="upload file"/>' +
+            '<input class="file-select" id="' + key + '" type="file" placeholder="upload file"/>' +
             '</div>'
         );
+        $("#file-key").val("");
     });
 
 
@@ -109,6 +121,7 @@ $(window).on("load", function () {
 
 
     $("#get-token").on("click", function () {
+        working(true);
         post(
             $("#base-url").val() + "/ui/user/signin",
             {
@@ -118,8 +131,8 @@ $(window).on("load", function () {
             "",
             "",
             function (data) {
-                inspect(data);
-                $("#auth").val(data.dto.token);
+                $("#auth").val(data.accessToken ? data.accessToken : data.dto.token);
+                working(false);
             }
         );
     });
@@ -161,6 +174,7 @@ $(window).on("load", function () {
 
 
     $("#add-unit-test").on("click", function () {
+        working(true);
         post(
             $("#base-url").val() + "/test/web/insert",
             {
@@ -176,6 +190,7 @@ $(window).on("load", function () {
             $.trim($("#auth").val()),
             "",
             function (data) {
+                working(false);
                 $("#status, #error-container").append("");
                 $("#success-container").html("TEST STORED");
                 alert("TEST STORED");
@@ -193,6 +208,8 @@ $(window).on("load", function () {
 
 
 function executeTest(tData) {
+    working(true);
+
     let data = fixData(tData.data),
         method = tData.method,
         baseUrl = $("#base-url").val(),
@@ -229,6 +246,8 @@ function executeTest(tData) {
         },
         // > > > SUCCESS
         success = function (rdata, status) {
+            working(false);
+
             addResult(status, JSON.stringify(rdata), false);
 
             if (tests.length > 0) {
@@ -251,6 +270,8 @@ function executeTest(tData) {
         },
         // > > > FAIL
         fail = function (rData, status) {
+            working(false);
+
             $("#status").html(status);
             addResult(status, false, JSON.stringify(rData));
         };
@@ -276,17 +297,22 @@ function executeTest(tData) {
 }
 
 function fixData(data) {
-    if (data.endsWith("}") && data.startsWith("{")) {
+    if ((data.endsWith("}") && data.startsWith("{")) || data.endsWith("[") && data.startsWith("]")) {
         data = JSON.parse(data);
     } else {
-        let d = data.split('\n');
+        let d = data.split(data.includes('&') ? '&' : '\n');
         data = {};
         for (let i = 0, l = d.length ; i < l ; ++i) {
-            let kv = d[i].split(d[i].indexOf('=') ? '=' : ':');
-            data[$.trim(kv[0])] = $.trim(kv[1]);
+            let kv = d[i].split(d[i].indexOf('=') > 0 ? '=' : ':');
+            data[trim(kv[0])] = trim(kv[1]);
         }
     }
     return data;
+}
+
+function trim(string) {
+    string = $.trim($.trim(string).replace(/,+$/g, ''));
+    return $.trim($.trim(string).replace(/^"+|"+$/g, ''));
 }
 //]]>
 </script>

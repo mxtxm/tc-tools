@@ -13,7 +13,8 @@
         <p>
             <select id="base-url">
                 <option value="http://localhost:8081">http://localhost:8081</option>
-                <option value="http://185.208.181.61:8083">http://185.208.181.61:8083</option>
+                <option value="http://172.16.1.31">http://172.16.1.31</option>
+                <option value="http://proda.ictrc.ac.ir">http://proda.ictrc.ac.ir</option>
             </select>
         </p>
         <p id="auth-form">

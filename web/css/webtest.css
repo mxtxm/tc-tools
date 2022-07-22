@@ -397,4 +397,32 @@ body {
 
 #file-container {
     display: none;
+    margin: 2px;
+    padding: 2px 10px 10px 10px;
+    background-color: #d6fff5;
 }
+
+#file-container div {
+    margin: 0!important;
+    padding: 0!important;
+}
+
+#file-key {
+    width: 90px!important;
+    margin-left: 2px!important;
+    background-color: white;
+}
+
+#file-add-row {
+    width: 90px!important;
+    height: 30px!important;
+}
+
+#files {
+    margin-left: 4px !important;
+}
+
+#files input {
+    border: none;
+}
+

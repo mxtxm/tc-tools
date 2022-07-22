@@ -1,5 +1,6 @@
 package com.tctools.common.util;
 
+import com.tctools.web.patch.TestController;
 import com.vantar.database.dto.Dto;
 import com.vantar.exception.ServiceException;
 import com.vantar.service.Services;
@@ -91,6 +92,7 @@ public class ModelUtil {
         while (floatParts[1].charAt(decimals) == '0') {
             ++decimals;
         }
+        TestController.log.error(">>>>{}",decimals);
         return NumberUtil.round(d, ++decimals);
     }
 }
