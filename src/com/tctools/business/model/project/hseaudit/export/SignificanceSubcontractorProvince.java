@@ -56,26 +56,29 @@ public class SignificanceSubcontractorProvince extends ExportCommon {
 
             for (ProvinceOrder provinceOrder : result.provinceOrdered) {
                 setProvinceHeader(wb, row1, firstCol, provinceOrder.name);
-
                 for (String title : result.statisticTitles) {
                     setStatisticsHeader(wb, row2, ++lastCol, title);
                 }
-
                 sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
                 firstCol += result.statisticTitles.size();
             }
+            setProvinceHeader(wb, row1, firstCol, "کل");
+            setStatisticsHeader(wb, row2, ++lastCol, "بازرسی");
 
+            int totatotal = 0;
             int r = 1;
             for (Map.Entry<String, QuestionStatistics> entry : result.questionStatistics.entrySet()) {
                 int c = 0;
                 Row row = sheet.createRow(++r);
                 setContractor(wb, row, c, entry.getKey());
 
+                int tRowAuditCount = 0;
                 for (ProvinceOrder provinceOrder : result.provinceOrdered) {
                     QuestionStatistics.Statistics s = entry.getValue().statistics.get(provinceOrder.name);
 
                     int t = s.provinceAuditCount;
                     setTotalAudit(wb, row, ++c, Integer.toString(t));
+                    tRowAuditCount += t;
 
                     setDataCell(wb, row, ++c, Integer.toString(s.critical));
                     setDataCell(wb, row, ++c, Double.toString(
@@ -87,6 +90,9 @@ public class SignificanceSubcontractorProvince extends ExportCommon {
                         Math.round((s.major * 100.0 / t) * 100.0) / 100.0
                     ));
                 }
+                setDataCell(wb, row, ++c, Integer.toString(tRowAuditCount));
+                totatotal += tRowAuditCount;
+//                totals.put(c, totatotal * 1.0);
             }
 
             for (int i = 0 ; i < firstCol ; ++i) {

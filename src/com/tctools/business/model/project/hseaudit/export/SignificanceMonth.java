@@ -56,25 +56,26 @@ public class SignificanceMonth extends ExportCommon {
 
             for (ProvinceOrder provinceOrder : result.provinceOrdered) {
                 setProvinceHeader(wb, row1, firstCol, provinceOrder.name);
-
                 for (String title : result.statisticTitles) {
                     setStatisticsHeader(wb, row2, ++lastCol, title);
                 }
-
                 sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
                 firstCol += result.statisticTitles.size();
             }
-
+            setProvinceHeader(wb, row1, firstCol, "کل");
+            setStatisticsHeader(wb, row2, ++lastCol, "بازرسی");
 
             Map<Integer, Double> totals = new HashMap<>(100);
             Set<Integer> percents = new HashSet<>(100);
 
+            int totatotal = 0;
             int r = 1;
             for (Map.Entry<String, SignificanceStatistics> entry : result.significanceStatistics.entrySet()) {
                 int c = 0;
                 Row row = sheet.createRow(++r);
                 setPane(wb, row, c, entry.getKey());
 
+                int tRowAuditCount = 0;
                 for (ProvinceOrder provinceOrder : result.provinceOrdered) {
                     SignificanceStatistics.Statistics s = entry.getValue().statistics.get(provinceOrder.name);
 
@@ -82,6 +83,7 @@ public class SignificanceMonth extends ExportCommon {
                     setTotalAudit(wb, row, ++c, Integer.toString(t));
                     Double v = totals.get(c);
                     totals.put(c, v == null ? t : (v + t));
+                    tRowAuditCount += t;
 
                     setDataCell(wb, row, ++c, Integer.toString(s.critical));
                     v = totals.get(c);
@@ -103,6 +105,9 @@ public class SignificanceMonth extends ExportCommon {
                     totals.put(c, v == null ? (s.major * 100.0 / t) : (v + (s.major * 100.0 / t)));
                     percents.add(c);
                 }
+                setDataCell(wb, row, ++c, Integer.toString(tRowAuditCount));
+                totatotal += tRowAuditCount;
+                totals.put(c, totatotal * 1.0);
             }
 
             Row row = sheet.createRow(++r);
@@ -125,7 +130,6 @@ public class SignificanceMonth extends ExportCommon {
                 totalSafe += s.totalSafe;
                 totalUnsafe += s.totalUnsafe;
             }
-
 
 
             ++r;

@@ -1,11 +1,18 @@
 # TC-Tools #
 
-* front: 
+
+http://localhost:8081/ui/hse/audit/significance/month?excel=true&from=1399-09-01&to=1400-05-30
+http://localhost:8081/ui/hse/audit/significance/subcontractor/province?excel=true&from=1399-09-01&to=1400-05-30
 
 
-YZ6003 ibs
-KS0205
-TH1262
+
+    //http://localhost:8081/ui/hse/audit/significance/subcontractor/province/complete?from=1400-01-1&to=1400-5-5&excel=1
+    //http://www.cel.ictrc.ac.ir:8080/ui/hse/audit/significance/subcontractor/province/complete?from=1400-01-1&to=1400-5-5&excel=1
+
+    //http://localhost:8081/ui/hse/audit/significance/subcontractor/province?from=1400-01-1&to=1400-5-5&subcontractorids=399,123
+    //http://localhost:8081/ui/hse/audit/significance/subcontractor?from=1400-01-1&to=1400-5-5&provinceids=1,2,30
+    //http://localhost:8081/ui/hse/audit/question/subcontractor?from=1399-09-1&to=1400-5-30&provinceids=1,2,30
+
 
 * todo: picture: dakal dast nazanad 
 * todo: picture: 750x999
@@ -29,17 +36,17 @@ TH1262
 
 
 var g = [
-        'rgba(255, 0, 0, 0)',
-        'rgba(255, 255, 0, 0.9)',
-        'rgba(0, 255, 0, 0.7)',
-        'rgba(173, 255, 47, 0.5)',
-        'rgba(152, 251, 152, 0)',
-        'rgba(152, 251, 152, 0)',
-        'rgba(0, 0, 238, 0.5)',
-        'rgba(186, 85, 211, 0.7)',
-        'rgba(255, 0, 255, 0.9)',
-        'rgba(255, 0, 0, 1)'
-        ];
+    'rgba(255, 0, 0, 0)',
+    'rgba(255, 255, 0, 0.9)',
+    'rgba(0, 255, 0, 0.7)',
+    'rgba(173, 255, 47, 0.5)',
+    'rgba(152, 251, 152, 0)',
+    'rgba(152, 251, 152, 0)',
+    'rgba(0, 0, 238, 0.5)',
+    'rgba(186, 85, 211, 0.7)',
+    'rgba(255, 0, 255, 0.9)',
+    'rgba(255, 0, 0, 1)'
+];
 
         $("html, body").animate({ scrollTop: 0 }, "slow");
         me.heatmap = new google.maps.visualization.HeatmapLayer({
