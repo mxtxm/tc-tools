@@ -111,7 +111,9 @@ public class RadioMetricFlow extends DtoBase {
     public Boolean isMeasurementTimeAcceptable170;
 
 
-    public Boolean isMwCm2;
+    public Boolean isMwCm2100;
+    public Boolean isMwCm2150;
+    public Boolean isMwCm2170;
 
     // Density min (µw/cm2)
     public Double densityMin100;

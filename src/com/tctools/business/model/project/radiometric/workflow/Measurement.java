@@ -45,6 +45,7 @@ public class Measurement {
 
         DateTime startDateTime = null;
         DateTime endDateTime = null;
+        boolean isMwCm2 = false;
 
         try (CSVReader reader = new CSVReader(new FileReader(csvPath))) {
             while ((record = reader.readNext()) != null) {
@@ -79,7 +80,7 @@ public class Measurement {
                         break;
                     // #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,
                     case 9:
-                        flow.isMwCm2 = record[3].contains("mW/cm2");
+                        isMwCm2 = record[3].contains("mW/cm2");
                         break;
                     // RECORDS FOR: #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,,
                     default:
@@ -152,7 +153,7 @@ public class Measurement {
         flow.setPropertyValue("isMeasurementGpsDataAvailable" + height, isMeasurementGpsDataAvailable);
         flow.setPropertyValue("isMeasurementRecordCountAcceptable" + height, measurementCount == MEASUREMENT_COUNT);
 
-        if (!flow.isMwCm2) {
+        if (!isMwCm2) {
             densityMin = vmToWcm2(densityMin);
             densityMax = vmToWcm2(densityMax);
             avg = vmToWcm2(avg);
@@ -162,6 +163,7 @@ public class Measurement {
             0 : ModelUtil.round(((sumValue2 / measurementCount) / 377) * 100, ROUND_TO_DECIMALS);
         double densityAverageDivMinRadiation = ModelUtil.round(avg / MIN_RADIATION_LEVEL_DIV, ROUND_TO_DECIMALS);
 
+        flow.setPropertyValue("isMwCm2" + height, isMwCm2);
         flow.setPropertyValue("densityMin" + height, densityMin);
         flow.setPropertyValue("densityMax" + height, densityMax);
         flow.setPropertyValue("densityAverage6min" + height, calculatedAvg);
