@@ -174,16 +174,20 @@ public class QuestionProvince extends ExportCommon {
             result.setAudit(questionnaire.site.province.name);
             availableProvinces.add(questionnaire.site.province.name);
             for (HseAuditAnswer answer: questionnaire.answers) {
-                if (answer.question.title == null) {
-                    continue;
-                }
-                String v = answer.question.title.get(LANG);
-                if (v == null) {
-                    continue;
-                }
                 if (answer.question.questionType.equals(HseAuditQuestionType.Option)) {
-                    result.questionStatistics
-                        .get(answer.question.title.get(LANG)).statistics
+                    if (answer.question.title == null) {
+                        continue;
+                    }
+                    String v = answer.question.title.get(LANG);
+                    if (v == null) {
+                        continue;
+                    }
+                    QuestionStatistics s = result.questionStatistics.get(v);
+                    if (s == null) {
+                        continue;
+                    }
+
+                    s.statistics
                         .get(questionnaire.site.province.name)
                         .set(questionnaire, answer);
                 }
