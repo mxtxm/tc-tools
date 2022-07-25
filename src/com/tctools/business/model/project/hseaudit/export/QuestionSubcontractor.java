@@ -187,8 +187,11 @@ public class QuestionSubcontractor extends ExportCommon {
                     if (v == null) {
                         continue;
                     }
-                    result.questionStatistics
-                        .get(v).statistics
+                    QuestionStatistics s = result.questionStatistics.get(v);
+                    if (s == null) {
+                        continue;
+                    }
+                    s.statistics
                         .get(questionnaire.subContractor.name)
                         .set(questionnaire, answer);
                 }
