@@ -174,7 +174,11 @@ public class QuestionProvince extends ExportCommon {
             result.setAudit(questionnaire.site.province.name);
             availableProvinces.add(questionnaire.site.province.name);
             for (HseAuditAnswer answer: questionnaire.answers) {
-                if (questionIds != null && !questionIds.contains(answer.question.id)) {
+                if (answer.question.title == null) {
+                    continue;
+                }
+                String v = answer.question.title.get(LANG);
+                if (v == null) {
                     continue;
                 }
                 if (answer.question.questionType.equals(HseAuditQuestionType.Option)) {

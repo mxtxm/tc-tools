@@ -180,8 +180,15 @@ public class QuestionSubcontractor extends ExportCommon {
                     continue;
                 }
                 if (answer.question.questionType.equals(HseAuditQuestionType.Option)) {
+                    if (answer.question.title == null) {
+                        continue;
+                    }
+                    String v = answer.question.title.get(LANG);
+                    if (v == null) {
+                        continue;
+                    }
                     result.questionStatistics
-                        .get(answer.question.title.get(LANG)).statistics
+                        .get(v).statistics
                         .get(questionnaire.subContractor.name)
                         .set(questionnaire, answer);
                 }
