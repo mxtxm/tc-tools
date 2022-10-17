@@ -1,10 +1,23 @@
 # TC-Tools #
 
 
+
+
+https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/2206/horizon-client-linux-installation/GUID-AB6F0B4D-03DD-4E7A-AE16-BAB77CE4D42D.html
+vmware-view --kioskLogin --nonInteractive --once --fullscreen --nomenubar --serverURL="172.26.19.53" --userName="ictrc.ac" --password="JNt987654321"
+ubuntu@172.26.7.98
+U@123456
+
+
+
+/ui/hse/audit/data?id=30582
+30582
+
+
 http://localhost:8081/ui/hse/audit/significance/month?excel=true&from=1399-09-01&to=1400-05-30
 http://localhost:8081/ui/hse/audit/significance/subcontractor/province?excel=true&from=1399-09-01&to=1400-05-30
 
-
+http://172.16.1.161:8080/ui/hse/audit/data/many?dateMin=2022-09-01&dateMin=2022-09-20
 
     //http://localhost:8081/ui/hse/audit/significance/subcontractor/province/complete?from=1400-01-1&to=1400-5-5&excel=1
     //http://www.cel.ictrc.ac.ir:8080/ui/hse/audit/significance/subcontractor/province/complete?from=1400-01-1&to=1400-5-5&excel=1
@@ -58,6 +71,15 @@ var g = [
             map: me.gmap.map,
             radius: me.getNewRadius()
         });
+
+
+## 2022-10-04 2.1 ##
+* update: new framework
+* add: "/ui/hse/audit/data/many?dateMin=2022-01-01&dateMax=2022-01-10"
+* fix: radiometrics > bug in setting state dates for CC
+* patch: "/patch/missing/date/fix"
+* add: auto delete temp
+
 
 
 ## 2022-06-30 2.0.2 ##

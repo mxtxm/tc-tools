@@ -495,12 +495,7 @@ public class ExportSite extends ExportCommon {
         String filename = siteCode + (RadioMetricComplain.isEmpty(flow.complain) ? "" : ("__" + flow.complain.ccnumber)) + ".docx";
         String filePath = flow.getPath();
         try {
-            boolean isOld = flow.assignDateTime != null && flow.assignDateTime.isBefore(new DateTime("2021-05-20"));
-//            if (!isOld || !FileUtil.exists(filePath + filename)) {
-            //if (!isOld && !FileUtil.exists(filePath + filename)) {
             Docx.createFromTemplate(Param.RADIO_METRIC_SITE_TEMPLATE, filePath, filename, mapping);
-            //}
-
             if (!FileUtil.exists(filePath + filename)) {
                 throw new ServerException("docx not created");
             }
@@ -509,7 +504,7 @@ public class ExportSite extends ExportCommon {
                 response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
                 Response.download(response, filePath + filename, filename);
             }
-        } catch (VantarException | DateTimeException e) {
+        } catch (VantarException e) {
             throw new ServerException(e);
         }
     }

@@ -23,6 +23,7 @@ public class AdminImportExport {
             .addHeading(Locale.getString(AppLangKey.ADMIN_EXPORT))
             .addBlockLink("HSE Audit Daily", "/ui/hse/audit/daily/report")
             .addBlockLink("HSE Audit by id=flow.id", "/ui/hse/audit/data")
+            .addBlockLink("HSE Audit Export reports", "/admin/export/site/reports")
 
             .addEmptyLine()
             .addBlockLink("Radiometric docx - id=flow.id", "/ui/radio/metric/site/docx")

@@ -4,8 +4,6 @@ import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.exception.*;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.json.Json;
-import org.docx4j.model.datastorage.migration.VariablePrepare;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.*;
 import java.io.*;
 import java.util.Map;
@@ -14,21 +12,6 @@ import java.util.Map;
 public class Docx {
 
     private static final Logger log = LoggerFactory.getLogger(Docx.class);
-
-
-    public static void createFromTemplateSimple(String templatePath, String filePath, Map<String, String> mapping) throws VantarException {
-        WordprocessingMLPackage template;
-        try {
-            template = WordprocessingMLPackage.load(new FileInputStream(new File(templatePath)));
-            VariablePrepare.prepare(template);
-            template.getMainDocumentPart().variableReplace(mapping);
-            template.getMainDocumentPart();
-            template.save(new File(filePath));
-        } catch (Exception e) {
-            log.error("! {} < {}", filePath, mapping, e);
-            throw new VantarException(AppLangKey.DOCX_CREATE_ERROR);
-        }
-    }
 
     public static void createFromTemplate(String templatePath, String filePath, String filename, Map<String, Object> mapping) throws VantarException {
         String jsonFilePath = filePath + filename + ".json";

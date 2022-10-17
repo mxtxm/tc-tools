@@ -1,19 +1,21 @@
 package com.tctools.web.patch;
 
 import com.tctools.business.dto.project.hseaudit.*;
+import com.tctools.business.dto.project.radiometric.workflow.State;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryBuilder;
+import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
+import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.DirUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
@@ -22,8 +24,8 @@ import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-
 @WebServlet({
+    "/patch/missing/date/fix",
     "/patch/fix/omni",
     "/patch/missing/radiometric",
     "/patch/invalid/selected/sector",
@@ -41,6 +43,67 @@ public class PatchController extends RouteToMethod {
 
     public static final Logger log = LoggerFactory.getLogger(PatchController.class);
 
+    /**
+     * 6 Oct 2022
+     * bug in setting state dates for CC
+     */
+    public void missingDateFix(Params params, HttpServletResponse response) throws FinishException, ServerException {
+        WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
+
+        QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
+        q.condition().isNull("assignDateTime");
+        q.condition().in(
+            "lastState",
+            RadioMetricFlowState.Planned,
+            RadioMetricFlowState.Problematic,
+            RadioMetricFlowState.Completed,
+            RadioMetricFlowState.Revise,
+            RadioMetricFlowState.Terminated,
+            RadioMetricFlowState.Verified,
+            RadioMetricFlowState.Returned,
+            RadioMetricFlowState.Approved
+        );
+
+        DateTime now = new DateTime();
+
+        CommonModelMongo.forEach(q, new QueryResultBase.Event() {
+            @Override
+            public void afterSetData(Dto dto) {
+                RadioMetricFlow flow = (RadioMetricFlow) dto;
+
+                if (flow.state == null) {
+                    return;
+                }
+                for (State state : flow.state) {
+                    if (state.state.equals(RadioMetricFlowState.Planned)) {
+                        flow.assignDateTime = state.dateTime;
+                        break;
+                    }
+                }
+
+                if (flow.assignDateTime == null) {
+                    return;
+                }
+
+                if (flow.lastStateDateTime == null) {
+                    flow.lastStateDateTime = now;
+                }
+                try {
+                    CommonModelMongo.update(flow);
+                    ui.addErrorMessage(flow.site.code).write();
+                } catch (InputException | ServerException e) {
+                    ui.addErrorMessage(e).write();
+                }
+            }
+
+            @Override
+            public void afterSetData(Dto dto, List<?> list) {
+
+            }
+        });
+
+        ui.addMessage("finished!").finish();
+    }
 
     /**
      * 20 Jan 2022
@@ -324,7 +387,7 @@ public class PatchController extends RouteToMethod {
     public void invalidQuestionnaireMissingSubcontractor(Params params, HttpServletResponse response) throws FinishException, ServiceException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
-        Map<Long, Dto> subContractor = Services.get(ServiceDtoCache.class).getMap(SubContractor.class);
+        Map<Long, SubContractor> subContractor = Services.get(ServiceDtoCache.class).getMap(SubContractor.class);
 
         Set<Long> subIds = new HashSet<>();
 

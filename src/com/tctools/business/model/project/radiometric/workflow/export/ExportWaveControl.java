@@ -7,7 +7,6 @@ import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
 import com.vantar.business.CommonRepoMongo;
 import com.vantar.database.datatype.Location;
-import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -152,7 +151,7 @@ public class ExportWaveControl extends ExportCommon {
             setHeader(wb, rowCc, c, "Type of Site");
             sheetCc.setColumnWidth(c, 4000);
 
-            Map<Long, Dto> siteTypesDic = Services.get(ServiceDtoCache.class).getMap(SiteType.class);
+            Map<Long, SiteType> siteTypesDic = Services.get(ServiceDtoCache.class).getMap(SiteType.class);
 
             int iSc = 0;
             int iCc = 0;
@@ -233,7 +232,7 @@ public class ExportWaveControl extends ExportCommon {
                 if (flow.site.siteType == null) {
                     siteTypeName = "";
                 } else {
-                    SiteType siteType = (SiteType) siteTypesDic.get(flow.site.siteType.id);
+                    SiteType siteType = siteTypesDic.get(flow.site.siteType.id);
                     siteTypeName = siteType == null ? "" : siteType.name.get("en");
                     if (siteTypeName == null) {
                         siteTypeName = "";

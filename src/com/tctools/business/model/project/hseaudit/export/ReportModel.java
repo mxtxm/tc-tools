@@ -6,7 +6,6 @@ import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.web.patch.TestController;
 import com.vantar.business.CommonRepoMongo;
-import com.vantar.database.dto.Dto;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -84,7 +83,7 @@ public class ReportModel {
     }
 
     private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, HseAuditFlowState state) throws DatabaseException {
-        Map<Long, Dto> provinces;
+        Map<Long, Province> provinces;
         try {
             provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
         } catch (ServiceException e) {

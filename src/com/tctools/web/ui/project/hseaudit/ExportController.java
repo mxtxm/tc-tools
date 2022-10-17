@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet({
     "/ui/hse/audit/daily/report",
     "/ui/hse/audit/data",
+    "/ui/hse/audit/data/many",
 
     // excel
     "/ui/hse/audit/question/province",
@@ -37,7 +38,13 @@ public class ExportController extends RouteToMethod {
     @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditData(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
-        new ExportModel().auditData(params, response);
+        new ExportModel().auditData(params, response, null, null);
+    }
+
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void hseAuditDataMany(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
+        new ExportModel().auditDataMany(params, response);
     }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})

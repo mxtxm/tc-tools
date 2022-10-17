@@ -6,14 +6,15 @@ import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.Docx;
 import com.tctools.web.patch.TestController;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryBuilder;
+import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.number.NumberUtil;
+import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -29,21 +30,24 @@ public class ExportModel {
     private final Map<String, CellStyle> styles = new HashMap<>(10);
 
 
-    public void auditData(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
-        HseAuditQuestionnaire.Viewable flow = new HseAuditQuestionnaire.Viewable();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id");
+    public void auditData(Params params, HttpServletResponse response, HseAuditQuestionnaire.Viewable flow, String putDir)
+        throws ServerException, InputException, NoContentException {
+
+        if (flow == null) {
+            flow = new HseAuditQuestionnaire.Viewable();
+            flow.id = params.getLong("id");
+            if (NumberUtil.isIdInvalid(flow.id)) {
+                throw new InputException(VantarKey.INVALID_ID, "id");
+            }
+            try {
+                flow = CommonRepoMongo.getById(flow, params.getLang());
+            } catch (DatabaseException e) {
+                log.error("!", e);
+                throw new ServerException(VantarKey.FETCH_FAIL);
+            }
         }
 
-        try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
-        } catch (DatabaseException e) {
-            log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
-
-        Map<String, String> mapping = new HashMap<>();
+        Map<String, Object> mapping = new HashMap<>(100);
         mapping.put("date", flow.auditDateTime == null ? "" : flow.auditDateTime.formatter().getDatePersian());
         mapping.put("time", flow.auditDateTime == null ? "" : flow.auditDateTime.formatter().getTimeHm());
         mapping.put("contractor", flow.subContractor == null ? "" : (flow.subContractor.name + " - " + flow.subContractor.province.name));
@@ -113,8 +117,8 @@ public class ExportModel {
         }
 
         mapping.put("critical-count", flow.criticalNoCount == null ? "0" : Integer.toString(flow.criticalNoCount));
-        mapping.put("major-count",  flow.majorNoCount == null ? "0" : Integer.toString(flow.majorNoCount));
-        mapping.put("minor-count",  flow.minorNoCount == null ? "0" :Integer.toString(flow.minorNoCount));
+        mapping.put("major-count", flow.majorNoCount == null ? "0" : Integer.toString(flow.majorNoCount));
+        mapping.put("minor-count", flow.minorNoCount == null ? "0" : Integer.toString(flow.minorNoCount));
         mapping.put("na-count", Integer.toString(naCount));
 
         String siteCode = flow.site == null ? "XXX" : flow.site.code.toLowerCase();
@@ -125,16 +129,66 @@ public class ExportModel {
         final long flowId = flow.id;
 
         try {
-            Docx.createFromTemplateSimple(Param.HSE_AUDIT_AUDIT_TEMPLATE, dir + "audit-" + flow.id + "-" + siteCode + ".docx", mapping);
-            FileUtil.zip(dir, zipTempDir + zipFile, s -> s.contains("-" + flowId  + "-"));
+            Docx.createFromTemplate(
+                Param.HSE_AUDIT_AUDIT_TEMPLATE,
+                dir,
+                "audit-" + flow.id + "-" + siteCode + ".docx",
+                mapping
+            );
+            FileUtil.zip(dir, zipTempDir + zipFile, s -> s.contains("-" + flowId + "-"));
 
-            response.setContentType("application/zip");
-            Response.download(response, zipTempDir + zipFile, zipFile);
+            if (putDir == null) {
+                response.setContentType("application/zip");
+                Response.download(response, zipTempDir + zipFile, zipFile);
+            } else {
+                FileUtil.move(zipTempDir + zipFile, putDir + zipFile);
+            }
         } catch (VantarException e) {
             throw new ServerException(e);
         }
     }
 
+    public void auditDataMany(Params params, HttpServletResponse response) throws ServerException, InputException {
+        DateTime dateMin = params.getDateTime("dateMin");
+        DateTime dateMax = params.getDateTime("dateMax");
+        String states = params.getString("states", "Approved");
+        CommonModel.validateRequired("dateMin", dateMin, "dateMax", dateMax);
+
+        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire.Viewable());
+        q.condition().between("lastStateDateTime", dateMin, dateMax);
+        q.condition().inString("lastState", StringUtil.splitToList(states, ','));
+
+        String dt = new DateTime().formatter().getDateTimeAsFilename();
+        String dir = Param.TEMP_DIR + dt + "/";
+        FileUtil.makeDirectory(dir);
+
+        CommonModelMongo.forEach(q, new QueryResultBase.Event() {
+            @Override
+            public void afterSetData(Dto dto) {
+                try {
+                    auditData(
+                        params,
+                        response,
+                        (HseAuditQuestionnaire.Viewable) dto,
+                        dir
+                    );
+                } catch (ServerException | InputException | NoContentException e) {
+                    log.error(" ! {}", dto.getId(), e);
+                }
+            }
+
+            @Override
+            public void afterSetData(Dto dto, List<?> list) {
+
+            }
+        });
+
+        String zipFile = "audit-" + dt + ".zip";
+        String zipTempDir = Param.TEMP_DIR;
+        FileUtil.zip(dir, zipTempDir + zipFile);
+        response.setContentType("application/zip");
+        Response.download(response, zipTempDir + zipFile, zipFile);
+    }
 
     public void dailyReport(Params params, HttpServletResponse response) throws ServerException {
 

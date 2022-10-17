@@ -11,7 +11,6 @@ The dependencies are defined and can be viewed in: "CODE-BASE/pom.xml"
 * **mongo-java-driver** mongo java driver
 * **amqp-client** rabbitmq java driver
 * **apache.poi** microsoft excel support
-* **docx4j** microsoft word support
 * **tika-core** file type detection
 * **commonmark** markdown to html convert for documents 
 * **httpclient** webservice connections

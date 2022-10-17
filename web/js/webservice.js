@@ -348,7 +348,6 @@ function inspect() {
 
 
 function objectToHtml(obj, cls) {
-
     if (Array.isArray(obj)) {
         let html = "<table" + (cls ? " class='" + cls + "'" : "") + ">";
         let l = obj.length;

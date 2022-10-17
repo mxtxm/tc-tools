@@ -23,10 +23,14 @@ import java.util.*;
 public class Assigning {
 
     public static ResponseMessage assignComplain(Params params, User assignor) throws ServerException, NoContentException, InputException {
+        DateTime now = new DateTime();
+
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.assigneeId = params.getLong("assigneeId");
         flow.complain = new RadioMetricComplain();
         flow.complain.id = params.getLong("complainId");
+        flow.assignDateTime = now;
+        flow.lastStateDateTime = now;
 
         if (NumberUtil.isIdInvalid(flow.complain.id)) {
             throw new InputException(VantarKey.INVALID_ID, "complainId (complain.id)");
@@ -82,8 +86,8 @@ public class Assigning {
         flow.siteLocation = site.location == null || site.location.isEmpty() ?  flow.complain.location : site.location;
         flow.sectors = site.sectors;
 
-        flow.state = new ArrayList<>();
-        flow.lastStateDateTime = new DateTime();
+        flow.state = new ArrayList<>(2);
+        flow.lastStateDateTime = now;
         flow.lastState = RadioMetricFlowState.Planned;
         // 1 - Pending
         State stateA = new State(RadioMetricFlowState.Pending, flow.complain.complainTime);

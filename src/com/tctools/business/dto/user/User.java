@@ -15,7 +15,7 @@ import java.util.List;
 
 @Cache
 @Mongo
-@Storage("users")
+@Storage("Users")
 @Index({"username:1"})
 public class User extends DtoBase implements CommonUser, CommonUserPassword {
 

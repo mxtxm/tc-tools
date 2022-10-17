@@ -23,6 +23,33 @@ GET
 
 
 
+## download site hse audit report of many sites ##
+download a zip file
+### url ###
+"/ui/hse/audit/data/many"
+### access ###
+* MANAGER
+* ENGINEER
+### method ###
+GET 
+### headers ###
+* **String X-Auth-Token**: auth token
+* String X-Lang: (default=SYSTEM-DEFINED-LANG) "fa" or "en" or ...
+### params ###
+* **String dateMin**:
+* **String dateMax**:
+* String states: default=Approved or states separated by ","
+### output ###
+    File zip
+### exceptions ###
+* 204 NoContentException
+* 401/403 AuthError/AuthPermissionError
+* 400 InvalidInputParams
+* 500 ServerError
+
+
+
+
 ## download daily report ##
 download an excel file
 ### url ###

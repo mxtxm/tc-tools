@@ -5,7 +5,6 @@ import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.user.User;
 import com.vantar.business.CommonRepoMongo;
-import com.vantar.database.dto.Dto;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -57,7 +56,7 @@ public class ReportModel {
     }
 
     private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, RadioMetricFlowState state) throws DatabaseException {
-        Map<Long, Dto> provinces;
+        Map<Long, Province> provinces;
         try {
             provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
         } catch (ServiceException e) {
@@ -72,7 +71,7 @@ public class ReportModel {
         int total = 0;
         for (Document document : MongoSearch.getAggregate(q)) {
             Integer count = document.getInteger("count");
-            String name = ((Province) provinces.get(document.getLong(Mongo.ID))).name.get("fa");
+            String name = provinces.get(document.getLong(Mongo.ID)).name.get("fa");
 
             HashMap<String, Integer> d = data.get(name);
             if (d == null) {
