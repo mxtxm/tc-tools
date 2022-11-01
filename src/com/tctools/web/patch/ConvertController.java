@@ -562,7 +562,8 @@ public class ConvertController extends RouteToMethod {
                         continue;
                     }
                     try {
-                        Measurement.applyCsv(path, f, height, errors);
+                        Measurement measurement = new Measurement();
+                        measurement.applyCsv(path, f, height, errors);
                     } catch (Exception e) {
                         ui.addErrorMessage(f.site.code).write();
                         ui.addErrorMessage(e).write();

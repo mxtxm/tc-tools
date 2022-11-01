@@ -42,7 +42,7 @@ public class ExportController extends RouteToMethod {
     }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void hseAuditDataMany(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
+    public void hseAuditDataMany(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         new ExportModel().auditDataMany(params, response);
     }

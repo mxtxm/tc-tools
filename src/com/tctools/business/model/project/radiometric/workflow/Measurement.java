@@ -29,8 +29,10 @@ public class Measurement {
     private static final int MIN_RADIATION_LEVEL = 440;
     public static final double MIN_RADIATION_LEVEL_DIV = 4.4;
 
+    boolean isMwCm2 = false;
 
-    public static void applyCsv(String csvPath, RadioMetricFlow flow, String height, List<ValidationError> errors) {
+
+    public void applyCsv(String csvPath, RadioMetricFlow flow, String height, List<ValidationError> errors) {
         boolean isMeasurementTimeAcceptable = true;
         boolean isMeasurementGpsDataAvailable = true;
         String[] record = null;
@@ -45,7 +47,6 @@ public class Measurement {
 
         DateTime startDateTime = null;
         DateTime endDateTime = null;
-        boolean isMwCm2 = false;
 
         try (CSVReader reader = new CSVReader(new FileReader(csvPath))) {
             while ((record = reader.readNext()) != null) {
@@ -145,10 +146,6 @@ public class Measurement {
             isMeasurementGpsDataAvailable = false;
         }
 
-//        if (!isMeasurementGpsDataAvailable) {
-//            errors.add(new ValidationError(Param.FILE_UPLOAD + height, AppLangKey.GPS_DATA_MISSING_CSV_DATA));
-//        }
-
         flow.setPropertyValue("isMeasurementTimeAcceptable" + height, isMeasurementTimeAcceptable);
         flow.setPropertyValue("isMeasurementGpsDataAvailable" + height, isMeasurementGpsDataAvailable);
         flow.setPropertyValue("isMeasurementRecordCountAcceptable" + height, measurementCount == MEASUREMENT_COUNT);
@@ -210,12 +207,16 @@ public class Measurement {
         // validation < < <
     }
 
-    public static void createOkExcel(String csvPath) throws ServerException {
+    public void createOkExcel(String csvPath) throws ServerException {
         String okTempFilename = StringUtil.replace(csvPath, ".csv", "__OK.temp");
         String okFilename = StringUtil.replace(csvPath, ".csv", "__OK.xlsx");
 
         FileUtil.removeFile(okTempFilename);
         FileUtil.removeFile(okFilename);
+
+        if (isMwCm2) {
+            return;
+        }
 
         try {
             Excel.csvToExcel(csvPath, okTempFilename);

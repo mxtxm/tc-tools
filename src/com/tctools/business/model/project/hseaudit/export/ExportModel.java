@@ -11,6 +11,7 @@ import com.vantar.database.dto.Dto;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
+import com.vantar.util.bool.BoolUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.number.NumberUtil;
@@ -148,10 +149,10 @@ public class ExportModel {
         }
     }
 
-    public void auditDataMany(Params params, HttpServletResponse response) throws ServerException, InputException {
+    public void auditDataMany(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
         DateTime dateMin = params.getDateTime("dateMin");
         DateTime dateMax = params.getDateTime("dateMax");
-        String states = params.getString("states", "Approved");
+        String states = params.getString("states", "Approved,PreApproved");
         CommonModel.validateRequired("dateMin", dateMin, "dateMax", dateMax);
 
         QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire.Viewable());
@@ -162,32 +163,38 @@ public class ExportModel {
         String dir = Param.TEMP_DIR + dt + "/";
         FileUtil.makeDirectory(dir);
 
-        CommonModelMongo.forEach(q, new QueryResultBase.Event() {
-            @Override
-            public void afterSetData(Dto dto) {
+        List<Dto> data = CommonModelMongo.getData(q);
+        for (Dto dto : data) {
+            try {
+                auditData(
+                    params,
+                    response,
+                    (HseAuditQuestionnaire.Viewable) dto,
+                    dir
+                );
+
+                Response.writeString(response, ((HseAuditQuestionnaire.Viewable) dto).site.code + "<br>");
                 try {
-                    auditData(
-                        params,
-                        response,
-                        (HseAuditQuestionnaire.Viewable) dto,
-                        dir
-                    );
-                } catch (ServerException | InputException | NoContentException e) {
-                    log.error(" ! {}", dto.getId(), e);
+                    response.flushBuffer();
+                } catch (IOException ignore) {
+
                 }
-            }
 
-            @Override
-            public void afterSetData(Dto dto, List<?> list) {
-
+            } catch (ServerException | InputException | NoContentException e) {
+                log.error(" ! {}", dto.getId(), e);
             }
-        });
+        }
 
         String zipFile = "audit-" + dt + ".zip";
         String zipTempDir = Param.TEMP_DIR;
         FileUtil.zip(dir, zipTempDir + zipFile);
-        response.setContentType("application/zip");
-        Response.download(response, zipTempDir + zipFile, zipFile);
+
+        if (BoolUtil.isTrue(params.getBoolean("nodownload"))) {
+            Response.writeString(response, dir + " : " + zipTempDir + zipFile);
+        } else {
+            response.setContentType("application/zip");
+            Response.download(response, zipTempDir + zipFile, zipFile);
+        }
     }
 
     public void dailyReport(Params params, HttpServletResponse response) throws ServerException {

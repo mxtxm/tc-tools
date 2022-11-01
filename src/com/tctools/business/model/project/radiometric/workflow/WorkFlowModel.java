@@ -440,11 +440,6 @@ public class WorkFlowModel {
             if (!uploaded.isUploaded() || uploaded.isIoError()) {
                 return;
             }
-
-            //if (!uploaded.isType("csv")) {
-            //    log.error(">>>{}",height);
-            //    errors.add(new ValidationError(key, VantarKey.FILE_TYPE, "csv"));
-            //}
             if (uploaded.getSize() < Param.FILE_MEASURE_CSV_MIN_SIZE || uploaded.getSize() > Param.FILE_MEASURE_CSV_MAX_SIZE) {
                 errors.add(
                     new ValidationError(
@@ -459,8 +454,9 @@ public class WorkFlowModel {
             uploaded.moveTo(path);
             success.put(key, pathToUrl(path));
 
-            Measurement.applyCsv(path, flow, height, errors);
-            Measurement.createOkExcel(path);
+            Measurement measurement = new Measurement();
+            measurement.applyCsv(path, flow, height, errors);
+            measurement.createOkExcel(path);
             WorkFlowModel.setNearestSector(flow);
         }
     }

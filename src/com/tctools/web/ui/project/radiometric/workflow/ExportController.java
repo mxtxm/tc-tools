@@ -12,6 +12,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet({
+    "/ui/radio/metric/site/state/excel",
+
     "/ui/radio/metric/site/docx",
     "/ui/radio/metric/site/zip",
     "/ui/radio/metric/site/assigned/excel",
@@ -26,9 +28,14 @@ import javax.servlet.http.HttpServletResponse;
     "/ui/radio/metric/performance/tech",
     "/ui/radio/metric/performance/province/monthly",
     "/ui/radio/metric/performance/province",
-
 })
 public class ExportController extends RouteToMethod {
+
+    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    public void radioMetricSiteStateExcel(Params params, HttpServletResponse response) throws AuthException, ServerException {
+        ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
+        new ExportSiteState().excel(params, response);
+    }
 
     @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricSiteDocx(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
