@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ProvinceController extends RouteToMethod {
 
-    public void provincesGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
+    public void provincesGet(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, ProvinceModel.getAll(params));
     }
 

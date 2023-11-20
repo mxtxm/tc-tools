@@ -17,10 +17,9 @@ public class MapFlowModel {
     public static List<RadioMetricMapFlow> searchForMap(Params params) throws VantarException {
         PageData data = CommonModelMongo.search(
             params,
-            new RadioMetricFlow(),
             new RadioMetricFlow.ViewableTiny()
         );
-
+ //       int i = 0;
         List<RadioMetricMapFlow> items = new ArrayList<>(data.data.size());
         for (Dto dto : data.data) {
             RadioMetricFlow.ViewableTiny flow = (RadioMetricFlow.ViewableTiny) dto;
@@ -28,14 +27,18 @@ public class MapFlowModel {
                 continue;
             }
             items.add(new RadioMetricMapFlow(flow));
+//            ++i;
         }
         return items;
     }
 
-    public static ResponseMessage updateSpotLocation(Params params) throws InputException, ServerException {
+    public static ResponseMessage updateSpotLocation(Params params) throws VantarException {
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = params.getLong("id");
         flow.spotLocation = params.getLocation("spotLocation");
+        if (flow.siteLocation != null && flow.spotLocation != null) {
+            flow.horizontalDistanceFromLocation = flow.spotLocation.getDistanceM(flow.siteLocation).intValue();
+        }
         flow.skipBeforeUpdate();
         if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");

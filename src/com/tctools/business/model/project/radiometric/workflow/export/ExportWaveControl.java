@@ -5,7 +5,7 @@ import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -37,11 +37,11 @@ public class ExportWaveControl extends ExportCommon {
                 q.sort("measurementDateTime:asc");
                 q.condition().in("lastState", RadioMetricFlowState.Approved, RadioMetricFlowState.Verified);
                 q.condition().greaterThan("measurementDateTime", date);
-                items = CommonRepoMongo.getData(q, "fa");
+                items = CommonModelMongo.getData(q, "fa");
             } else {
-                items = CommonRepoMongo.getData(new RadioMetricFlow.Viewable(), "fa");
+                items = CommonModelMongo.getAll(new RadioMetricFlow.Viewable(), "fa");
             }
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             log.error("!", e);
             throw new ServerException(VantarKey.FETCH_FAIL);
         }

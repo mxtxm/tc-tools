@@ -24,45 +24,45 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ComplainController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
-    public void radioMetricComplainDelete(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    public void radioMetricComplainDelete(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.delete(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
-    public void radioMetricComplainGet(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException, NoContentException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
+    public void radioMetricComplainGet(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.get(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
-    public void radioMetricComplainsSearch(Params params, HttpServletResponse response) throws InputException, ServerException, NoContentException, AuthException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
+    public void radioMetricComplainsSearch(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.search(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
-    public void radioMetricComplainsAssignable(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
+    public void radioMetricComplainsAssignable(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.assignable(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
-    public void radioMetricComplainsAssigned(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
+    public void radioMetricComplainsAssigned(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ComplainModel.assigned(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
-    public void radioMetricComplainAssign(Params params, HttpServletResponse response) throws InputException, ServerException, NoContentException, AuthException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    public void radioMetricComplainAssign(Params params, HttpServletResponse response) throws VantarException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assignComplain(params, user));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
-    public void radioMetricComplainAssignRemove(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException, NoContentException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    public void radioMetricComplainAssignRemove(Params params, HttpServletResponse response) throws VantarException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assignRemove(params, user));

@@ -17,7 +17,7 @@ import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.json.Json;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
@@ -32,7 +32,7 @@ public class WorkFlowModel {
     private static final Logger log = LoggerFactory.getLogger(WorkFlowModel.class);
 
 
-    public static ResponseMessage delete(Params params) throws InputException, ServerException {
+    public static ResponseMessage delete(Params params) throws VantarException {
         return CommonModelMongo.delete(params, new RadioMetricFlow(), new CommonModel.WriteEvent() {
 
             @Override
@@ -46,19 +46,15 @@ public class WorkFlowModel {
             }
 
             @Override
-            public void afterWrite(Dto dto) {
+            public void afterWrite(Dto dto) throws VantarException {
                 RadioMetricComplain complain = new RadioMetricComplain();
                 complain.workFlowId = dto.getId();
-                try {
-                    CommonRepoMongo.delete(complain);
-                } catch (DatabaseException ignore) {
-
-                }
+                CommonModelMongo.deleteById(complain);
             }
         });
     }
 
-    public static ResponseMessage update(Params params) throws InputException, ServerException {
+    public static ResponseMessage update(Params params) throws VantarException {
         TempParams tempParams;
         try {
             tempParams = params.getJson(TempParams.class);
@@ -74,8 +70,8 @@ public class WorkFlowModel {
         flow.id = tempParams.id;
 
         try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
-        } catch (NoContentException | DatabaseException e) {
+            flow = CommonModelMongo.getById(flow, params.getLang());
+        } catch (VantarException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
@@ -98,8 +94,8 @@ public class WorkFlowModel {
                     return;
                 }
                 try {
-                    CommonRepoMongo.update(flow.complain);
-                } catch (DatabaseException ignore) {
+                    CommonModelMongo.update(flow.complain);
+                } catch (VantarException ignore) {
 
                 }
             }
@@ -121,7 +117,7 @@ public class WorkFlowModel {
     // > > > STATE
 
 
-    public static ResponseMessage updateState(Params params, User user) throws InputException, ServerException, NoContentException {
+    public static ResponseMessage updateState(Params params, User user) throws VantarException {
         RadioMetricFlowState state;
         try {
             state = RadioMetricFlowState.valueOf(params.getString("state"));
@@ -131,7 +127,7 @@ public class WorkFlowModel {
         return updateState(params.getLong("id"), state, user, params.getString("comments"));
     }
 
-    public static ResponseMessage commitMeasurements(Params params, User user) throws InputException, ServerException, NoContentException {
+    public static ResponseMessage commitMeasurements(Params params, User user) throws VantarException {
         List<Long> ids = params.getLongList("ids");
         if (ids == null || ids.isEmpty()) {
             throw new InputException(VantarKey.INVALID_ID, "ids");
@@ -143,7 +139,7 @@ public class WorkFlowModel {
     }
 
     private static ResponseMessage updateState(Long flowId, RadioMetricFlowState state, User user, String comment)
-        throws InputException, ServerException, NoContentException {
+        throws VantarException {
 
         // permission
         switch (user.role) {
@@ -174,11 +170,7 @@ public class WorkFlowModel {
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = flowId;
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(flow);
 
         int i = flow.state.size();
         if (i > 0 && flow.state.get(i-1).state.equals(state)) {
@@ -193,12 +185,7 @@ public class WorkFlowModel {
         s.assignorName = user.fullName;
         flow.state.add(s);
 
-        try {
-            CommonRepoMongo.update(flow);
-            return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.INSERT_FAIL);
-        }
+        return CommonModelMongo.update(flow);
     }
 
 
@@ -209,41 +196,20 @@ public class WorkFlowModel {
         return StringUtil.replace(path, Param.RADIO_METRIC_FILES, Param.RADIO_METRIC_URL);
     }
 
-    public static PageData search(Params params) throws ServerException, NoContentException, InputException {
-        return CommonModelMongo.search(params, new RadioMetricFlow(), new RadioMetricFlow.Viewable());
+    public static PageData search(Params params) throws VantarException {
+        return CommonModelMongo.search(params, new RadioMetricFlow.Viewable());
     }
 
-    public static RadioMetricFlow.Viewable get(Params params) throws ServerException, NoContentException, InputException {
-        RadioMetricFlow flow = new RadioMetricFlow();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (flow.id)");
-        }
-        QueryBuilder q = new QueryBuilder(flow, new RadioMetricFlow.Viewable());
-        q.setConditionFromDtoEqualTextMatch();
-        try {
-            return CommonRepoMongo.getFirst(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+    public static RadioMetricFlow.Viewable get(Params params) throws VantarException {
+        return CommonModelMongo.getById(params, new RadioMetricFlow.Viewable());
     }
 
-    public static ResponseMessage deleteLog(Params params) throws InputException, ServerException {
-        RadioMetricFlow flow = new RadioMetricFlow();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID);
-        }
+    public static ResponseMessage deleteLog(Params params) throws VantarException {
+        RadioMetricFlow flow = CommonModelMongo.getById(params, new RadioMetricFlow());
 
         Integer height = params.getInteger("height");
         if (height == null || (height != 100 && height != 150 && height != 170)) {
             throw new InputException(VantarKey.INVALID_VALUE);
-        }
-
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException | NoContentException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
         String path = RadioMetricFlow.getMeasurementPath(flow.site.code, flow.id, height.toString(), false, false);
@@ -274,20 +240,9 @@ public class WorkFlowModel {
     // > > > MEASUREMENT
 
 
-    public static ResponseMessage measurementSubmit(Params params) throws InputException, ServerException, NoContentException, AuthException {
+    public static ResponseMessage measurementSubmit(Params params) throws VantarException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN, Role.VENDOR);
-
-        RadioMetricFlow flow = new RadioMetricFlow();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");
-        }
-
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        RadioMetricFlow flow = CommonModelMongo.getById(params, new RadioMetricFlow());
 
         List<ValidationError> errors = new ArrayList<>();
         Map<String, Object> success = new HashMap<>();
@@ -315,29 +270,19 @@ public class WorkFlowModel {
         QueryBuilder q = new QueryBuilder(device);
         q.condition().equal("serialNumber", flow.deviceSerialNumber);
         try {
-            device = CommonRepoMongo.getFirst(q);
+            device = CommonModelMongo.getFirst(q);
             flow.deviceTitle = device.title;
             flow.deviceManufacturer = device.manufacturer;
             flow.deviceCalibrationExpire = device.calibrationExpire;
-        } catch (DatabaseException | NoContentException ignore) {
+        } catch (VantarException ignore) {
 
         }
     }
 
-    public static Object uploadImages(Params params) throws InputException, NoContentException, ServerException, AuthException {
+    public static Object uploadImages(Params params) throws VantarException {
         Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.TECHNICIAN, Role.VENDOR);
 
-        RadioMetricFlow flow = new RadioMetricFlow();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "RadioMetricFlow.id");
-        }
-
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        RadioMetricFlow flow = CommonModelMongo.getById(params, new RadioMetricFlow());
 
         List<ValidationError> errors = new ArrayList<>();
         Map<String, Object> success = new HashMap<>();
@@ -397,7 +342,7 @@ public class WorkFlowModel {
             + "resize.php "
             + jsonFilePath;
 
-        FileUtil.giveAllPermissions(Docx.class.getResource("/arta/app/docx/").getPath());
+        DirUtil.giveAllPermissions(Docx.class.getResource("/arta/app/docx/").getPath());
 
         Map<String, Object> mapping = new HashMap<>(5);
         mapping.put("f", filePath);
@@ -524,33 +469,25 @@ public class WorkFlowModel {
     // > > > TECHNICIAN
 
 
-    public static List<RadioMetricFlow.Viewable> getNewTasks(Params params, User user) throws ServerException, NoContentException {
-        QueryBuilder q = new QueryBuilder(new RadioMetricFlow(), new RadioMetricFlow.Viewable());
+    public static List<RadioMetricFlow.Viewable> getNewTasks(Params params, User user) throws VantarException {
+        QueryBuilder q = new QueryBuilder(new RadioMetricFlow.Viewable());
         q.condition()
             .equal("assigneeId", user.id)
             .equal("lastState", RadioMetricFlowState.Planned);
 
-        try {
-            return CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.getData(q, params.getLang());
     }
 
-    public static List<RadioMetricFlow.Viewable> getFinishedTasks(Params params, User user) throws ServerException, NoContentException {
-        QueryBuilder q = new QueryBuilder(new RadioMetricFlow(), new RadioMetricFlow.Viewable());
+    public static List<RadioMetricFlow.Viewable> getFinishedTasks(Params params, User user) throws VantarException {
+        QueryBuilder q = new QueryBuilder(new RadioMetricFlow.Viewable());
         q.condition()
             .equal("assigneeId", user.id)
             .notEqual("lastState", RadioMetricFlowState.Planned);
 
-        try {
-            return CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.getData(q, params.getLang());
     }
 
-    public static ResponseMessage deleteImage(Params params) throws InputException, ServerException {
+    public static ResponseMessage deleteImage(Params params) throws VantarException {
         String path = params.getString("path");
         if (StringUtil.isEmpty(path)) {
             throw new InputException(VantarKey.REQUIRED, "path");
@@ -560,7 +497,7 @@ public class WorkFlowModel {
         return path.contains("/complain/") ? deleteImageComplain(params.getLong("complainid"), path) : deleteImageFlow(path);
     }
 
-    private static ResponseMessage deleteImageFlow(String path) throws ServerException, InputException {
+    private static ResponseMessage deleteImageFlow(String path) throws VantarException {
         String[] parts = StringUtil.split(path, "/measurement/");
         if (parts.length != 2) {
             throw new InputException(VantarKey.INVALID_VALUE, "path");
@@ -569,44 +506,28 @@ public class WorkFlowModel {
 
         RadioMetricFlow flow = new RadioMetricFlow();
         flow.id = StringUtil.scrapeLong(parts[0]);
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
-        }
-
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        } catch (NoContentException e) {
-            throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
-        }
+        flow = CommonModelMongo.getById(flow);
 
         CommonModelMongo.update(flow);
         return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
     }
 
-    private static ResponseMessage deleteImageComplain(Long complainId, String path) throws ServerException, InputException {
+    private static ResponseMessage deleteImageComplain(Long complainId, String path) throws VantarException {
         if (NumberUtil.isIdInvalid(complainId)) {
             throw new InputException(VantarKey.INVALID_ID, "complainid");
         }
 
         RadioMetricComplain complain = new RadioMetricComplain();
         complain.id = complainId;
-        try {
-            complain = CommonRepoMongo.getById(complain);
-            complain.imageUrl = null;
-            CommonModelMongo.update(complain);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        } catch (NoContentException e) {
-            throw new InputException(VantarKey.INVALID_ID, "complainid");
-        }
+        complain = CommonModelMongo.getById(complain);
+        complain.imageUrl = null;
+        CommonModelMongo.update(complain);
 
         if (complain.workFlowId != null) {
             RadioMetricFlow flow = new RadioMetricFlow();
             flow.id = complain.workFlowId;
             try {
-                flow = CommonRepoMongo.getById(flow);
+                flow = CommonModelMongo.getById(flow);
                 flow.complain.imageUrl = null;
                 CommonModelMongo.update(flow);
 
@@ -617,9 +538,6 @@ public class WorkFlowModel {
                         "/measurement/" + flow.id + "/"
                     )
                 );
-
-            } catch (DatabaseException e) {
-                throw new ServerException(VantarKey.FETCH_FAIL);
             } catch (NoContentException ignore) {
 
             }

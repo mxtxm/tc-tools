@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class CityController extends RouteToMethod {
 
-    public void citiesGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
+    public void citiesGet(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, CityModel.getAll(params));
     }
 

@@ -11,7 +11,8 @@ import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import java.util.List;
+import java.util.*;
+
 
 @Cache
 @Mongo
@@ -29,7 +30,6 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
 
     public List<ProjectType> projectTypes;
 
-    @PresentBy("Province")
     public List<Long> provinceIds;
 
     @Required
@@ -141,6 +141,11 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
 
     @Override
     public List<? extends CommonUserRole> getRoles() {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getExtraData() {
         return null;
     }
 

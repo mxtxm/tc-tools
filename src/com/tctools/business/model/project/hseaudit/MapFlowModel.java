@@ -18,10 +18,9 @@ import java.util.*;
 
 public class MapFlowModel {
 
-    public static List<HseAuditMapFlow> searchForMap(Params params) throws ServerException, NoContentException, InputException {
+    public static List<HseAuditMapFlow> searchForMap(Params params) throws VantarException {
         PageData data = CommonModelMongo.search(
             params,
-            new HseAuditQuestionnaire(),
             new HseAuditQuestionnaire.ViewableTiny()
         );
 
@@ -36,18 +35,9 @@ public class MapFlowModel {
         return items;
     }
 
-    public static ResponseMessage assign(Params params, User assignor) throws InputException, ServerException, NoContentException {
+    public static ResponseMessage assign(Params params, User assignor) throws VantarException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
-        }
-
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(params, flow);
 
         flow.assigneeId = params.getLong("assigneeId");
         if (NumberUtil.isIdInvalid(flow.assigneeId)) {
@@ -80,18 +70,14 @@ public class MapFlowModel {
         return CommonModelMongo.update(flow);
     }
 
-    public static ResponseMessage removeAssign(Params params, User remover) throws InputException, ServerException, NoContentException {
+    public static ResponseMessage removeAssign(Params params, User remover) throws VantarException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         flow.id = params.getLong("id");
         if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(params, flow);
 
         flow.assignable = true;
         flow.copyable = false;
@@ -130,18 +116,9 @@ public class MapFlowModel {
         return CommonModelMongo.update(flow);
     }
 
-    public static ResponseMessage createChild(Params params) throws InputException, ServerException, NoContentException {
+    public static ResponseMessage createChild(Params params) throws VantarException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
-        }
-
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(params, flow);
 
         Long assigneeId = flow.assigneeId;
 

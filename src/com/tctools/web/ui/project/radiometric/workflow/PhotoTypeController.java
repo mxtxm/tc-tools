@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class PhotoTypeController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void radioMetricPhotoTypeGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Response.writeJson(response, EnumUtil.getEnumValues(RadioMetricPhotoType.values()));
     }

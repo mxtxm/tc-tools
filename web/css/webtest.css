@@ -390,6 +390,10 @@ body {
     display: none;
 }
 
+pre {
+    white-space: pre-line;
+}
+
 .request-data pre {
     color: #3b8805;
     margin-bottom: 10px;

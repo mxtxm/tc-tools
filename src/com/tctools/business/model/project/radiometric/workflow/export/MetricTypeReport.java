@@ -23,8 +23,8 @@ public class MetricTypeReport extends ExportCommon {
 
         Map<String, Integer> result = new HashMap<>(2);
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
-                result.put((boolean) document.get(Mongo.ID) ? "CC" : "Regular", (int) document.get("count"));
+            for (Document document : MongoQuery.getAggregate(q)) {
+                result.put((boolean) document.get(Mongo.ID) ? "CC" : "Normal", (int) document.get("count"));
             }
         } catch (DatabaseException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);
@@ -33,7 +33,7 @@ public class MetricTypeReport extends ExportCommon {
         cache(TYPE_OVERVIEW, result);
     }
 
-    public static String getCount() throws NoContentException, ServerException {
+    public static String getCount() throws VantarException {
         return getFromCache(TYPE_OVERVIEW);
     }
 }

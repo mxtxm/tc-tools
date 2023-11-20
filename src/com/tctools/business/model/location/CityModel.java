@@ -10,7 +10,7 @@ import java.util.*;
 
 public class CityModel {
 
-    public static List<City.Localed> getAll(Params params) throws ServerException, NoContentException {
+    public static List<City.Localed> getAll(Params params) throws VantarException {
         return CommonModelMongo.getAllFromCache(params, City.class, City.Localed.class);
     }
 

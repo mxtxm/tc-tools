@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class WebTestController extends RouteToMethod {
 
-    public void webInsert(Params params, HttpServletResponse response) throws InputException, ServerException {
+    public void webInsert(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, CommonModelMongo.insert(params, new WebTest()));
     }
 

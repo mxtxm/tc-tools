@@ -11,7 +11,8 @@ public enum Role implements CommonUserRole {
     ENGINEER,
     TECHNICIAN,
     VENDOR,
-    READONLY
+    READONLY,
+    MCI
     ;
 
     @Override

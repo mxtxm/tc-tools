@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class RadiationStatusController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void radioMetricRadiationStatusGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Response.writeJson(response, EnumUtil.getEnumValues(RadioMetricRadiationStatus.values()));
     }

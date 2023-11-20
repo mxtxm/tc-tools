@@ -6,8 +6,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet({
-    "/ui/app/log",
-    "/ui/app/log/json",
+    //"/ui/app/log",
+    //"/ui/app/log/json",
 })
 public class LogController extends RouteToMethod {
 

@@ -36,17 +36,17 @@ public class AdminSynchHseAudit {
         boolean doState = params.isChecked("synchallhse");
 
         try {
-            for (Dto site : CommonRepoMongo.getAll(new Site())) {
+            for (Dto site : CommonModelMongo.getAll(new Site())) {
                 synchWithSite((Site) site, doState, ui);
             }
-        } catch (NoContentException | DatabaseException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
         ui.finish();
     }
 
-    public static void synchWithSite(Site site, boolean allStates, WebUi ui) throws DatabaseException {
+    public static void synchWithSite(Site site, boolean allStates, WebUi ui) throws VantarException {
         String title = "(" + site.code + ") " + (site.name == null ? "???" : site.name.get(Locale.getSelectedLocale())) + "  ";
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
@@ -54,7 +54,7 @@ public class AdminSynchHseAudit {
         QueryBuilder q = new QueryBuilder(flow);
         q.condition().equal("site.code", site.code);
 
-        if (CommonRepoMongo.exists(q)) {
+        if (CommonModelMongo.exists(q)) {
             q = new QueryBuilder(flow);
             q.condition().equal("site.code", site.code);
             if (allStates) {
@@ -68,11 +68,11 @@ public class AdminSynchHseAudit {
             }
 
             try {
-                for (Dto dto : CommonRepoMongo.getData(q)) {
+                for (Dto dto : CommonModelMongo.getData(q)) {
                     flow = (HseAuditQuestionnaire) dto;
                     flow.site = site;
 
-                    CommonRepoMongo.update(flow);
+                    CommonModelMongo.update(flow);
                     if (ui != null) {
                         ui.addMessage(Locale.getString(AppLangKey.UPDATED, flow.getClass().getSimpleName(), flow.site.code)).write();
                     }
@@ -104,32 +104,40 @@ public class AdminSynchHseAudit {
                 }
             }
 
-            long flowId = CommonRepoMongo.insert(flow);
+            ResponseMessage res = CommonModelMongo.insert(flow);
             if (ui != null) {
-                ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), flowId + " - " + title)).write();
+                ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), res.value + " - " + title)).write();
             }
         }
     }
 
     protected static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : CommonRepoMongo.getData(new HseAuditQuestionnaire())) {
+            for (Dto dto : CommonModelMongo.getAll(new HseAuditQuestionnaire())) {
                 HseAuditQuestionnaire flow = (HseAuditQuestionnaire) dto;
                 if (!AdminSiteImport.siteCodes.contains(flow.site.code)) {
-                    if(HseAuditFlowState.Completed.equals(flow.lastState)
-                    || HseAuditFlowState.Approved.equals(flow.lastState)
-                    || HseAuditFlowState.PreApproved.equals(flow.lastState)) {
+
+//                    if(HseAuditFlowState.Completed.equals(flow.lastState)
+//                    || HseAuditFlowState.Approved.equals(flow.lastState)
+//                    || HseAuditFlowState.PreApproved.equals(flow.lastState)
+//                    || HseAuditFlowState.MCI_Approve.equals(flow.lastState)
+//                    || HseAuditFlowState.MCI_Reject.equals(flow.lastState)) {
+//                        continue;
+//                    }
+                    if(!HseAuditFlowState.Pending.equals(flow.lastState) && !HseAuditFlowState.Planned.equals(flow.lastState)) {
                         continue;
                     }
+
+
                     try {
                         CommonModelMongo.deleteById(flow);
                         ui.addMessage("deleted " + flow.id + ":"+ flow.site.code + " from HseAuditQuestionnaire");
-                    } catch (InputException | ServerException e) {
+                    } catch (VantarException e) {
                         ui.addErrorMessage(e);
                     }
                 }
             }
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
     }

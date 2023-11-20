@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class DistrictController extends RouteToMethod {
 
-    public void districtsGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
+    public void districtsGet(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, DistrictModel.getAll());
     }
 

@@ -15,15 +15,15 @@ import java.util.*;
     "lastState:1", "scheduledDateTimeFrom:1"})
 public class HseAuditQuestionnaire extends DtoBase {
 
-    public Long id;
+    public Long id;//
 
     @Required
-    public Site site;
+    public Site site;//
     //@Depends(SubContractor.class)
     public Long subContractorId;
-    public HseAuditActivity activity;
+    public HseAuditActivity activity;//
 
-    public List<Long> parents;
+    public List<Long> parents;//
 
     // assign > > >
     @Default("true")
@@ -31,22 +31,22 @@ public class HseAuditQuestionnaire extends DtoBase {
     @Default("false")
     public Boolean copyable;
     //@Depends(User.class)
-    public Long assignorId;
+    public Long assignorId;//
     //@Depends(User.class)
-    public Long assigneeId;
+    public Long assigneeId;//
     public List<State> state;
-    public HseAuditFlowState lastState;
+    public HseAuditFlowState lastState;//
 
     @Timestamp
-    public DateTime lastStateDateTime;
+    public DateTime lastStateDateTime;//
     @Timestamp
-    public DateTime assignDateTime;
+    public DateTime assignDateTime;//
     @Timestamp
-    public DateTime scheduledDateTimeFrom;
+    public DateTime scheduledDateTimeFrom;//
     @Timestamp
-    public DateTime scheduledDateTimeTo;
+    public DateTime scheduledDateTimeTo;//
     @Timestamp
-    public DateTime auditDateTime;
+    public DateTime auditDateTime;//
     // < < < assign
 
     public List<HseAuditAnswer> answers;
@@ -82,7 +82,9 @@ public class HseAuditQuestionnaire extends DtoBase {
             || state == HseAuditFlowState.PreApproved
             || state == HseAuditFlowState.Approved
             || state == HseAuditFlowState.Completed
-            || state == HseAuditFlowState.Expired;
+            || state == HseAuditFlowState.Expired
+            || state == HseAuditFlowState.MCI_Approve
+            || state == HseAuditFlowState.MCI_Reject;
     }
 
     @Override

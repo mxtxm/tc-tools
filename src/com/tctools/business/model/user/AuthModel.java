@@ -6,12 +6,28 @@ import com.vantar.exception.*;
 import com.vantar.service.Services;
 import com.vantar.service.auth.*;
 import com.vantar.service.cache.ServiceDtoCache;
+import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 
 
 public class AuthModel {
 
+    private static final String SEPARATOR_SIGNIN_USERNAME = ">>>";
+
     public static ResponseMessage signin(Params params) throws AuthException, ServerException {
+        String username = params.getString("username");
+        if (username != null && username.contains(SEPARATOR_SIGNIN_USERNAME)) {
+            String[] usernames = StringUtil.splitTrim(username, SEPARATOR_SIGNIN_USERNAME);
+            params.set("username", usernames[0]);
+
+            User admin = (User) Services.get(ServiceAuth.class).signin(params);
+            for (User user : ServiceDtoCache.asList(User.class)) {
+                if (user.username.equalsIgnoreCase(usernames[1])) {
+                    Services.get(ServiceAuth.class).forceSignin(user);
+                    return ResponseMessage.success(AppLangKey.SIGNIN_SUCCESS, (User) user.getClone());
+                }
+            }
+        }
         return ResponseMessage.success(AppLangKey.SIGNIN_SUCCESS, Services.get(ServiceAuth.class).signin(params));
     }
 

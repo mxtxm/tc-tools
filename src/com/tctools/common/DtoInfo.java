@@ -12,6 +12,7 @@ import com.vantar.database.dto.DtoDictionary;
 import com.vantar.database.nosql.mongo.MongoSequence;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.service.log.dto.*;
+import com.vantar.service.patch.dto.PatchHistory;
 
 
 public class DtoInfo {
@@ -22,6 +23,8 @@ public class DtoInfo {
         DtoDictionary.add( "لاگ", Log.class);
         DtoDictionary.add( "تنظیمات", Settings.class);
         DtoDictionary.add( "تست", WebTest.class);
+        DtoDictionary.add("وصله", PatchHistory.class);
+        DtoDictionary.add("Patch", PatchHistory.class);
 
         // user
         DtoDictionary.setCategory("کاربران");

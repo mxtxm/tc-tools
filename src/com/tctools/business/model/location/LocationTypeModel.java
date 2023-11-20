@@ -10,7 +10,7 @@ import java.util.*;
 
 public class LocationTypeModel {
 
-    public static List<LocationType.Localed> getAll(Params params) throws ServerException, NoContentException {
+    public static List<LocationType.Localed> getAll(Params params) throws VantarException {
         return CommonModelMongo.getAllFromCache(params, LocationType.class, LocationType.Localed.class);
     }
 

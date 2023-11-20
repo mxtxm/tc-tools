@@ -10,14 +10,14 @@ import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
 import com.tctools.common.util.ExportCommon;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.dto.*;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.json.Json;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
@@ -51,7 +51,7 @@ public class Patch2Controller extends RouteToMethod {
     public static final Logger log = LoggerFactory.getLogger(Patch2Controller.class);
 
     @Access("ROOT")
-    public void t(Params params, HttpServletResponse response) throws FinishException, DatabaseException, NoContentException {
+    public void t(Params params, HttpServletResponse response) throws VantarException {
         List<Long> ids = new ArrayList<>();
         String s = "[0, 3, 259, 4, 6, 8, 73, 9, 74, 330, 396, 397, 14, 146, 19, 87, 23, 26, 28, 351, 224, 33, 417, 34, 228, 100, 38, 39, 105, 297, 45, 110, 51, 116, 53, 118, 119, 57, 121, 380, 63]";
         ids = Json.d.listFromJson(s, Long.class);
@@ -62,7 +62,7 @@ public class Patch2Controller extends RouteToMethod {
 
         QueryBuilder q = new QueryBuilder(new SubContractor());
         q.condition().inNumber("id", ids);
-        List<Dto> x = CommonRepoMongo.getData(q);
+        List<Dto> x = CommonModelMongo.getData(q);
         log.error(">>{}",x);
 
     }
@@ -72,7 +72,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (f.sectors == null || f.sectors.isEmpty()) {
@@ -81,7 +81,7 @@ public class Patch2Controller extends RouteToMethod {
                 try {
                     WorkFlowModel.setNearestSector(f);
 
-                    CommonRepoMongo.update(f);
+                    CommonModelMongo.update(f);
 
                     ui.addMessage(f.site.code).write();
                 } catch (Exception x) {
@@ -90,7 +90,7 @@ public class Patch2Controller extends RouteToMethod {
                 }
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -101,7 +101,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (f.sectors == null || f.sectors.isEmpty()) {
@@ -111,11 +111,11 @@ public class Patch2Controller extends RouteToMethod {
                 QueryBuilder q = new QueryBuilder(new Site());
                 q.condition().equal("code", f.site.code);
                 try {
-                    Site site = CommonRepoMongo.getFirst(q);
+                    Site site = CommonModelMongo.getFirst(q);
 
                     f.site = site;
                     f.sectors = site.sectors;
-                    CommonRepoMongo.update(f);
+                    CommonModelMongo.update(f);
 
                     ui.addMessage(site.code).write();
                 } catch (Exception x) {
@@ -123,7 +123,7 @@ public class Patch2Controller extends RouteToMethod {
                 }
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -399,7 +399,7 @@ public class Patch2Controller extends RouteToMethod {
                 QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
                 q.condition().equal("site.code", item);
 
-                for (Dto dd : CommonRepoMongo.getData(q)) {
+                for (Dto dd : CommonModelMongo.getData(q)) {
                     RadioMetricFlow f = (RadioMetricFlow) dd;
 
                     if (f.state != null) {
@@ -413,12 +413,12 @@ public class Patch2Controller extends RouteToMethod {
 
                         f.measurementDateTime = d;
                         f.skipBeforeUpdate();
-                        CommonRepoMongo.update(f);
+                        CommonModelMongo.update(f);
                         ui.addMessage(f.site.code).write();
                     }
                 }
             }
-        } catch (DatabaseException | NoContentException ee) {
+        } catch (VantarException ee) {
             ui.addErrorMessage(ee).write();
         }
 
@@ -431,7 +431,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<City> items = CommonRepoMongo.getData(new City());
+            List<City> items = CommonModelMongo.getAll(new City());
 
             for (City c: items) {
                 String oldName = c.name.get("fa");
@@ -444,7 +444,7 @@ public class Patch2Controller extends RouteToMethod {
                 c.name.put("fa", newName);
                 ui.addMessage(oldName + " >> " + newName).write();
 
-                CommonRepoMongo.update(c);
+                CommonModelMongo.update(c);
             }
 
             for (City c: items) {
@@ -458,10 +458,10 @@ public class Patch2Controller extends RouteToMethod {
                 c.name.put("en", newName);
                 ui.addMessage(oldName + " >> " + newName).write();
 
-                CommonRepoMongo.update(c);
+                CommonModelMongo.update(c);
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -473,7 +473,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (RadioMetricComplain.isEmpty(f.complain)) {
@@ -516,7 +516,7 @@ public class Patch2Controller extends RouteToMethod {
                 if (FileUtil.exists(f.getPath())) {
                     Arrays.stream(new File(f.getPath()).listFiles((file, p) -> p.endsWith(".png"))).forEach(file -> {
                         if (file.getName().contains("درخواست")) {
-                            FileUtil.move(
+                            DirUtil.move(
                                 file.getAbsolutePath(),
                                 "/opt/backup/" + f.id + "------" + file.getName()
                             );
@@ -526,15 +526,15 @@ public class Patch2Controller extends RouteToMethod {
 
                 if (FileUtil.exists(f.complain.getImageFilePath(false))) {
                     f.complain.imageUrl = f.complain.getImageUrl(false);
-                    CommonRepoMongo.update(f);
-                    CommonRepoMongo.update(f.complain);
+                    CommonModelMongo.update(f);
+                    CommonModelMongo.update(f.complain);
                     ui.addMessage(f.site.code).write();
                 } else {
                     ui.addErrorMessage(f.site.code).write();
                 }
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -547,8 +547,8 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
-            List<RadioMetricComplain> complains = CommonRepoMongo.getData(new RadioMetricComplain());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricComplain> complains = CommonModelMongo.getAll(new RadioMetricComplain());
 
             Set<Long> cc = new HashSet<>(complains.size());
             for (RadioMetricComplain c : complains) {
@@ -561,7 +561,7 @@ public class Patch2Controller extends RouteToMethod {
                 }
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -584,7 +584,7 @@ public class Patch2Controller extends RouteToMethod {
         }
 
         try {
-            List<Site> items = CommonRepoMongo.getData(new Site());
+            List<Site> items = CommonModelMongo.getAll(new Site());
 
             String[] parts = StringUtil.split(dtos, ',');
             for (String part : parts) {
@@ -600,7 +600,7 @@ public class Patch2Controller extends RouteToMethod {
                     q.condition().greaterThanEqual("id", StringUtil.toLong(dtoId[1]));
                 }
 
-                List<Dto> dicItems = CommonRepoMongo.getData(q);
+                List<Dto> dicItems = CommonModelMongo.getData(q);
 
                 String dtoIdFieldName = StringUtil.firstCharToLowerCase(dtoId[0]) + "Id";
                 for (Site s : items) {
@@ -612,7 +612,7 @@ public class Patch2Controller extends RouteToMethod {
                 }
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -632,47 +632,47 @@ public class Patch2Controller extends RouteToMethod {
 
         try {
             int i = 0;
-            List<RadioMetricComplain> cc = CommonRepoMongo.getData(c);
+            List<RadioMetricComplain> cc = CommonModelMongo.getAll(c);
 
             for (RadioMetricComplain ccc : cc) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonRepoMongo.update(ccc);
+                CommonModelMongo.update(ccc);
             }
 
-            List<Site> ss = CommonRepoMongo.getData(s);
+            List<Site> ss = CommonModelMongo.getAll(s);
 
             ui.addMessage("11").write();
             ui.addMessage("11").write();
             for (Site sss : ss) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonRepoMongo.update(sss);
+                CommonModelMongo.update(sss);
             }
             ui.addMessage("11").write();
 
-            List<RadioMetricFlow> rr = CommonRepoMongo.getData(r);
+            List<RadioMetricFlow> rr = CommonModelMongo.getAll(r);
 
             i = 0;
             for (RadioMetricFlow rrr : rr) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonRepoMongo.update(rrr);
+                CommonModelMongo.update(rrr);
             }
             ui.addMessage("11").write();
 
             ui.addMessage("11").write();
-            List<HseAuditQuestionnaire> hh = CommonRepoMongo.getData(h);
+            List<HseAuditQuestionnaire> hh = CommonModelMongo.getAll(h);
 
             i = 0;
             for (HseAuditQuestionnaire hhh : hh) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonRepoMongo.update(hhh);
+                CommonModelMongo.update(hhh);
             }
             ui.addMessage("11").write();
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 

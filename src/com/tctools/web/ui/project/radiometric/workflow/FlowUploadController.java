@@ -19,15 +19,15 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class FlowUploadController extends RouteToMethod {
 
-    public void radioMetricMeasurementSubmit(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
+    public void radioMetricMeasurementSubmit(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, WorkFlowModel.measurementSubmit(params));
     }
 
-    public void radioMetricFlowUpdate(Params params, HttpServletResponse response) throws ServerException, InputException {
+    public void radioMetricFlowUpdate(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, WorkFlowModel.update(params));
     }
 
-    public void radioMetricImageUpload(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException, NoContentException {
+    public void radioMetricImageUpload(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, WorkFlowModel.uploadImages(params));
     }
 }

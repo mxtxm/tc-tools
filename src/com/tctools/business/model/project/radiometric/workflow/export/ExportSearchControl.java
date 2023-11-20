@@ -5,12 +5,10 @@ import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.dto.site.Sector;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
-import com.vantar.database.query.data.QueryData;
 import com.vantar.exception.*;
-import com.vantar.locale.VantarKey;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.web.Params;
 import org.apache.poi.ss.usermodel.*;
@@ -22,23 +20,15 @@ import java.util.List;
 
 public class ExportSearchControl extends ExportCommon {
 
-    public void excel(Params params, HttpServletResponse response) throws ServerException, InputException {
-        QueryData queryData = params.getQueryData();
-        if (queryData == null) {
-            throw new InputException(VantarKey.NO_SEARCH_COMMAND);
+    public void excel(Params params, HttpServletResponse response) throws VantarException {
+        QueryBuilder q = params.getQueryBuilder(new RadioMetricFlow.Viewable());
+        if (q == null) {
+            throw new InputException("NO SEARCH COMMAND");
         }
-        queryData.setDto(new RadioMetricFlow(), new RadioMetricFlow.Viewable());
-
-        List<RadioMetricFlow.Viewable> items;
-        try {
-            items = CommonRepoMongo.getData(new QueryBuilder(queryData));
-        } catch (DatabaseException | NoContentException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
-
+        List<RadioMetricFlow.Viewable> items = CommonModelMongo.getData(q);
         try (Workbook wb = new XSSFWorkbook()) {
 
-            Sheet sheetSp = wb.createSheet("Regular");
+            Sheet sheetSp = wb.createSheet("Normal");
             Sheet sheetCc = wb.createSheet("CC");
             int rowIndexSp = 0;
             int rowIndexCc = 0;

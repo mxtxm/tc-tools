@@ -37,73 +37,73 @@ public class UserController extends RouteToMethod {
         Response.writeJson(
             response,
             user.role.equals(Role.MANAGER) ?
-                EnumUtil.getEnumValues(Role.values(), "ADMIN", "ROOT") :
-                EnumUtil.getEnumValues(Role.values(), "ADMIN", "ROOT", "MANAGER")
+                EnumUtil.getEnumValues(Role.values(), "ADMIN", "MCI", "ROOT") :
+                EnumUtil.getEnumValues(Role.values(), "ADMIN", "MCI", "ROOT", "MANAGER")
         );
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void userGetCurrent(Params params, HttpServletResponse response) throws AuthException, NoContentException, ServiceException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void userGetCurrent(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getCurrentUser(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void userGetById(Params params, HttpServletResponse response) throws ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void userGetById(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getUserById(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void usersAll(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
+    public void usersAll(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getAll(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void usersAllKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
+    public void usersAllKeyval(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void usersTechniciansGet(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
+    public void usersTechniciansGet(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getTechnicians(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void usersTechniciansKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
+    public void usersTechniciansKeyval(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getTechniciansAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void usersAcTechniciansKeyval(Params params, HttpServletResponse response) throws AuthException, ServerException, NoContentException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
+    public void usersAcTechniciansKeyval(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.getAcTechniciansAsKeyValue(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
-    public void userInsert(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    public void userInsert(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.insert(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void userUpdate(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void userUpdate(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.update(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "VENDOR",})
-    public void userDelete(Params params, HttpServletResponse response) throws InputException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    public void userDelete(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.delete(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void userSignatureExists(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Response.writeJson(response, UserModel.signatureExists(((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void userChangePassword(Params params, HttpServletResponse response) throws InputException, AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void userChangePassword(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.changePassword(params, ((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void userUnsubscribe(Params params, HttpServletResponse response) throws AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    public void userUnsubscribe(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.unsubscribe(((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 }

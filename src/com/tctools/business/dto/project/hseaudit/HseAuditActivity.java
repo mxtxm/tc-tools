@@ -11,4 +11,5 @@ public enum HseAuditActivity {
     MakingSafe,
     CleanUp,
     AddL2100,
+    QA,
 }

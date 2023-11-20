@@ -5,11 +5,13 @@ import com.tctools.business.dto.project.radiometric.complain.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
 import com.vantar.exception.ServiceException;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
+import com.vantar.util.bool.BoolUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
@@ -36,10 +38,10 @@ public class RadioMetricFlow extends DtoBase {
     // assign > > >
     @Default("true")
     public Boolean assignable;
-    @Required
+    //@Required
     //@Depends(User.class)
     public Long assignorId;
-    @Required
+    //@Required
     //@Depends(User.class)
     public Long assigneeId;
     public List<State> state;
@@ -109,7 +111,6 @@ public class RadioMetricFlow extends DtoBase {
     public Boolean isMeasurementRecordCountAcceptable170;
     public Boolean isMeasurementGpsDataAvailable170;
     public Boolean isMeasurementTimeAcceptable170;
-
 
     public Boolean isMwCm2100;
     public Boolean isMwCm2150;
@@ -205,6 +206,36 @@ public class RadioMetricFlow extends DtoBase {
 
     @Override
     public boolean beforeUpdate() {
+        spotAddress = Site.normaliseAddress(spotAddress);
+        siteAddress = Site.normaliseAddress(siteAddress);
+        if (complain != null) {
+            complain.address = Site.normaliseAddress(complain.address);
+            complain.complainerAddress = Site.normaliseAddress(complain.complainerAddress);
+        }
+        if (site != null) {
+            site.address = Site.normaliseAddress(site.address);
+        }
+
+        if (complain != null && complain.id == null) {
+            complain = null;
+            addNullProperties("complain");
+            isCc = false;
+        }
+
+        if (BoolUtil.isTrue(isCc)) {
+            if (complain != null) {
+                try {
+                    RadioMetricComplain complainX = new RadioMetricComplain();
+                    complainX.id = complain.id;
+                    complainX = CommonModelMongo.getById(complainX);
+                    complainX.lastState = lastState;
+                    CommonModelMongo.update(complainX);
+                } catch (Exception ignore) {
+
+                }
+            }
+        }
+
         if (skipBeforeUpdate) {
             return true;
         }
@@ -214,7 +245,7 @@ public class RadioMetricFlow extends DtoBase {
             addNullProperties("complain");
             isCc = false;
         } else {
-            isCc = complain.type.equals(ComplainType.CustomerComplain);
+            isCc = ComplainType.CustomerComplain.equals(complain.type);
         }
 
         measurementDateTime = logDateTime100;
@@ -523,6 +554,11 @@ public class RadioMetricFlow extends DtoBase {
         public Double densityAverageDivMinRadiation170;
         public DateTime logDateTime170;
         public RadioMetricRadiationStatus radiationStatus170;
+
+        public Boolean isMwCm2100;
+        public Boolean isMwCm2150;
+        public Boolean isMwCm2170;
+
         // < < < measurement
 
         // observation > > >
@@ -624,6 +660,10 @@ public class RadioMetricFlow extends DtoBase {
         public Double densityAverage6min100;
         public Double densityAverage6min150;
         public Double densityAverage6min170;
+
+        public Boolean isMwCm2100;
+        public Boolean isMwCm2150;
+        public Boolean isMwCm2170;
 
         // > > > CHECKING
         public Boolean isCommittable;

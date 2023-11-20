@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class LocationTypeController extends RouteToMethod {
 
-    public void locationTypeGet(Params params, HttpServletResponse response) throws ServerException, NoContentException {
+    public void locationTypeGet(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, LocationTypeModel.getAll(params));
     }
 

@@ -8,7 +8,7 @@ import com.tctools.business.dto.system.Settings;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.Excel;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.*;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
@@ -19,7 +19,7 @@ import com.vantar.locale.*;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.object.ClassUtil;
 import com.vantar.util.string.*;
 import com.vantar.web.*;
@@ -56,72 +56,72 @@ public class AdminSiteImport {
 
         if (!params.contains("f")) {
             String fields =
-                "Region\n" + //0
-                "Province\n" + //1
-                "City\n" + //2
-                "code\n" + //3
-                "comment\n" + //4
-                "...\n" + //5
-                "...\n" + //6
-                "...\n" + //7
-                "District\n" + //8
-                "LocationType\n" + //9
-                "name:fa\n" + //10
-                "name:en\n" + //11
-                "address\n" + //12
-                "latitude\n" + //13
-                "longitude\n" + //14
-                "SiteOwnership\n" + //15
-                "controller\n" + //16
-                "BtsStatus\n" + //17
-                "setupDate\n" + //18
-                "BtsOwnership\n" + //19
-                "contractStartDate\n" + //20
-                "...\n" + //21
-                "etcTransceiverCount\n" + //22
-                "SiteType\n" + //23
-                "SiteClass\n" + //24
-                "BtsInstall\n" + //25
-                "BtsTowerType\n" + //26
-                "towerHeight\n" + //27
-                "buildingHeight\n" + //28
-                "frequencyBand\n" + //29
-                "Sector A:height\n" + //30
-                "Sector A:antennaCount\n" + //31
-                "Sector A:azimuth\n" + //32
-                "Sector A:mechanicalTilt\n" + //33
-                "Sector A:LocationType\n" + //34
-                "Sector A2:height\n" + //35
-                "Sector A2:azimuth\n" + //36
-                "Sector A2:mechanicalTilt\n" + //37
-                "Sector B:height\n" + //38
-                "Sector B:antennaCount\n" + //39
-                "Sector B:azimuth\n" + //40
-                "Sector B:mechanicalTilt\n" + //41
-                "Sector B:LocationType\n" + //42
-                "Sector B2:height\n" + //43
-                "Sector B2:azimuth\n" + //44
-                "Sector B2:mechanicalTilt\n" + //45
-                "Sector C:height\n" + //46
-                "Sector C:antennaCount\n" + //47
-                "Sector C:azimuth\n" + //48
-                "Sector C:mechanicalTilt\n" + //49
-                "Sector C:LocationType\n" + //50
-                "Sector C2:height\n" + //51
-                "Sector C2:azimuth\n" + //52
-                "Sector C2:mechanicalTilt\n" + //53
-                "Sector D:height\n" + //54
-                "Sector D:antennaCount\n" + //55
-                "Sector D:azimuth\n" + //56
-                "Sector D:mechanicalTilt\n" + //57
-                "Sector D:SectorOptimization\n" + //58
-                "Sector D2:height\n" + //59
-                "Sector D2:azimuth\n" + //60
-                "Sector D2:mechanicalTilt\n" + //61
-                "assignable\n" + //62
-                "Sector A:electricalTilt\n" + //63
-                "Sector B:electricalTilt\n" + //64
-                "Sector C:electricalTilt"; //65
+                "Region\n" + //0 A
+                "Province\n" + //1 B
+                "City\n" + //2 C
+                "code\n" + //3 D
+                "comment\n" + //4 E
+                "...\n" + //5 F
+                "...\n" + //6 G
+                "...\n" + //7 H
+                "District\n" + //8 I
+                "LocationType\n" + //9 J
+                "name:fa\n" + //10 K
+                "name:en\n" + //11 L
+                "address\n" + //12 M
+                "latitude\n" + //13 N
+                "longitude\n" + //14 O
+                "SiteOwnership\n" + //15 P
+                "controller\n" + //16 Q
+                "BtsStatus\n" + //17 R
+                "setupDate\n" + //18 S
+                "BtsOwnership\n" + //19 T
+                "contractStartDate\n" + //20 U
+                "...\n" + //21 V
+                "etcTransceiverCount\n" + //22 W
+                "SiteType\n" + //23 X
+                "SiteClass\n" + //24 Y
+                "BtsInstall\n" + //25 Z
+                "BtsTowerType\n" + //26 AA
+                "towerHeight\n" + //27 AB
+                "buildingHeight\n" + //28 AC
+                "frequencyBand\n" + //29 AD
+                "Sector A:height\n" + //30 AE
+                "Sector A:antennaCount\n" + //31 AF
+                "Sector A:azimuth\n" + //32 AG
+                "Sector A:mechanicalTilt\n" + //33 AH
+                "Sector A:LocationType\n" + //34 AI
+                "Sector A2:height\n" + //35 AJ
+                "Sector A2:azimuth\n" + //36 AK
+                "Sector A2:mechanicalTilt\n" + //37 AL
+                "Sector B:height\n" + //38 AM
+                "Sector B:antennaCount\n" + //39 AN
+                "Sector B:azimuth\n" + //40 AO
+                "Sector B:mechanicalTilt\n" + //41 AP
+                "Sector B:LocationType\n" + //42 AQ
+                "Sector B2:height\n" + //43 AR
+                "Sector B2:azimuth\n" + //44 AS
+                "Sector B2:mechanicalTilt\n" + //45 AT
+                "Sector C:height\n" + //46 AU
+                "Sector C:antennaCount\n" + //47 AV
+                "Sector C:azimuth\n" + //48 AW
+                "Sector C:mechanicalTilt\n" + //49 AX
+                "Sector C:LocationType\n" + //50 AY
+                "Sector C2:height\n" + //51 AZ
+                "Sector C2:azimuth\n" + //52 BA
+                "Sector C2:mechanicalTilt\n" + //53 BB
+                "Sector D:height\n" + //54 BC
+                "Sector D:antennaCount\n" + //55 BD
+                "Sector D:azimuth\n" + //56 BE
+                "Sector D:mechanicalTilt\n" + //57 BF
+                "Sector D:SectorOptimization\n" + //58 BG
+                "Sector D2:height\n" + //59 BH
+                "Sector D2:azimuth\n" + //60 BI
+                "Sector D2:mechanicalTilt\n" + //61 BJ
+                "assignable\n" + //62 BK
+                "Sector A:electricalTilt\n" + //63 BL
+                "Sector B:electricalTilt\n" + //64 BM
+                "Sector C:electricalTilt"; //65 BN
 
             ui.beginUploadForm()
                 .addEmptyLine()
@@ -147,7 +147,7 @@ public class AdminSiteImport {
         loadSites(ui);
 
         String[] fields = StringUtil.split(params.getString("fields"), '\n');
-        String path = FileUtil.getTempDirectory() + new DateTime().getAsTimestamp();
+        String path = DirUtil.getTempDirectory() + new DateTime().getAsTimestamp();
 
         ui.addMessage("db > operators").write();
         Map<String, Long> operatorIds = new HashMap<>();
@@ -196,11 +196,15 @@ public class AdminSiteImport {
                 if (++i == 1) {
                     continue;
                 }
+                if (!record[3].equals("KZ4970")
+                ) {
+                    continue;
+                }
 
                 String cityEn = record[6];
-                if (StringUtil.isEmpty(record[2])) {
-                    record[2] = record[5];
-                }
+//                if (StringUtil.isEmpty(record[2])) {
+//                    record[2] = record[5];
+//                }
 
                 Site site = new Site();
                 Long provinceId = null;
@@ -377,7 +381,11 @@ public class AdminSiteImport {
                                         if (value.equals("قبل از سال 93")) {
                                             value = "1391-01-01";
                                         }
-                                        dt = new DateTime(value);
+                                        if (value.equals("-") || value.isEmpty()) {
+                                            dt = null;
+                                        } else {
+                                            dt = new DateTime(value);
+                                        }
                                     } catch (DateTimeException e) {
                                         ui.addErrorMessage(
                                             "WARNING " + site.code + " > invalid date " + fieldName + " >" + value + "<"
@@ -440,25 +448,25 @@ public class AdminSiteImport {
                     if (id != null) {
                         QueryBuilder q = new QueryBuilder(site);
                         q.condition().equal("id", id);
-                        CommonRepoMongo.update(site, q);
+                        CommonModelMongo.updateNoLog(q);
                         ui.addMessage(
                             (i-1) + " " + Locale.getString(AppLangKey.UPDATED, site.getClass().getSimpleName(), site.code)
                         ).write();
-                        site = CommonRepoMongo.getFirst(q);
+                        site = CommonModelMongo.getFirst(q);
                     } else {
-                        site.id = CommonRepoMongo.insert(site);
+                        CommonModelMongo.insertNoLog(site);
                         ui.addMessage(
                             (i-1) + " " + Locale.getString(AppLangKey.ADDED, site.getClass().getSimpleName(), site.code)
                         ).write();
                     }
 
                     // > > > hook to projects
-                    AdminSynchRadiometric.synchWithSite(site, doAllStatesRadioMetric, ui);
-                    AdminSynchHseAudit.synchWithSite(site, doAllStatesHseAudit, ui);
+                    AdminSynchRadiometric.synchWithSite(site, ui);
+                    //AdminSynchHseAudit.synchWithSite(site, doAllStatesHseAudit, ui);
                     // < < < hook to projects
 
                     ++recordCount;
-                } catch (DatabaseException | NoContentException e) {
+                } catch (VantarException e) {
                     Admin.log.error("! unexpected error ({})", site, e);
                     ui.addErrorMessage(e).write();
                 }
@@ -472,11 +480,11 @@ public class AdminSiteImport {
         try {
             QueryBuilder q = new QueryBuilder(new Settings());
             q.condition().equal("key", Settings.KEY_ARAS_UPDATE);
-            CommonRepoMongo.delete(q);
+            CommonModelMongo.deleteNoLog(q);
             Settings settings = new Settings();
             settings.key = Settings.KEY_ARAS_UPDATE;
             settings.value = new DateTime().formatter().getDate();
-            CommonRepoMongo.insert(settings);
+            CommonModelMongo.insertNoLog(settings);
         } catch (Exception e) {
             ui.addErrorMessage(e);
         }
@@ -524,12 +532,12 @@ public class AdminSiteImport {
     private static void loadSites(WebUi ui) {
         codeIdMap = new HashMap<>();
         try {
-            for (Dto dto : CommonRepoMongo.getAll(new Site.ViewableIdCode())) {
+            for (Dto dto : CommonModelMongo.getAll(new Site.ViewableIdCode())) {
                 codeIdMap.put(((Site.ViewableIdCode) dto).code, ((Site.ViewableIdCode) dto).id);
             }
         } catch (NoContentException e) {
             ui.addMessage("no sites in database");
-        } catch (DatabaseException e) {
+        } catch (VantarException e) {
             Admin.log.error("! error loading sites", e);
             ui.addErrorMessage("can not load sites");
         }
@@ -538,6 +546,10 @@ public class AdminSiteImport {
     private static <T extends Dto> Long getId(WebUi ui, T obj, String... values) {
         for (String name : values) {
             String nValue = normalize(name);
+            if ("Out of city".equalsIgnoreCase(name)) {
+                continue;
+            }
+
 
 //            if (StringUtil.isEmpty(nValue)) {
 //                continue;
@@ -565,27 +577,37 @@ public class AdminSiteImport {
         }
 
         try {
-            if (obj.hasAnnotation("name", Localized.class)) {
-                Map<String, String> map = (Map<String, String>) obj.getPropertyValue("name");
-                if (map == null) {
-                    map = new HashMap<>(2);
-                }
-                map.put(Persian.containsPersian(values[0]) ? "fa" : "en", values[values.length > 1 ? 1 : 0]);
-                obj.setPropertyValue("name", map);
-            } else {
-                obj.setPropertyValue("name", values[0]);
-            }
-
             if (obj instanceof City) {
                 ((City) obj).provinceId = StringUtil.toLong(values[2]);
+                Map<String, String> map = new HashMap<>(2);
+                map.put("fa", values[0]);
+                if (values[1].equalsIgnoreCase("Out of city")) {
+                    values[1] = values[0];
+                }
+                map.put("en", values[1]);
+                obj.setPropertyValue("name", map);
+
+            } else {
+
+
+                if (obj.hasAnnotation("name", Localized.class)) {
+                    Map<String, String> map = (Map<String, String>) obj.getPropertyValue("name");
+                    if (map == null) {
+                        map = new HashMap<>(2);
+                    }
+                    map.put(Persian.containsPersian(values[0]) ? "fa" : "en", values[values.length > 1 ? 1 : 0]);
+                    obj.setPropertyValue("name", map);
+                } else {
+                    obj.setPropertyValue("name", values[0]);
+                }
             }
 
-            long id = CommonRepoMongo.insert(obj);
+            ResponseMessage res = CommonModelMongo.insertNoLog(obj);
             ui.addMessage(
-                Locale.getString(AppLangKey.ADDED, obj.getClass().getSimpleName(), "(" + id + ") " + values[0])
+                Locale.getString(AppLangKey.ADDED, obj.getClass().getSimpleName(), "(" + res.value + ") " + values[0])
             ).write();
             Admin.log.warn("! inserted new({}) > {}", obj.getClass().getSimpleName(), values[0]);
-            return id;
+            return (Long) res.value;
         } catch (Exception e) {
             Admin.log.error("! failed insert ({}, {})", obj.getClass().getSimpleName(), values[0], e);
             ui.addErrorMessage(e).write();
@@ -644,23 +666,23 @@ public class AdminSiteImport {
 
     private static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : CommonRepoMongo.getData(new Site())) {
+            for (Dto dto : CommonModelMongo.getAll(new Site())) {
                 Site site = (Site) dto;
                 if (!siteCodes.contains(site.code)) {
                     try {
                         CommonModelMongo.deleteById(site);
                         ui.addMessage("deleted " + site.code + " from Site");
-                    } catch (InputException | ServerException e) {
+                    } catch (VantarException e) {
                         Admin.log.error("! can not delete {}", site);
                         ui.addErrorMessage(e);
                     }
                 }
             }
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
-        AdminSynchHseAudit.removeRemovedSited(ui);
+        //AdminSynchHseAudit.removeRemovedSited(ui);
         AdminSynchRadiometric.removeRemovedSited(ui);
     }
 }

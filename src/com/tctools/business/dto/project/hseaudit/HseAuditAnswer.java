@@ -2,7 +2,7 @@ package com.tctools.business.dto.project.hseaudit;
 
 import com.tctools.common.Param;
 import com.vantar.database.dto.*;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.string.StringUtil;
 import java.util.*;
 
@@ -30,7 +30,7 @@ public class HseAuditAnswer extends DtoBase {
         String urlPart = Param.HSE_AUDIT_URL + siteCode + '/';
         String q = "q" + questionId;
         imageUrls = new ArrayList<>();
-        for (String file : FileUtil.getDirectoryFiles(Param.HSE_AUDIT_FILES + siteCode + '/')) {
+        for (String file : DirUtil.getDirectoryFiles(Param.HSE_AUDIT_FILES + siteCode + '/')) {
             String[] parts = StringUtil.split(file, '/');
             String filename = parts[parts.length - 1];
             String[] filenameParts = StringUtil.split(filename, '-');

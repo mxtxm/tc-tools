@@ -5,8 +5,6 @@ import com.tctools.business.model.project.radiometric.workflow.Measurement;
 import com.vantar.admin.model.Admin;
 import com.vantar.business.CommonModelMongo;
 import com.vantar.database.common.ValidationError;
-import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryResultBase;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
@@ -26,18 +24,21 @@ public class MeasurementController extends RouteToMethod {
     public static final Logger log = LoggerFactory.getLogger(MeasurementController.class);
 
 
-    public void radiometricMeasurementRedo(Params params, HttpServletResponse response) throws FinishException, ServerException {
+    public void radiometricMeasurementRedo(Params params, HttpServletResponse response) throws FinishException, VantarException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         String siteCode = params.getString("siteCode");
+        Long id = params.getLong("id");
 
-        CommonModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.Event() {
-            @Override
-            public void afterSetData(Dto dto) {
-                RadioMetricFlow flow = (RadioMetricFlow) dto;
-                if (siteCode != null && !flow.site.code.equals(siteCode)) {
-                    return;
-                }
+        CommonModelMongo.forEach(new RadioMetricFlow(), dto -> {
+            RadioMetricFlow flow = (RadioMetricFlow) dto;
+            if (siteCode != null && !flow.site.code.equals(siteCode)) {
+                return;
+            }
+            if (id != null && !flow.id.equals(id)) {
+                return;
+            }
+            try {
 
                 String csv100 = flow.getPath() + flow.site.code + "__100CM.csv";
                 String csv150 = flow.getPath() + flow.site.code + "__150CM.csv";
@@ -50,16 +51,31 @@ public class MeasurementController extends RouteToMethod {
                     hasCsv = true;
                     Measurement measurement = new Measurement();
                     measurement.applyCsv(csv100, flow, "100", errors);
+                    try {
+                        measurement.createOkExcel(csv100);
+                    } catch (ServerException ignore) {
+
+                    }
                 }
                 if (FileUtil.exists(csv150)) {
                     hasCsv = true;
                     Measurement measurement = new Measurement();
                     measurement.applyCsv(csv150, flow, "150", errors);
+                    try {
+                        measurement.createOkExcel(csv150);
+                    } catch (ServerException ignore) {
+
+                    }
                 }
                 if (FileUtil.exists(csv170)) {
                     hasCsv = true;
                     Measurement measurement = new Measurement();
                     measurement.applyCsv(csv170, flow, "170", errors);
+                    try {
+                        measurement.createOkExcel(csv170);
+                    } catch (ServerException ignore) {
+
+                    }
                 }
 
                 if (hasCsv && errors.isEmpty()) {
@@ -70,11 +86,9 @@ public class MeasurementController extends RouteToMethod {
                         ui.addErrorMessage(e).write();
                     }
                 }
-            }
-
-            @Override
-            public void afterSetData(Dto dto, List<?> list) {
-
+                ui.addMessage(flow.site.code).write();
+            } catch (Exception e) {
+                ui.addErrorMessage(e).write();
             }
         });
 

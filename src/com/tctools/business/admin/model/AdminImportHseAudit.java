@@ -4,7 +4,7 @@ import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -14,7 +14,7 @@ import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.apache.poi.ss.usermodel.*;
@@ -76,17 +76,17 @@ public class AdminImportHseAudit {
                 String siteCode = cells.getCell(4).getStringCellValue().toUpperCase();
                 q.condition().equal("site.code", siteCode);
                 try {
-                    List<Dto> flows = CommonRepoMongo.getData(q);
+                    List<Dto> flows = CommonModelMongo.getData(q);
                     if (flows.size() != 1) {
                         ui.addErrorMessage(siteCode + ": " + flows.size() + " items found!").write();
                         return;
                     }
                     flow = (HseAuditQuestionnaire) flows.get(0);
-                } catch (DatabaseException e) {
-                    ui.addErrorMessage(e).write();
-                    return;
                 } catch (NoContentException e) {
                     ui.addErrorMessage(siteCode + ": no data").write();
+                    return;
+                } catch (VantarException e) {
+                    ui.addErrorMessage(e).write();
                     return;
                 }
 
@@ -201,9 +201,9 @@ public class AdminImportHseAudit {
                     flow.state.add(state);
                 }
                 try {
-                    CommonRepoMongo.update(flow);
+                    CommonModelMongo.updateNoLog(flow);
                     ui.addMessage("Inserted : " + flow.site.code);
-                } catch (DatabaseException e) {
+                } catch (VantarException e) {
                     ui.addErrorMessage(e);
                 }
             });
@@ -272,7 +272,7 @@ public class AdminImportHseAudit {
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         try {
-            for (Dto dto : CommonRepoMongo.getAll(flow)) {
+            for (Dto dto : CommonModelMongo.getAll(flow)) {
                 boolean updated = false;
                 flow = (HseAuditQuestionnaire) dto;
 
@@ -321,11 +321,11 @@ public class AdminImportHseAudit {
                 }
 
                 if (updated) {
-                    CommonRepoMongo.update(flow);
+                    CommonModelMongo.update(flow);
                     ui.addMessage("updated HSE > " + flow.site.code);
                 }
             }
-        } catch (NoContentException | DatabaseException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -391,8 +391,8 @@ public class AdminImportHseAudit {
                         QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire());
                         q.condition().equal("site.code", parts[0].toUpperCase());
                         try {
-                            dtos = CommonRepoMongo.getData(q);
-                        } catch (DatabaseException | NoContentException e) {
+                            dtos = CommonModelMongo.getData(q);
+                        } catch (VantarException e) {
                             ui.addErrorMessage(e).write();
                             return;
                         }

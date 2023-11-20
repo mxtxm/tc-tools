@@ -8,13 +8,12 @@ import com.tctools.common.util.Docx;
 import com.tctools.web.patch.TestController;
 import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.*;
+import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.bool.BoolUtil;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
-import com.vantar.util.number.NumberUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.apache.poi.ss.usermodel.*;
@@ -32,20 +31,11 @@ public class ExportModel {
 
 
     public void auditData(Params params, HttpServletResponse response, HseAuditQuestionnaire.Viewable flow, String putDir)
-        throws ServerException, InputException, NoContentException {
+        throws VantarException {
 
         if (flow == null) {
             flow = new HseAuditQuestionnaire.Viewable();
-            flow.id = params.getLong("id");
-            if (NumberUtil.isIdInvalid(flow.id)) {
-                throw new InputException(VantarKey.INVALID_ID, "id");
-            }
-            try {
-                flow = CommonRepoMongo.getById(flow, params.getLang());
-            } catch (DatabaseException e) {
-                log.error("!", e);
-                throw new ServerException(VantarKey.FETCH_FAIL);
-            }
+            flow = CommonModelMongo.getById(params, flow);
         }
 
         Map<String, Object> mapping = new HashMap<>(100);
@@ -83,7 +73,7 @@ public class ExportModel {
                 if (answer.questionId == 6) {
                     mapping.put("employees", answer.comments);
                     continue;
-                }
+                }//{comments}
                 if (answer.question.questionType != HseAuditQuestionType.Option) {
                     continue;
                 }
@@ -124,8 +114,8 @@ public class ExportModel {
 
         String siteCode = flow.site == null ? "XXX" : flow.site.code.toLowerCase();
         String dir = Param.HSE_AUDIT_FILES + siteCode + "/";
-        FileUtil.makeDirectory(dir);
-        String zipTempDir = FileUtil.getTempDirectory();
+        DirUtil.makeDirectory(dir);
+        String zipTempDir = DirUtil.getTempDirectory();
         String zipFile = "hse-audit-" + flow.id + '-' + siteCode + ".zip";
         final long flowId = flow.id;
 
@@ -142,14 +132,14 @@ public class ExportModel {
                 response.setContentType("application/zip");
                 Response.download(response, zipTempDir + zipFile, zipFile);
             } else {
-                FileUtil.move(zipTempDir + zipFile, putDir + zipFile);
+                DirUtil.move(zipTempDir + zipFile, putDir + zipFile);
             }
         } catch (VantarException e) {
             throw new ServerException(e);
         }
     }
 
-    public void auditDataMany(Params params, HttpServletResponse response) throws ServerException, InputException, NoContentException {
+    public void auditDataMany(Params params, HttpServletResponse response) throws VantarException {
         DateTime dateMin = params.getDateTime("dateMin");
         DateTime dateMax = params.getDateTime("dateMax");
         String states = params.getString("states", "Approved,PreApproved");
@@ -161,7 +151,7 @@ public class ExportModel {
 
         String dt = new DateTime().formatter().getDateTimeAsFilename();
         String dir = Param.TEMP_DIR + dt + "/";
-        FileUtil.makeDirectory(dir);
+        DirUtil.makeDirectory(dir);
 
         List<Dto> data = CommonModelMongo.getData(q);
         for (Dto dto : data) {
@@ -197,7 +187,7 @@ public class ExportModel {
         }
     }
 
-    public void dailyReport(Params params, HttpServletResponse response) throws ServerException {
+    public void dailyReport(Params params, HttpServletResponse response) throws VantarException {
 
         // <cell, questionId>
         Map<Integer, Long> t = new HashMap<>();
@@ -247,14 +237,11 @@ public class ExportModel {
 
             Sheet sheet = wb.getSheetAt(0);
 
-            QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
+            QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire.Viewable());
             q.condition().in("lastState", HseAuditFlowState.Approved, HseAuditFlowState.PreApproved);
             List<Dto> items;
             try {
-                items = CommonRepoMongo.getData(q, params.getLang());
-            } catch (DatabaseException e) {
-                log.error("!", e);
-                throw new ServerException(VantarKey.FETCH_FAIL);
+                items = CommonModelMongo.getData(q, params.getLang());
             } catch (NoContentException e) {
                 throw new ServerException(VantarKey.FETCH_FAIL);
             }
@@ -304,7 +291,7 @@ public class ExportModel {
                     Long questionId = entry.getValue();
                     HseAuditAnswer answer = answers.get(questionId);
 
-                    if (answer == null) {
+                    if (answer == null || answer.question == null || answer.question.questionType == null) {
                         continue;
                     }
 

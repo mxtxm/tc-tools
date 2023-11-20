@@ -4,7 +4,7 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.Param;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.exception.*;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
@@ -58,7 +58,7 @@ public class AdminTools {
         ui.addInput("date time", "dt", dt);
         ui.addEmptyLine();
         ui.addCheckbox("update cc", "cc", cc);
-        ui.addCheckbox("update regular", "regular", regular);
+        ui.addCheckbox("update normal", "regular", regular);
         ui.addCheckbox("synch state", "synch", synch);
         ui.addEmptyLine();
         ui.addCheckbox("add trend", "trend", tr);
@@ -88,7 +88,7 @@ public class AdminTools {
         RadioMetricFlowState state = st == null ? null : RadioMetricFlowState.valueOf(st);
 
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (!codeSites.contains(f.site.code)) {
@@ -128,11 +128,11 @@ public class AdminTools {
                     }
                 }
 
-                CommonRepoMongo.update(f);
+                CommonModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -181,7 +181,7 @@ public class AdminTools {
         RadioMetricFlowState state = RadioMetricFlowState.valueOf(st);
 
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (!codeSites.contains(f.site.code)) {
@@ -217,11 +217,11 @@ public class AdminTools {
                     }
                 }
 
-                CommonRepoMongo.update(f);
+                CommonModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
@@ -231,14 +231,14 @@ public class AdminTools {
     public static void updateAll(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi("Update all", params, response, false);
         try {
-            List<RadioMetricFlow> items = CommonRepoMongo.getData(new RadioMetricFlow());
+            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
-                CommonRepoMongo.update(f);
+                CommonModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 

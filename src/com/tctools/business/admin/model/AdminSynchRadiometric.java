@@ -4,13 +4,14 @@ import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.service.locale.AppLangKey;
 import com.vantar.admin.model.Admin;
-import com.vantar.business.*;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
 import com.vantar.util.datetime.DateTime;
+import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -23,7 +24,6 @@ public class AdminSynchRadiometric {
 
         if (!params.contains("f")) {
             ui.beginFormPost()
-                .addCheckbox("Synch all Radio Metric states", "synchallradiometric")
                 .addMessage(Locale.getString(VantarKey.ADMIN_CONFIRM))
                 .addEmptyLine()
                 .addSubmit(Locale.getString(VantarKey.ADMIN_IMPORT))
@@ -31,20 +31,18 @@ public class AdminSynchRadiometric {
             return;
         }
 
-        boolean doState = params.isChecked("synchallradiometric");
-
         try {
-            for (Dto site : CommonRepoMongo.getAll(new Site())) {
-                synchWithSite((Site) site, doState, ui);
+            for (Dto site : CommonModelMongo.getAll(new Site())) {
+                synchWithSite((Site) site, ui);
             }
-        } catch (NoContentException | DatabaseException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
 
         ui.finish();
     }
 
-    public static void synchWithSite(Site site, boolean allStates, WebUi ui) throws DatabaseException {
+    public static void synchWithSite(Site site, WebUi ui) throws VantarException {
         String title = "(" + site.code + ") " + (site.name == null ? "???" : site.name.get(Locale.getSelectedLocale())) + "  ";
 
         RadioMetricFlow flow = new RadioMetricFlow();
@@ -52,56 +50,67 @@ public class AdminSynchRadiometric {
         QueryBuilder q = new QueryBuilder(flow);
         q.condition().equal("site.code", site.code);
 
-        if (CommonRepoMongo.exists(q)) {
+        if (CommonModelMongo.exists(q)) {
             q = new QueryBuilder(flow);
             q.condition().equal("site.code", site.code);
-            if (!allStates) {
-                q.condition().in(
-                    "lastState",
-                    RadioMetricFlowState.Pending,
-                    RadioMetricFlowState.Planned,
-                    RadioMetricFlowState.Problematic,
-                    RadioMetricFlowState.Completed,
-                    RadioMetricFlowState.Revise,
-                    RadioMetricFlowState.Terminated,
-                    RadioMetricFlowState.Returned
-                );
-            }
 
             try {
-                for (Dto dto : CommonRepoMongo.getData(q)) {
+                for (Dto dto : CommonModelMongo.getData(q)) {
                     flow = (RadioMetricFlow) dto;
-                    flow.site = site;
 
-                    flow.provinceId = site.provinceId;
-                    flow.cityId = site.cityId;
-                    flow.siteLocation = site.location;
-                    flow.siteAddress = site.address;
+                    if (flow.lastState == RadioMetricFlowState.Pending
+                        || flow.lastState == RadioMetricFlowState.Planned
+                        || flow.lastState == RadioMetricFlowState.Problematic
+                        || flow.lastState == RadioMetricFlowState.Completed
+                        || flow.lastState == RadioMetricFlowState.Revise
+                        || flow.lastState == RadioMetricFlowState.Terminated
+                        || flow.lastState == RadioMetricFlowState.Returned
+                    ) {
 
-                    Set<RadioMetricProximityType> types = new HashSet<>(5);
-                    if (flow.proximities == null) {
-                        flow.proximities = new ArrayList<>(5);
+                        flow.site = site;
+
+                        flow.provinceId = site.provinceId;
+                        flow.cityId = site.cityId;
+                        flow.siteLocation = site.location;
+                        flow.siteAddress = site.address;
+
+                        Set<RadioMetricProximityType> types = new HashSet<>(5);
+                        if (flow.proximities == null) {
+                            flow.proximities = new ArrayList<>(5);
+                        } else {
+                            for (Proximity p : flow.proximities) {
+                                types.add(p.proximityType);
+                            }
+                        }
+                        for (RadioMetricProximityType pt : RadioMetricProximityType.values()) {
+                            if (!types.contains(pt)) {
+                                Proximity p = new Proximity();
+                                p.proximityType = pt;
+                                flow.proximities.add(p);
+                            }
+                        }
+
+                        if (flow.collocationType == null) {
+                            flow.collocationType = flow.site.collocationType;
+                        }
+                        if (flow.collocations == null) {
+                            flow.collocations = flow.site.collocations;
+                        }
                     } else {
-                        for (Proximity p : flow.proximities) {
-                            types.add(p.proximityType);
-                        }
-                    }
-                    for (RadioMetricProximityType pt : RadioMetricProximityType.values()) {
-                        if (!types.contains(pt)) {
-                            Proximity p = new Proximity();
-                            p.proximityType = pt;
-                            flow.proximities.add(p);
-                        }
+                        flow.provinceId = site.provinceId;
+                        flow.cityId = site.cityId;
+                        flow.siteLocation = site.location;
+                        flow.siteAddress = site.address;
+
+                        flow.site.provinceId = site.provinceId;
+                        flow.site.regionId = site.regionId;
+                        flow.site.cityId = site.cityId;
+                        flow.site.location = site.location;
+                        flow.site.address = site.address;
+
                     }
 
-                    if (flow.collocationType == null) {
-                        flow.collocationType = flow.site.collocationType;
-                    }
-                    if (flow.collocations == null) {
-                        flow.collocations = flow.site.collocations;
-                    }
-
-                    CommonRepoMongo.update(flow);
+                    CommonModelMongo.updateNoLog(flow);
                     if (ui != null) {
                         ui.addMessage(
                             Locale.getString(AppLangKey.UPDATED, flow.getClass().getSimpleName(),
@@ -113,6 +122,11 @@ public class AdminSynchRadiometric {
 
             }
         } else {
+            if (site.address != null) {
+                site.address = StringUtil.replace(site.address, " ,", ",");
+                site.address = StringUtil.replace(site.address, ", ", ",");
+                site.address = StringUtil.replace(site.address, ",", "-");
+            }
             flow.site = site;
             flow.state = new ArrayList<>();
             flow.lastStateDateTime = new DateTime();
@@ -137,32 +151,35 @@ public class AdminSynchRadiometric {
                 flow.collocations = flow.site.collocations;
             }
 
-            long flowId = CommonRepoMongo.insert(flow);
+            ResponseMessage res = CommonModelMongo.insertNoLog(flow);
             if (ui != null) {
-                ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), flowId + " - " + title)).write();
+                ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), res.value + " - " + title)).write();
             }
         }
     }
 
     protected static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : CommonRepoMongo.getData(new RadioMetricFlow())) {
+            for (Dto dto : CommonModelMongo.getAll(new RadioMetricFlow())) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (!AdminSiteImport.siteCodes.contains(flow.site.code)) {
-                    if(RadioMetricFlowState.Completed.equals(flow.lastState)
-                        || RadioMetricFlowState.Approved.equals(flow.lastState)
-                        || RadioMetricFlowState.Verified.equals(flow.lastState)) {
+//                    if (RadioMetricFlowState.Completed.equals(flow.lastState)
+//                        || RadioMetricFlowState.Approved.equals(flow.lastState)
+//                        || RadioMetricFlowState.Verified.equals(flow.lastState)) {
+//                        continue;
+//                    }
+                    if (!RadioMetricFlowState.Pending.equals(flow.lastState) && !RadioMetricFlowState.Planned.equals(flow.lastState)) {
                         continue;
                     }
                     try {
                         CommonModelMongo.deleteById(flow);
                         ui.addMessage("deleted " + flow.id + ":"+ flow.site.code + " from RadioMetricFlow");
-                    } catch (InputException | ServerException e) {
+                    } catch (VantarException e) {
                         ui.addErrorMessage(e);
                     }
                 }
             }
-        } catch (DatabaseException | NoContentException e) {
+        } catch (VantarException e) {
             ui.addErrorMessage(e);
         }
     }

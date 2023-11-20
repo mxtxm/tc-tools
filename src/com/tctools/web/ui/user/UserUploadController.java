@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class UserUploadController extends RouteToMethod {
 
-    public void userSignatureSubmit(Params params, HttpServletResponse response) throws InputException, AuthException, ServiceException {
+    public void userSignatureSubmit(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, UserModel.signatureSubmit(params));
     }
 

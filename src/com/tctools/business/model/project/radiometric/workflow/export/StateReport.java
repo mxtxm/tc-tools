@@ -2,7 +2,7 @@ package com.tctools.business.model.project.radiometric.workflow.export;
 
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
@@ -35,7 +35,7 @@ public class StateReport extends ExportCommon {
         }
 
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
+            for (Document document : MongoQuery.getAggregate(q)) {
                 data.put(document.get(Mongo.ID).toString(), (Integer) document.get("count"));
             }
         } catch (DatabaseException e) {
@@ -45,22 +45,20 @@ public class StateReport extends ExportCommon {
         return data;
     }
 
-    public static void cacheMonthlyOverview() throws ServerException {
+    public static void cacheMonthlyOverview() throws VantarException {
         Map<String, StateStatistic> data = new LinkedHashMap<>(40);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.sort("lastStateDateTime");
 
         try {
-            for (Dto dto : CommonRepoMongo.getData(q)) {
+            for (Dto dto : CommonModelMongo.getData(q)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 String ym = flow.lastStateDateTime.formatter().getDatePersianYmonth();
 
                 StateStatistic stateCount = data.computeIfAbsent(ym, k -> new StateStatistic());
                 stateCount.set(flow);
             }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (NoContentException ignore) {
 
         }
@@ -68,22 +66,20 @@ public class StateReport extends ExportCommon {
         cache(MONTHLY_OVERVIEW, data);
     }
 
-    public static Map<String, StateStatistic> getMonthlyOverview() throws ServerException, NoContentException {
+    public static Map<String, StateStatistic> getMonthlyOverview() throws VantarException {
         String value = getFromCache(MONTHLY_OVERVIEW);
         return Json.d.mapFromJson(value, String.class, StateStatistic.class);
     }
 
-    public static Map<String, StateStatistic> getMonthlyOverviewTarget() throws ServerException, NoContentException {
+    public static Map<String, StateStatistic> getMonthlyOverviewTarget() throws VantarException {
         Map<String, StateStatistic> withTarget = new LinkedHashMap<>();
 
         try {
-            List<RadioMetricTarget> data = CommonRepoMongo.getData(new RadioMetricTarget());
+            List<RadioMetricTarget> data = CommonModelMongo.getAll(new RadioMetricTarget());
             for (RadioMetricTarget t : data) {
                 String ym = new DateTime(t.year + "-" + t.month + "-01").formatter().getDatePersianYmonth();
                 withTarget.put(ym, new StateStatistic(t.value));
             }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (DateTimeException e) {
             log.error("! datetime", e);
         }

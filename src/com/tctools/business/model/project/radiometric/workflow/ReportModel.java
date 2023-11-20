@@ -4,7 +4,7 @@ import com.tctools.business.dto.location.Province;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.user.User;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -29,7 +29,7 @@ public class ReportModel {
 
         int total = 0;
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
+            for (Document document : MongoQuery.getAggregate(q)) {
                 Integer count = document.getInteger("count");
                 data.put(document.getString(Mongo.ID), count);
                 if (count != null) {
@@ -69,7 +69,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         int total = 0;
-        for (Document document : MongoSearch.getAggregate(q)) {
+        for (Document document : MongoQuery.getAggregate(q)) {
             Integer count = document.getInteger("count");
             String name = provinces.get(document.getLong(Mongo.ID)).name.get("fa");
 
@@ -94,16 +94,11 @@ public class ReportModel {
         data.put("total", d);
     }
 
-    public static Map<String, Map<String, HashMap<String, Integer>>> usersDoneAggregate(Params params) throws ServerException, NoContentException {
+    public static Map<String, Map<String, HashMap<String, Integer>>> usersDoneAggregate(Params params) throws VantarException {
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("projectTypes", ProjectType.RadioMetric);
 
-        List<User> users;
-        try {
-            users = CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        List<User> users = CommonModelMongo.getData(q, params.getLang());
 
         Map<String, Map<String, HashMap<String, Integer>>> allData = new HashMap<>(users.size());
         for (User user : users) {
@@ -157,7 +152,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTime ts = new DateTime();
-        for (Document document : MongoSearch.getAggregate(q)) {
+        for (Document document : MongoQuery.getAggregate(q)) {
             Integer count = document.getInteger("count");
             Long date = document.getLong(Mongo.ID);
             if (date == null) {
@@ -185,7 +180,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTime ts = new DateTime();
-        for (Document document : MongoSearch.getAggregate(q)) {
+        for (Document document : MongoQuery.getAggregate(q)) {
             Integer count = document.getInteger("count");
             Long date = document.getLong(Mongo.ID);
             if (date == null) {

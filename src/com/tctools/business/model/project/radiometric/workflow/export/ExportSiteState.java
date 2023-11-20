@@ -2,27 +2,36 @@ package com.tctools.business.model.project.radiometric.workflow.export;
 
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.service.locale.AppLangKey;
+import com.tctools.common.Param;
 import com.tctools.common.util.ExportCommon;
 import com.vantar.business.CommonModelMongo;
-import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryResultBase;
-import com.vantar.exception.ServerException;
-import com.vantar.web.*;
+import com.vantar.exception.*;
+import com.vantar.util.file.FileUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.slf4j.*;
+import java.io.*;
 import java.util.*;
 
 
 public class ExportSiteState extends ExportCommon {
 
+    private static final Logger log = LoggerFactory.getLogger(ExportSiteState.class);
     private final Map<String, CellStyle> styles = new HashMap<>(5);
     private int rowIndex;
+    private int i;
 
 
-    public void excel(Params params, HttpServletResponse response) throws ServerException {
-        try (Workbook wb = new XSSFWorkbook()) {
+    public static void createExcelFile() throws VantarException {
+        new ExportSiteState().excel();
+    }
+
+    public void excel() throws VantarException {
+        log.info(" >> start creating site-states.xlsx");
+        String filename = Param.RADIO_METRIC_FILES + "site-states.xlsx";
+        FileUtil.removeFile(filename);
+        try (Workbook wb = new XSSFWorkbook();
+             OutputStream outputStream = new FileOutputStream(filename)) {
 
             Sheet sheetSp = wb.createSheet("Sites states");
             Row row = sheetSp.createRow(rowIndex);
@@ -45,47 +54,34 @@ public class ExportSiteState extends ExportCommon {
             setHeader(wb, row, c, "Latitude");
             sheetSp.setColumnWidth(c++, 4000);
             setHeader(wb, row, c, "Longitude");
-            sheetSp.setColumnWidth(c, 4000);
+            sheetSp.setColumnWidth(c++, 4000);
+            setHeader(wb, row, c, "Status");
+            sheetSp.setColumnWidth(c++, 5000);
 
-            CommonModelMongo.forEach(new RadioMetricFlow.Viewable(), new QueryResultBase.Event() {
-                @Override
-                public void afterSetData(Dto dto) {
-                    RadioMetricFlow.Viewable flow = (RadioMetricFlow.Viewable) dto;
+            CommonModelMongo.forEach(new RadioMetricFlow.Viewable(), dto -> {
+                RadioMetricFlow.Viewable flow = (RadioMetricFlow.Viewable) dto;
 
-                    Row row = sheetSp.createRow(++rowIndex);
-                    int c = 0;
-                    setDataPink(wb, row, c++, flow.isCc ? "CC" : "Normal");
-                    setDataPink(wb, row, c++, flow.lastState.toString());
-                    setDataPink(wb, row, c++, flow.site.code);
+                Row row1 = sheetSp.createRow(++rowIndex);
+                int c1 = 0;
+                setDataPink(wb, row1, c1++, flow.isCc ? "CC" : "Normal");
+                setDataPink(wb, row1, c1++, flow.lastState.toString());
+                setDataPink(wb, row1, c1++, flow.site.code);
 
-                    setDataYellow(wb, row, c++, flow.site.province == null ? "" : getValue(flow.site.province.name));
-                    setDataYellow(wb, row, c++, flow.site.city == null ? "" : getValue(flow.site.city.name));
-                    setDataYellow(wb, row, c++, getValue(flow.site.address));
-                    setDataYellow(wb, row, c++, flow.site.location == null ? "" : getValue(flow.site.location.latitude));
-                    setDataYellow(wb, row, c,   flow.site.location == null ? "" : getValue(flow.site.location.longitude));
-                }
-
-                @Override
-                public void afterSetData(Dto dto, List<?> list) {
-
-                }
+                setDataYellow(wb, row1, c1++, flow.site.province == null ? "" : getValue(flow.site.province.name));
+                setDataYellow(wb, row1, c1++, flow.site.city == null ? "" : getValue(flow.site.city.name));
+                setDataYellow(wb, row1, c1++, getValue(flow.site.address));
+                setDataYellow(wb, row1, c1++, flow.site.location == null ? "" : getValue(flow.site.location.latitude));
+                setDataYellow(wb, row1, c1++,   flow.site.location == null ? "" : getValue(flow.site.location.longitude));
+                setDataYellow(wb, row1, c1++,   getValue(flow.site.btsStatus == null ? "" : flow.site.btsStatus.name));
+                ++i;
             });
 
-            response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment; filename=radiometrics-state.xlsx");
-
-            wb.write(response.getOutputStream());
+            wb.write(outputStream);
         } catch (IOException e) {
             log.error("", e);
             throw new ServerException(AppLangKey.EXPORT_FAIL);
-        } finally {
-            try {
-                response.getOutputStream().flush();
-                response.getOutputStream().close();
-            } catch (IOException ignore) {
-
-            }
         }
+        log.info(" end creating site-states.xlsx <<");
     }
 
     private void setHeader(Workbook wb, Row row, int col, String value) {

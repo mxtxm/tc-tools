@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class QuestionController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void hseAuditQuestionsGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.HseAudit);
         Response.writeJson(response, QuestionModel.get(params));

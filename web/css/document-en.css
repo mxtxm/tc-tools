@@ -20,10 +20,10 @@ body {
 
 pre {
     font-family: Courier, monospace !important;
-    white-space: pre-wrap;
+    /*white-space: pre-wrap;*/
     direction: ltr!important;
     margin-bottom: 10px;
-    padding: 5px 80px;
+    padding: 5px 50px;
 }
 
 li,
@@ -104,12 +104,20 @@ h5 {
 }
 
 ul {
-    margin: 0 95px 10px 95px;
+    margin: 0 70px 10px 70px;
+}
+
+li ul {
+    margin: 0 50px 10px 50px!important;
 }
 
 li {
     padding: 3px 5px;
     font-size: 14px;
+}
+
+li p {
+    padding: 0 0 10px 0;
 }
 
 a {

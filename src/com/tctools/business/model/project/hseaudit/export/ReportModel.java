@@ -5,7 +5,7 @@ import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.web.patch.TestController;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -30,7 +30,7 @@ public class ReportModel {
 
         int total = 0;
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
+            for (Document document : MongoQuery.getAggregate(q)) {
                 Integer count = document.getInteger("count");
                 data.put(document.getString(Mongo.ID), count);
                 if (count != null) {
@@ -55,7 +55,7 @@ public class ReportModel {
 
         int total = 0;
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
+            for (Document document : MongoQuery.getAggregate(q)) {
                 Integer count = document.getInteger("count");
                 data.put(document.getString(Mongo.ID), count);
                 if (count != null) {
@@ -96,7 +96,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         int total = 0;
-        for (Document document : MongoSearch.getAggregate(q)) {
+        for (Document document : MongoQuery.getAggregate(q)) {
             Integer count = document.getInteger("count");
             String name = ((Province) provinces.get(document.getLong(Mongo.ID))).name.get("fa");
 
@@ -130,7 +130,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
+            for (Document document : MongoQuery.getAggregate(q)) {
 //                data.put(
                 TestController.log.error(">>>> {}",
                     document.getInteger("criticalNoCount")
@@ -141,36 +141,6 @@ public class ReportModel {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
         return data;
-    }
-
-    public static Map<String, Map<String, HashMap<String, Integer>>> usersDoneAggregate(Params params) throws ServerException, NoContentException {
-        QueryBuilder q = new QueryBuilder(new User());
-        q.condition().equal("projectTypes", ProjectType.HseAudit);
-
-        List<User> users;
-        try {
-            users = CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
-
-        Map<String, Map<String, HashMap<String, Integer>>> allData = new HashMap<>(users.size());
-        for (User user : users) {
-            Map<String, HashMap<String, Integer>> data = new HashMap<>();
-            try {
-                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Completed);
-                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Approved);
-                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.PreApproved);
-                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Planned);
-                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Incomplete);
-
-                allData.put(user.id + "||" + user.username + "||" + user.fullName, data);
-            } catch (DatabaseException e) {
-                throw new ServerException(VantarKey.FETCH_FAIL);
-            }
-        }
-
-        return allData;
     }
 
     public static Map<String, HashMap<String, Integer>> userDoneAggregate(Params params) throws ServerException, InputException {
@@ -202,7 +172,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTime ts = new DateTime();
-        for (Document document : MongoSearch.getAggregate(q)) {
+        for (Document document : MongoQuery.getAggregate(q)) {
             Integer count = document.getInteger("count");
             Long date = document.getLong(Mongo.ID);
             if (date == null) {
@@ -220,6 +190,32 @@ public class ReportModel {
         }
     }
 
+    // {user: {}}
+    public static Map<String, Map<String, HashMap<String, Integer>>> usersDoneAggregate(Params params) throws VantarException {
+        QueryBuilder q = new QueryBuilder(new User());
+        q.condition().equal("projectTypes", ProjectType.HseAudit);
+
+        List<User> users = CommonModelMongo.getData(q, params.getLang());
+
+        Map<String, Map<String, HashMap<String, Integer>>> allData = new HashMap<>(users.size());
+        for (User user : users) {
+            Map<String, HashMap<String, Integer>> data = new HashMap<>();
+            try {
+                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Completed);
+                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Approved);
+                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.PreApproved);
+                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Planned);
+                putUserDoneAggregateMonth(data, user.id, HseAuditFlowState.Incomplete);
+
+                allData.put(user.id + "||" + user.username + "||" + user.fullName, data);
+            } catch (DatabaseException e) {
+                throw new ServerException(VantarKey.FETCH_FAIL);
+            }
+        }
+
+        return allData;
+    }
+
     private static void putUserDoneAggregateMonth(Map<String, HashMap<String, Integer>> data,
         long userId, HseAuditFlowState state) throws DatabaseException {
 
@@ -230,7 +226,7 @@ public class ReportModel {
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTime ts = new DateTime();
-        for (Document document : MongoSearch.getAggregate(q)) {
+        for (Document document : MongoQuery.getAggregate(q)) {
             Integer count = document.getInteger("count");
             Long date = document.getLong(Mongo.ID);
             if (date == null) {

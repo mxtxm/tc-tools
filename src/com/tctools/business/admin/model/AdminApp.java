@@ -9,7 +9,7 @@ import com.vantar.exception.*;
 import com.vantar.locale.Locale;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.web.Params;
 import java.util.*;
 
@@ -29,9 +29,9 @@ public class AdminApp {
                     Site site = (Site) dto;
                     // > > > hook to projects
                     try {
-                        AdminSynchRadiometric.synchWithSite(site, false, null);
+                        AdminSynchRadiometric.synchWithSite(site, null);
                         AdminSynchHseAudit.synchWithSite(site, false, null);
-                    } catch (DatabaseException ignore) {
+                    } catch (VantarException ignore) {
 
                     }
                     // < < < hook to projects
@@ -86,11 +86,11 @@ public class AdminApp {
     }
 
     public static void factoryResetAfter() {
-        FileUtil.makeDirectory("/opt/tc-tools/backup/");
-        FileUtil.makeDirectory("/opt/tc-tools/documents/");
-        FileUtil.makeDirectory("/opt/tc-tools/files/hse-audit/");
-        FileUtil.makeDirectory("/opt/tc-tools/files/radiometric/");
-        FileUtil.makeDirectory("/opt/tc-tools/files/temp/");
-        FileUtil.makeDirectory("/opt/tc-tools/files/user/");
+        DirUtil.makeDirectory("/opt/tc-tools/backup/");
+        DirUtil.makeDirectory("/opt/tc-tools/documents/");
+        DirUtil.makeDirectory("/opt/tc-tools/files/hse-audit/");
+        DirUtil.makeDirectory("/opt/tc-tools/files/radiometric/");
+        DirUtil.makeDirectory("/opt/tc-tools/files/temp/");
+        DirUtil.makeDirectory("/opt/tc-tools/files/user/");
     }
 }

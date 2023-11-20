@@ -10,11 +10,16 @@ import java.util.*;
 
 public class RegionModel {
 
-    public static List<Region.Localed> getAll(Params params) throws ServerException, NoContentException {
+    public static List<Region.Localed> getAll(Params params) throws VantarException {
         return CommonModelMongo.getAllFromCache(params, Region.class, Region.Localed.class);
     }
 
     public static Map<Long, String> getAsKeyValue(Params params) {
         return ModelUtil.getAsKeyValue(new Region(), params.getLang());
     }
+
+    public static Map<Long, String> getAcAsKeyValue(Params params) {
+        return ModelUtil.getAcAsKeyValue(new Region());
+    }
+
 }

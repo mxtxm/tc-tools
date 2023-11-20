@@ -9,7 +9,7 @@ import java.util.*;
 
 public class DistrictModel {
 
-    public static List<District> getAll() throws ServerException, NoContentException {
+    public static List<District> getAll() throws VantarException {
         return CommonModelMongo.getAll(new District());
     }
 

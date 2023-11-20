@@ -1,30 +1,33 @@
 # TC-Tools #
 
-http://localhost:8081/ui/hse/audit/significance/month?excel=true&from=1399-09-01&to=1400-05-30
-http://localhost:8081/ui/hse/audit/significance/subcontractor/province?excel=true&from=1399-09-01&to=1400-05-30
-http://172.16.1.161:8080/ui/hse/audit/data/many?dateMin=2020-09-01&dateMax=2022-11-20&nodownload=1
-http://172.16.1.161:8080/ui/hse/audit/data/many?dateMin=2020-09-01&dateMax=2022-01-20&nodownload=1&x=cd3c0695b983653e512f93cdb226943b52799aff
-http://172.16.1.161:8080/ui/hse/audit/data/many?dateMin=2020-09-01&dateMax=2022-01-20&nodownload=1&x=cd3c0695b983653e512f93cdb226943b52799aff
-http://172.16.1.161:8080/ui/hse/audit/data/many?dateMax=2022-12-01&dateMin=2022-01-19&nodownload=1&x=cd3c0695b983653e512f93cdb226943b52799aff
-https://proda.nak-mci.ir:8443/patch/psite/delete/by/project?id=24
+https://www.rf-emf.nak-mci.ir
 
-* todo: picture: dakal dast nazanad 
-* todo: picture: 750x999
-* Map: KS020 > drag and drop 
-* Map: KS020 > fit to map 
-* complain assign > date nazad too complain
-* complain> plan > reassign. RADIOMETRIC delete nashavad
-* gheyre plan ghabele assign nemishe
-* agar plan nabood edit kone complain o amma reassign natoone bokone
-* complain: agar planned nabashad delete nakonad
-* complain state dashte bashad
-* moghe zip kardan axe complain toosh nist
-    * hast
+
+http://185.147.162.67:8080/ui/radio/metric/site/zip?id=38806
+
+## Todo ##
+* HTTPS
+* Normal ---> Regular
+* date time --> handle
+
+
+## 2023-05-22 2.1.3 ##
+* change: radiometrics > rounding numbers in word report
+* change: __ok file unit
+* change: extention name changed: http://172.16.1.161:8080/admin/index?lang=en&x=d5a4d68676fb61e1b7b58d0023488ff4f73135f3
+
+
+## 2023-03-15 2.1.2 ##
+* add: "http://cel.ictrc.ac.ir:8080/ui/radio/metric/site/state/excel"
+* add: isMwCm2100
+* add: isMwCm2150;
+* add: isMwCm2170;
 
 
 
 ## 2022-10-30 2.1.1 ##
-* add: "/ui/radio/metric/site/state/excel"
+* add: "http://cel.ictrc.ac.ir:8080/ui/radio/metric/site/state/excel"
+* add: "http://172.16.1.161:8080/ui/radio/metric/site/state/excel"
 * add: "/patch/radiometric/measurement/redo?siteCode=XXXX"
 
 

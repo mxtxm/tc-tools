@@ -5,11 +5,10 @@ import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.user.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
-import com.vantar.locale.VantarKey;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.web.Params;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -21,7 +20,7 @@ import java.util.*;
 
 public class ExportAssigned extends ExportCommon {
 
-    public static void excel(Params params, User user, HttpServletResponse response) throws ServerException {
+    public static void excel(Params params, User user, HttpServletResponse response) throws VantarException {
         Long userId = params.getLong(
             "userId",
             Role.ROOT.equals(user.role) ||
@@ -37,13 +36,7 @@ public class ExportAssigned extends ExportCommon {
         }
         q.condition().equal("lastState", RadioMetricFlowState.Planned);
 
-        List<RadioMetricFlow.Viewable> items;
-        try {
-            items = CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException | NoContentException e) {
-            log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        List<RadioMetricFlow.Viewable> items = CommonModelMongo.getData(q, params.getLang());
 
         try (Workbook wb = new HSSFWorkbook()) {
             Sheet sheet = wb.createSheet("Planned sites");
@@ -214,7 +207,7 @@ public class ExportAssigned extends ExportCommon {
 
             response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-Disposition", "attachment; filename=assigned-"
-                + (new DateTime().formatter().getDateTimeSimple()) + ".xlsx");
+                + (new DateTime().formatter().getDateTimeSimple()) + ".xls");
 
             wb.write(response.getOutputStream());
 

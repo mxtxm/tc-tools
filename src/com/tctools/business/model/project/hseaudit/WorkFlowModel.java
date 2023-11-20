@@ -10,7 +10,7 @@ import com.tctools.common.util.SendMessage;
 import com.vantar.business.*;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryBuilder;
+import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
@@ -19,7 +19,7 @@ import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.service.log.LogEvent;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
@@ -31,7 +31,7 @@ public class WorkFlowModel {
     private static final String SMS_NOTIFY_NUMBERS = "09126214967,09129346154,09359947922,09197148361,09120067168";
 
 
-    public static ResponseMessage submit(Params params, User user) throws ServerException, InputException, NoContentException {
+    public static ResponseMessage submit(Params params, User user) throws VantarException {
         // get flow
         FlowParams flowParams;
         try {
@@ -45,11 +45,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
 
-        try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(flow, params.getLang());
         flow.answers = null;
         flow.inCompleteImages = new HashSet<>();
         flow.lastStateDateTime = new DateTime();
@@ -116,7 +112,7 @@ public class WorkFlowModel {
         });
     }
 
-    public static ResponseMessage imageUpload(Params params) throws ServerException, InputException, AuthException {
+    public static ResponseMessage imageUpload(Params params) throws VantarException {
         try (Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD)) {
 
             if (!uploaded.isUploaded() || uploaded.isIoError()) {
@@ -144,7 +140,8 @@ public class WorkFlowModel {
             String tempPath = Param.TEMP_DIR + originalFilename;
             uploaded.moveTo(tempPath);
 
-            User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.TECHNICIAN, Role.VENDOR);
+            User user = (User) Services.get(ServiceAuth.class)
+                .permitAccess(params, Role.ADMIN, Role.TECHNICIAN, Role.VENDOR, Role.MCI);
             user.projectAccess(ProjectType.HseAudit);
 
             HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
@@ -163,11 +160,11 @@ public class WorkFlowModel {
     }
 
     private static synchronized String imageUploadDb(Params params, HseAuditQuestionnaire flow, String originalFilename
-        , User user, String tempPath, Params.Uploaded uploaded) throws ServerException, InputException {
+        , User user, String tempPath, Params.Uploaded uploaded) throws VantarException {
 
         String destinationPath = null;
         try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
+            flow = CommonModelMongo.getById(flow, params.getLang());
             if (flow.answers == null) {
                 throw new InputException(VantarKey.REQUIRED, "answers");
             }
@@ -191,7 +188,7 @@ public class WorkFlowModel {
             for (HseAuditAnswer answer : flow.answers) {
                 if (answer.imageName != null && StringUtil.containsCi(answer.imageName, originalFilename)) {
                     destinationPath = answer.getNextImagePath(flow);
-                    FileUtil.move(tempPath, destinationPath);
+                    DirUtil.move(tempPath, destinationPath);
                     break;
                 }
 
@@ -202,7 +199,7 @@ public class WorkFlowModel {
                 for (String imageName : answer.imageNames) {
                     if (imageName != null && StringUtil.containsCi(imageName, originalFilename)) {
                         destinationPath = answer.getNextImagePath(flow);
-                        FileUtil.move(tempPath, destinationPath);
+                        DirUtil.move(tempPath, destinationPath);
                         brk = true;
                         break;
                     }
@@ -212,17 +209,17 @@ public class WorkFlowModel {
                 }
             }
 
-            CommonRepoMongo.update(flow);
+            CommonModelMongo.update(flow);
             notifyFailed(flow);
 
-        } catch (DatabaseException e) {
-            LogEvent.error("AppImageUpload", "db error",
-                flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
-            throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (NoContentException e) {
             LogEvent.error("AppImageUpload", "invalid id (no data)",
                 flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
             throw new InputException(AppLangKey.UNKNOWN_FILE, originalFilename);
+        } catch (VantarException e) {
+            LogEvent.error("AppImageUpload", "db error",
+                flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
+            throw new ServerException(VantarKey.FETCH_FAIL);
         }
         return destinationPath;
     }
@@ -239,7 +236,7 @@ public class WorkFlowModel {
         try {
             settings = CommonModelMongo.getFirst(q);
             numbers = settings.value;
-        } catch (ServerException | NoContentException e) {
+        } catch (VantarException e) {
             numbers = SMS_NOTIFY_NUMBERS;
         }
 
@@ -251,7 +248,7 @@ public class WorkFlowModel {
         );
     }
 
-    public static ResponseMessage imageUploadDirect(Params params) throws ServerException, InputException, AuthException {
+    public static ResponseMessage imageUploadDirect(Params params) throws VantarException {
         try (Params.Uploaded uploaded = params.upload(Param.FILE_UPLOAD)) {
             if (!uploaded.isUploaded() || uploaded.isIoError()) {
                 throw new InputException(VantarKey.REQUIRED, "file");
@@ -277,7 +274,8 @@ public class WorkFlowModel {
             String tempPath = FileUtil.getUniqueName(Param.TEMP_DIR);
             uploaded.moveTo(tempPath);
 
-            User user = (User) Services.get(ServiceAuth.class).permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR);
+            User user = (User) Services.get(ServiceAuth.class)
+                .permitAccess(params, Role.ADMIN, Role.MANAGER, Role.ENGINEER, Role.VENDOR, Role.MCI);
             user.projectAccess(ProjectType.HseAudit);
 
             HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
@@ -290,19 +288,17 @@ public class WorkFlowModel {
             String destinationPath = null;
 
             try {
-                flow = CommonRepoMongo.getById(flow, params.getLang());
+                flow = CommonModelMongo.getById(flow, params.getLang());
                 if (flow.answers == null) {
                     throw new InputException(VantarKey.REQUIRED, "answers in db");
                 }
                 for (HseAuditAnswer answer : flow.answers) {
                     if (questionId.equals(answer.questionId)) {
                         destinationPath = answer.getNextImagePath(flow);
-                        FileUtil.move(tempPath, destinationPath);
+                        DirUtil.move(tempPath, destinationPath);
                         break;
                     }
                 }
-            } catch (DatabaseException e) {
-                throw new ServerException(VantarKey.FETCH_FAIL);
             } catch (NoContentException e) {
                 throw new InputException(AppLangKey.UNKNOWN_FILE, uploaded.getOriginalFilename());
             }
@@ -314,11 +310,11 @@ public class WorkFlowModel {
         }
     }
 
-    public static ResponseMessage delete(Params params) throws InputException, ServerException {
+    public static ResponseMessage delete(Params params) throws VantarException {
         return CommonModelMongo.delete(params, new HseAuditQuestionnaire());
     }
 
-    public static ResponseMessage update(Params params) throws ServerException, InputException, NoContentException {
+    public static ResponseMessage update(Params params) throws VantarException {
         // get flow
         FlowParams flowParams;
         try {
@@ -332,17 +328,13 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
 
-        try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(flow, params.getLang());
 
         //params.set("action", Dto.Action.UPDATE_ALL_COLS);
         return CommonModelMongo.updateJson(params, flow);
     }
 
-    public static ResponseMessage updateState(Params params, User user) throws InputException, ServerException, NoContentException {
+    public static ResponseMessage updateState(Params params, User user) throws VantarException {
         HseAuditFlowState state;
         try {
             state = HseAuditFlowState.valueOf(params.getString("state"));
@@ -353,7 +345,7 @@ public class WorkFlowModel {
     }
 
     private static ResponseMessage updateState(Long id, HseAuditFlowState state, User user, String comments)
-        throws InputException, ServerException, NoContentException {
+        throws VantarException {
 
         if (user.role == Role.ENGINEER && state == HseAuditFlowState.Approved) {
             throw new InputException(AppLangKey.INVALID_STATE);
@@ -365,11 +357,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
-        try {
-            flow = CommonRepoMongo.getFirst(flow);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(flow);
 
         int i = flow.state.size();
         if (i > 0 && flow.state.get(i-1).state.equals(state)) {
@@ -384,44 +372,23 @@ public class WorkFlowModel {
         flow.lastStateDateTime = new DateTime();
         flow.state.add(new State(state, flow.lastStateDateTime, user, comments));
 
-        try {
-            CommonRepoMongo.update(flow);
-            return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.INSERT_FAIL);
-        }
+        return CommonModelMongo.update(flow);
     }
 
-    public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        return CommonModelMongo.searchX(params, new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
+    public static PageData search(Params params) throws VantarException {
+        return CommonModelMongo.search(params, new HseAuditQuestionnaire.Viewable());
     }
-
-    public static List<HseAuditQuestionnaire.ViewableTiny> getAssigned(Params params, User user) throws ServerException, NoContentException {
-        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.ViewableTiny());
+//%7B%22operator%22%3A%22AND%22%2C%22items%22%3A%5B%7B%22col%22%3A%22site.provinceId%22%2C%22type%22%3A%22IN%22%2C%22values%22%3A%5B1%5D%7D%2C%7B%22col%22%3A%22site.cityId%22%2C%22type%22%3A%22EQUAL%22%2C%22value%22%3A1%7D%2C%7B%22col%22%3A%22measurementDateTime%22%2C%22type%22%3A%22BETWEEN%22%2C%22values%22%3A%5B%221402-04-11%2B14%3A33%22%2C%221402-04-11%2B15%3A33%22%5D%7D%5D%7D
+    public static List<HseAuditQuestionnaire.ViewableTiny> getAssigned(Params params, User user) throws VantarException {
+        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire.ViewableTiny());
         q   .sort("scheduledDateTimeFrom:asc")
             .condition().equal("assigneeId", user.id);
 
-        try {
-            return CommonRepoMongo.getData(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.getData(q, params.getLang());
     }
 
-    public static HseAuditQuestionnaire.Viewable get(Params params) throws ServerException, NoContentException, InputException {
-        HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
-        }
-
-        QueryBuilder q = new QueryBuilder(flow, new HseAuditQuestionnaire.Viewable());
-        q.setConditionFromDtoEqualTextMatch();
-        try {
-            return CommonRepoMongo.getFirst(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+    public static HseAuditQuestionnaire.Viewable get(Params params) throws VantarException {
+        return CommonModelMongo.getById(params, new HseAuditQuestionnaire.Viewable());
     }
 
     public static ResponseMessage deleteImage(Params params) throws InputException {

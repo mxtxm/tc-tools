@@ -3,7 +3,7 @@ package com.tctools.business.model.project.radiometric.workflow.export;
 import com.tctools.business.dto.location.Province;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
@@ -23,7 +23,7 @@ public class ProvinceReport extends ExportCommon {
     private final static int MIN_YEAR = 1390;
 
 
-    public static void cacheStatistics() throws ServerException {
+    public static void cacheStatistics() throws VantarException {
         // <provinceId, <ym, ProvinceStatistic>>
         Map<Long, Map<Integer, ProvinceStatistic>> statistics = new LinkedHashMap<>(500);
 
@@ -33,7 +33,7 @@ public class ProvinceReport extends ExportCommon {
         int yMin = 5000;
         int yMax = 0;
         try {
-            for (Dto dto : CommonRepoMongo.getData(q, LOCALE)) {
+            for (Dto dto : CommonModelMongo.getData(q, LOCALE)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (flow.provinceId == null || flow.lastStateDateTime == null) {
                     continue;
@@ -60,15 +60,11 @@ public class ProvinceReport extends ExportCommon {
                 yMin = Math.min(yMin, y);
                 yMax = Math.max(yMax, y);
             }
-        } catch (DatabaseException | NoContentException e) {
+        } catch (NoContentException e) {
             log.error("!", e);
         }
 
-        try {
-            CommonRepoMongo.deleteAll(new ProvinceStatistic());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.DELETE_FAIL);
-        }
+        CommonModelMongo.purge(new ProvinceStatistic());
 
         for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
             Map<Integer, ProvinceStatistic> dateStat = statistics.get(province.id);
@@ -91,8 +87,8 @@ public class ProvinceReport extends ExportCommon {
                     stat.yearMonth = ymToInt(y, m);
 
                     try {
-                        CommonRepoMongo.insert(stat);
-                    } catch (DatabaseException e) {
+                        CommonModelMongo.insert(stat);
+                    } catch (VantarException e) {
                         log.error("! {}=>", stat, e);
                     }
                 }
@@ -101,7 +97,7 @@ public class ProvinceReport extends ExportCommon {
     }
 
     public static Map<String, Map<String ,ProvinceStatistic.Viewable>> getMonthlyPerformance(Params params)
-        throws InputException, NoContentException, ServerException {
+        throws VantarException {
 
         String from = params.getString("from");
         String to = params.getString("to");
@@ -118,7 +114,7 @@ public class ProvinceReport extends ExportCommon {
         int yTo = StringUtil.toInteger(toParts[0]);
         int mTo = StringUtil.toInteger(toParts[1]);
 
-        QueryBuilder q = new QueryBuilder(new ProvinceStatistic(), new ProvinceStatistic.Viewable());
+        QueryBuilder q = new QueryBuilder(new ProvinceStatistic.Viewable());
         q.sort("yearMonth");
 
         q.condition().between(
@@ -132,12 +128,7 @@ public class ProvinceReport extends ExportCommon {
             q.condition().inNumber("provinceId", provinceIds);
         }
 
-        List<Dto> dtos;
-        try {
-            dtos = CommonRepoMongo.getData(q);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        List<Dto> dtos = CommonModelMongo.getData(q);
 
         // <provinceName, <ym, ProvinceStatistic>>
         Map<String, Map<String ,ProvinceStatistic.Viewable>> statistics = new LinkedHashMap<>(500);
@@ -163,7 +154,7 @@ public class ProvinceReport extends ExportCommon {
         // <provinceName, count>
         Map<String, Integer> statistics = new LinkedHashMap<>(500);
         try {
-            for (Document document : MongoSearch.getAggregate(q)) {
+            for (Document document : MongoQuery.getAggregate(q)) {
                 statistics.put((String) document.get(Mongo.ID), (int) document.get("count"));
             }
         } catch (DatabaseException e) {

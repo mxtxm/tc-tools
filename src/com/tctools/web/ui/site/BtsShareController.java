@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class BtsShareController extends RouteToMethod {
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsShareGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsShareModel.getAll(params));
     }
 
-    @Access({"ADMIN", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteBtsShareKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, BtsShareModel.getAsKeyValue(params));
     }

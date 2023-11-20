@@ -353,6 +353,46 @@ td.option {
     width: 250px;
 }
 
+.dto-action-link {
+    display: block;
+    float: left;
+    margin: 5px;
+    font-weight: bold;
+    width: 52px;
+    text-align: center;
+    color: #a3d69e !important;
+}
+.link-box {
+    text-align: left!important;
+    border-color: #def6dc;
+}
+.link-box p {
+    text-align: left!important;
+    padding: 3px!important;
+    background-color: #efffed!important;
+}
+.link-box h2 {
+    background-color: #efffed!important;
+}
+.link-box .tag {
+    font-size: 10px!important;
+    float: right;
+}
+
+.link-box h2 {
+    padding: 10px!important;
+}
+
+.db-box-nostore p,
+.db-box-nostore h2 {
+    background-color: #fffde1 !important;
+    color: #4fb80d;
+}
+
+
+
+
+
 .system-box {
     min-width: 240px;
     min-height: 240px;
@@ -392,7 +432,7 @@ pre {
     font-family: Courier, monospace;
     font-size: 14px;
     padding: 10px;
-    white-space: pre-wrap;
+    white-space: pre-line;
     line-height: 150%;
     background-color: #fffddb;
     color: #333;

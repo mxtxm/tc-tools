@@ -75,7 +75,7 @@ public class RadioMetricMapFlow {
             isCc = false;
             isRe = false;
         } else {
-            if (flow.complain.type == null || flow.complain.type.equals(ComplainType.NormalRequest)) {
+            if (flow.complain.type == null || flow.complain.type.equals(ComplainType.Normal)) {
                 isCc = false;
                 isRe = true;
             } else {

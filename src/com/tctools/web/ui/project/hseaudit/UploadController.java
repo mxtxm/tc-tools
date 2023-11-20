@@ -19,11 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class UploadController extends RouteToMethod {
 
-    public void hseAuditQuestionnaireImageUpload(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
+    public void hseAuditQuestionnaireImageUpload(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, WorkFlowModel.imageUpload(params));
     }
 
-    public void hseAuditQuestionnaireImageUploadDirect(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
+    public void hseAuditQuestionnaireImageUploadDirect(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, WorkFlowModel.imageUploadDirect(params));
     }
 }

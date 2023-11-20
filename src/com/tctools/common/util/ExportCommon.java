@@ -1,10 +1,9 @@
 package com.tctools.common.util;
 
 import com.tctools.business.dto.system.Settings;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.*;
 import com.vantar.database.query.QueryBuilder;
-import com.vantar.exception.*;
-import com.vantar.locale.VantarKey;
+import com.vantar.exception.VantarException;
 import com.vantar.util.json.Json;
 import com.vantar.util.string.StringUtil;
 import org.slf4j.*;
@@ -22,7 +21,10 @@ public class ExportCommon {
         }
         if (obj instanceof Double) {
             String s = BigDecimal.valueOf((Double) obj).toPlainString();
-            return s.endsWith(".0") ? StringUtil.remove(s, ".0") : s;
+            s = StringUtil.rtrim(s, '0');
+            s = StringUtil.rtrim(s, '.');
+            return s;
+            //return s.endsWith(".0") ? StringUtil.remove(s, ".0") : s;
         }
         return obj.toString();
     }
@@ -47,24 +49,20 @@ public class ExportCommon {
         try {
             QueryBuilder q = new QueryBuilder(new Settings());
             q.condition().equal("key", key);
-            CommonRepoMongo.delete(q);
+            CommonModelMongo.delete(q);
             Settings settings = new Settings();
             settings.key = key;
             settings.value = Json.d.toJson(value);
-            CommonRepoMongo.insert(settings);
+            CommonModelMongo.insert(settings);
         } catch (Exception e) {
             log.error("! {}=>{}", key, value, e);
         }
     }
 
-    public static String getFromCache(String key) throws ServerException, NoContentException {
-        try {
-            QueryBuilder q = new QueryBuilder(new Settings());
-            q.condition().equal("key", key);
-            return (String) CommonRepoMongo.getFirst(q).getPropertyValue("value");
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+    public static String getFromCache(String key) throws VantarException {
+        QueryBuilder q = new QueryBuilder(new Settings());
+        q.condition().equal("key", key);
+        return (String) CommonModelMongo.getFirst(q).getPropertyValue("value");
     }
 
     public static String numberToMonth(int m) {

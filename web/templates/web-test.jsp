@@ -13,7 +13,7 @@
         <p>
             <select id="base-url">
                 <option value="http://localhost:8081">http://localhost:8081</option>
-                <option value="http://www.cel.ictrc.ac.ir:8080">http://www.cel.ictrc.ac.ir:8080</option>
+                <option value="http://185.147.162.67:8080">http://185.147.162.67:8080/</option>
             </select>
         </p>
         <p id="auth-form">

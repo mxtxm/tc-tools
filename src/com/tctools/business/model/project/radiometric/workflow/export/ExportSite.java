@@ -6,12 +6,11 @@ import com.tctools.business.dto.site.Sector;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.*;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.collection.CollectionUtil;
-import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.object.ObjectUtil;
 import com.vantar.util.string.StringUtil;
@@ -26,64 +25,69 @@ public class ExportSite extends ExportCommon {
     private static final String CHECKED = "⬛";
 
 
-    public static void zip(Params params, HttpServletResponse response)
-        throws ServerException, InputException, NoContentException {
-
+    public static void zip(Params params, HttpServletResponse response) throws VantarException {
         RadioMetricFlow.Viewable flow = new RadioMetricFlow.Viewable();
         flow.id = params.getLong("id");
         if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 
-        try {
-            flow = CommonRepoMongo.getById(flow, params.getLang());
-        } catch (DatabaseException e) {
-            log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(flow, params.getLang());
 
-        String zipTempDir = FileUtil.getTempDirectory();
+        String zipTempDir = DirUtil.getTempDirectory();
         String zipFile = flow.site.code
             + (flow.isCc && flow.complain.ccnumber != null ? " C.C-" + flow.complain.ccnumber : "") + ".zip";
 
-        boolean isOld;
-        try {
-            isOld = flow.assignDateTime != null && flow.assignDateTime.isBefore(new DateTime("2021-05-20"));
-        } catch (DateTimeException ignore) {
-            isOld = false;
-        }
-        if (!isOld) {
-            docx(params, response, false);
+        docx(params, response, false);
 
-            if (!RadioMetricComplain.isEmpty(flow.complain)) {
-                String imagePath = flow.complain.getImageFilePath(true);
-                if (imagePath != null) {
-                    FileUtil.copy(imagePath, flow.getPath() + flow.complain.getImageFilename());
-                }
+        if (!RadioMetricComplain.isEmpty(flow.complain)) {
+            String imagePath = flow.complain.getImageFilePath(true);
+            if (imagePath != null) {
+                FileUtil.copy(imagePath, flow.getPath() + flow.complain.getImageFilename());
             }
-
-            String dir = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id;
-            FileUtil.zip(dir, zipTempDir + zipFile, filename -> !filename.endsWith(".jpg.png"));
         }
+
+        String dir = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id;
+
+
+        try {
+            String csv100 = flow.getPath() + flow.site.code + "__100CM__OK.csv";
+            String csv150 = flow.getPath() + flow.site.code + "__150CM__OK.csv";
+            String csv170 = flow.getPath() + flow.site.code + "__170CM__OK.csv";
+            String csv100x = flow.getPath() + flow.site.code + "__100CM__OK.xlsx";
+            String csv150x = flow.getPath() + flow.site.code + "__150CM__OK.xlsx";
+            String csv170x = flow.getPath() + flow.site.code + "__170CM__OK.xlsx";
+            if (flow.isMwCm2100) {
+                FileUtil.removeFile(csv100);
+                FileUtil.removeFile(csv100x);
+            }
+            if (flow.isMwCm2150) {
+                FileUtil.removeFile(csv150);
+                FileUtil.removeFile(csv150x);
+            }
+            if (flow.isMwCm2170) {
+                FileUtil.removeFile(csv170);
+                FileUtil.removeFile(csv170x);
+            }
+        } catch (Exception ignore) {
+
+        }
+
+
+        FileUtil.zip(dir, zipTempDir + zipFile, filename -> !filename.endsWith(".jpg.png"));
+
         response.setContentType("application/zip");
         Response.download(response, zipTempDir + zipFile, zipFile);
     }
 
-    public static void docx(Params params, HttpServletResponse response, boolean outputResult)
-        throws ServerException, InputException, NoContentException {
-
+    public static void docx(Params params, HttpServletResponse response, boolean outputResult) throws VantarException {
         RadioMetricFlow.Viewable flow = new RadioMetricFlow.Viewable();
         flow.id = params.getLong("id");
         if (NumberUtil.isIdInvalid(flow.id)) {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 
-        try {
-            flow = CommonRepoMongo.getById(flow, "fa");
-        } catch (DatabaseException e) {
-            log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        flow = CommonModelMongo.getById(flow, "fa");
 
         if (flow.site == null || flow.site.code == null) {
             throw new ServerException(AppLangKey.EXPORT_FAIL);
@@ -312,7 +316,7 @@ public class ExportSite extends ExportCommon {
         mapping.put("oName4", operatorName4);
         mapping.put("oSiteId4",  noCollocations || StringUtil.isEmpty(operatorName4) ? "" : "نامشخص");
 
-        mapping.put("comments", "");
+        mapping.put("comments", flow.comments == null ? "" : getValue(" - " + flow.comments));
         mapping.put("deviceName", getValue(flow.deviceTitle));
         mapping.put("deviceModel", getValue(flow.deviceModel));
         mapping.put("deviceSerialNo", getValue(flow.deviceSerialNumber));
@@ -376,12 +380,12 @@ public class ExportSite extends ExportCommon {
         mapping.put("complainMobile", complainMobile);
 
 
-        mapping.put("maxDensity170", getValue(flow.densityMax170));
-        mapping.put("avgDensity170", getValue(flow.densityAverage6min170));
-        mapping.put("maxDensity150", getValue(flow.densityMax150));
-        mapping.put("avgDensity150", getValue(flow.densityAverage6min150));
-        mapping.put("maxDensity100", getValue(flow.densityMax100));
-        mapping.put("avgDensity100", getValue(flow.densityAverage6min100));
+        mapping.put("maxDensity170", getValueR(flow.densityMax170));
+        mapping.put("avgDensity170", getValueR(flow.densityAverage6min170));
+        mapping.put("maxDensity150", getValueR(flow.densityMax150));
+        mapping.put("avgDensity150", getValueR(flow.densityAverage6min150));
+        mapping.put("maxDensity100", getValueR(flow.densityMax100));
+        mapping.put("avgDensity100", getValueR(flow.densityAverage6min100));
 
         mapping.put("technicianName", flow.assignee == null ? "" : flow.assignee.fullName);
         mapping.put("reporterNames", flow.assignee == null ? "" : flow.assignee.fullName);
@@ -507,6 +511,14 @@ public class ExportSite extends ExportCommon {
         } catch (VantarException e) {
             throw new ServerException(e);
         }
+    }
+
+    private static String getValueR(Double d) {
+        if (d == null) {
+            return "";
+        }
+        double dd = NumberUtil.round(d, 3);
+        return getValue(dd == 0 ? d : dd);
     }
 
     private static String dateSet(String d) {

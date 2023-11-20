@@ -81,16 +81,16 @@ public class Measurement {
                         break;
                     // #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,
                     case 9:
-                        isMwCm2 = record[3].contains("mW/cm2");
+                        isMwCm2 = record[3].contains("uW/cm2");
                         break;
                     // RECORDS FOR: #,Date,Time,ValueV/m,AverageV/m,Latitude,Longitude,Height,,
                     default:
-                        if (record.length != 8 && record.length != 5) {
+                        if (record.length != 8 && record.length != 5 && record.length != 6) {
                             errors.add(new ValidationError(Param.FILE_UPLOAD + height, AppLangKey.INVALID_MEASURE_CSV_DATA));
                             continue;
                         }
-                        boolean gpsDataMissing = record.length == 5;
-                        if (record.length == 5) {
+                        boolean gpsDataMissing = record.length == 5 || record.length == 6;
+                        if (record.length == 5 || record.length == 6) {
                             isMeasurementGpsDataAvailable = false;
                         }
 
@@ -103,9 +103,11 @@ public class Measurement {
                             avg = avgTemp;
                         }
 
-                        if (!gpsDataMissing && (location.isEmpty() || !location.isValid())) {
-                            location.latitude = StringUtil.toDouble(record[5]);
-                            location.longitude = StringUtil.toDouble(record[6]);
+                        if (height.equals("150")) {
+                            if (!gpsDataMissing && (i < 10 || location.isEmpty() || !location.isValid())) {
+                                location.latitude = StringUtil.toDouble(record[5]);
+                                location.longitude = StringUtil.toDouble(record[6]);
+                            }
                         }
 
                         try {
@@ -150,14 +152,18 @@ public class Measurement {
         flow.setPropertyValue("isMeasurementGpsDataAvailable" + height, isMeasurementGpsDataAvailable);
         flow.setPropertyValue("isMeasurementRecordCountAcceptable" + height, measurementCount == MEASUREMENT_COUNT);
 
+        double calculatedAvg;
         if (!isMwCm2) {
             densityMin = vmToWcm2(densityMin);
             densityMax = vmToWcm2(densityMax);
             avg = vmToWcm2(avg);
+            calculatedAvg = measurementCount == 0 ?
+                0 :
+                ModelUtil.round(((sumValue2 / measurementCount) / 377) * 100, ROUND_TO_DECIMALS);
+        } else {
+            calculatedAvg = ModelUtil.round(avg, ROUND_TO_DECIMALS);
         }
 
-        double calculatedAvg = measurementCount == 0 ?
-            0 : ModelUtil.round(((sumValue2 / measurementCount) / 377) * 100, ROUND_TO_DECIMALS);
         double densityAverageDivMinRadiation = ModelUtil.round(avg / MIN_RADIATION_LEVEL_DIV, ROUND_TO_DECIMALS);
 
         flow.setPropertyValue("isMwCm2" + height, isMwCm2);
@@ -180,7 +186,7 @@ public class Measurement {
             }
         }
 
-        long mins = endDateTime.diffSeconds(startDateTime) / 60;
+        long mins = endDateTime == null || startDateTime == null ? 0 : endDateTime.diffSeconds(startDateTime) / 60;
         if (mins < 3) {
             msg.add(height + ": too quick (" + mins + "minutes)");
         } else if (mins > 6) {
@@ -238,8 +244,10 @@ public class Measurement {
 
             for (r = 9 ; r < 369 ; ++r) {
                 row = sheet.getRow(r);
-                cell = row.createCell(8);
-                cell.setCellFormula("D" + (r+1) + "*D" + (r+1));
+                if (row != null) {
+                    cell = row.createCell(8);
+                    cell.setCellFormula("D" + (r + 1) + "*D" + (r + 1));
+                }
             }
 
             row = sheet.createRow(++r);
@@ -268,18 +276,19 @@ public class Measurement {
 
             row = sheet.createRow(++r);
             cell = row.createCell(0);
-            cell.setCellValue("Rounded S Average [W/cm²]");
+            cell.setCellValue("Rounded S Average [uW/cm²]");
             cell = row.createCell(1);
             cell.setCellFormula("ROUND(B374,3)");
 
             row = sheet.createRow(++r);
             cell = row.createCell(0);
-            cell.setCellValue("Rounded S Average [W/cm²]/4.4");
+            cell.setCellValue("Rounded S Average [uW/cm²]/4.4");
             cell = row.createCell(1);
             cell.setCellFormula("ROUND(B375/4.4,3)");
 
-            FileUtil.removeFile(okTempFilename);
 
+            //FileUtil.removeFile(okTempFilename);
+//log.error(">>>>>>>>{}",csvPath);
             workbook.write(out);
         } catch (Exception e) {
             log.error("! {}", csvPath, e);

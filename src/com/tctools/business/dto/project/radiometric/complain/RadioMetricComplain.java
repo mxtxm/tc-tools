@@ -1,6 +1,8 @@
 package com.tctools.business.dto.project.radiometric.complain;
 
 import com.tctools.business.dto.location.*;
+import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlowState;
+import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
 import com.vantar.database.datatype.Location;
@@ -27,9 +29,6 @@ public class RadioMetricComplain extends DtoBase {
     @Required
     @Default("true")
     public Boolean assignable;
-
-
-
 
     //@Depends(User.class)
     public Long assigneeId;
@@ -76,6 +75,10 @@ public class RadioMetricComplain extends DtoBase {
     public String complainerPhone;
     public String complainerAddress;
     public String complainerComments;
+
+    public RadioMetricFlowState lastState;
+
+
     // < < < complainer
 
     // visit data > > >
@@ -103,12 +106,16 @@ public class RadioMetricComplain extends DtoBase {
     }
 
     private static String getImagePathX(String filename, String siteCode, boolean isUrl, boolean exists) {
-        String filePath = Param.RADIO_METRIC_FILES + siteCode + "/complain/" + filename;
-        if (exists && !FileUtil.exists(filePath)) {
+        try {
+            String filePath = Param.RADIO_METRIC_FILES + siteCode + "/complain/" + filename;
+            if (exists && !FileUtil.exists(filePath)) {
+                return null;
+            }
+
+            return isUrl ? Param.RADIO_METRIC_URL + siteCode + "/complain/" + filename : filePath;
+        } catch (Exception e) {
             return null;
         }
-
-        return isUrl ? Param.RADIO_METRIC_URL + siteCode + "/complain/" + filename: filePath;
     }
 
     public String getImageFilename() {
@@ -133,10 +140,10 @@ public class RadioMetricComplain extends DtoBase {
 
     @Override
     public boolean beforeUpdate() {
-        imageUrl = getImageUrl(true);
-        if (location != null) {
-            location.round(Param.LOCATION_DECIMALS);
-        }
+        address = Site.normaliseAddress(address);
+        complainerAddress = Site.normaliseAddress(complainerAddress);
+
+        assignTime = new DateTime();
         if (assigneeId != null && workFlowId != null) {
             assignable = false;
         } else {
@@ -146,11 +153,17 @@ public class RadioMetricComplain extends DtoBase {
             assignTime = null;
             addNullProperties("assigneeId", "workFlowId", "assignTime");
         }
+
+        imageUrl = getImageUrl(true);
+        if (location != null) {
+            location.round(Param.LOCATION_DECIMALS);
+        }
+
         return true;
     }
 
     public static boolean isEmpty(RadioMetricComplain c) {
-        return c == null || StringUtil.isEmpty(c.ccnumber);
+        return c == null || c.id == null || StringUtil.isEmpty(c.ccnumber);
     }
 
     public static boolean isEmpty(RadioMetricComplain.Viewable c) {
@@ -223,7 +236,13 @@ public class RadioMetricComplain extends DtoBase {
         // visitor data > > >
         public String imageUrl;
 
+        public RadioMetricFlowState lastState;
+
+
         public String getImageFilename() {
+            if (city == null) {
+                return null;
+            }
             return getImageFilenameX(city.id, complainerName, ccnumber);
         }
 
@@ -249,6 +268,8 @@ public class RadioMetricComplain extends DtoBase {
         public DateTime complainTime;
         public DateTime assignTime;
         public Location location;
+        public RadioMetricFlowState lastState;
+
 
     }
 }

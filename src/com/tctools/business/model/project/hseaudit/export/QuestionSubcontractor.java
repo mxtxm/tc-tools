@@ -3,7 +3,7 @@ package com.tctools.business.model.project.hseaudit.export;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonRepoMongo;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -127,7 +127,7 @@ public class QuestionSubcontractor extends ExportCommon {
     }
 
     public void outputAggregate(Params params, HttpServletResponse response)
-        throws InputException, NoContentException, ServerException {
+        throws VantarException {
 
         DateTimeRange dateTimeRange = params.getDateTimeRange("from", "to");
         if (dateTimeRange == null || !dateTimeRange.isValid()) {
@@ -137,7 +137,7 @@ public class QuestionSubcontractor extends ExportCommon {
         List<Long> subContractorIds = params.getLongList("subcontractorids");
         List<Long> questionIds = params.getLongList("questionids");
 
-        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire(), new HseAuditQuestionnaire.Viewable());
+        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire.Viewable());
         q.condition().in("lastState", HseAuditFlowState.PreApproved, HseAuditFlowState.Approved);
         q.condition().between("auditDateTime", dateTimeRange);
         if (provinceIds != null && !provinceIds.isEmpty()) {
@@ -148,11 +148,7 @@ public class QuestionSubcontractor extends ExportCommon {
         }
 
         List<HseAuditQuestionnaire.Viewable> questionnaires;
-        try {
-            questionnaires = CommonRepoMongo.getData(q, LANG);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        questionnaires = CommonModelMongo.getData(q, LANG);
 
         Result result = new Result();
         // for all option type questions

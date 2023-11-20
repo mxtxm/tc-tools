@@ -11,7 +11,6 @@ import com.vantar.http.Ssl;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.service.cache.ServiceDtoCache;
-import com.vantar.service.log.LogEvent;
 import com.vantar.service.messaging.ServiceMessaging;
 import com.vantar.web.Response;
 import org.aeonbits.owner.ConfigFactory;
@@ -78,7 +77,6 @@ public class Application implements ServletContextListener {
 
                     @Override
                     public void onMessageQueueFail(String queue) {
-                        queueFail(getClass(), ServiceMessaging.QUEUE_NAME_MESSAGE, 0);
                     }
                 });
 
@@ -110,11 +108,5 @@ public class Application implements ServletContextListener {
         log.info("\n\n> Stopping application\n");
         Services.stop();
         log.info("\n\n< Stopping application\n\n");
-    }
-
-    public static void queueFail(Class<?> clazz, String queueName, int workerId) {
-        LogEvent.fatal(clazz, "queue(" + queueName + ", "  + workerId + ") failed - restarting all services...");
-        Services.stop();
-        Services.start();
     }
 }

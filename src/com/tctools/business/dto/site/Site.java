@@ -5,6 +5,7 @@ import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.Date;
 import com.vantar.database.dto.*;
 import com.vantar.util.datetime.DateTime;
+import com.vantar.util.string.StringUtil;
 import java.util.*;
 
 @Mongo
@@ -82,7 +83,18 @@ public class Site extends DtoBase {
     @Override
     public boolean beforeUpdate() {
         code = code.toUpperCase();
+        address = normaliseAddress(address);
         return true;
+    }
+
+    public static String normaliseAddress(String a) {
+        if (a == null) {
+            return a;
+        }
+        a = StringUtil.replace(a, "،", ",");
+        a = StringUtil.replace(a, " ,", ",");
+        a = StringUtil.replace(a, ", ", ",");
+        return StringUtil.replace(a, ",", " - ");
     }
 
 

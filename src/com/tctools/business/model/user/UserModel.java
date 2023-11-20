@@ -12,7 +12,7 @@ import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
 import com.vantar.service.auth.*;
-import com.vantar.util.file.FileUtil;
+import com.vantar.util.file.*;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
@@ -30,7 +30,7 @@ public class UserModel {
         return user;
     }
 
-    public static User getUserById(Params params) throws ServerException, NoContentException, InputException {
+    public static User getUserById(Params params) throws VantarException {
         Long id = params.getLong("id");
         if (!NumberUtil.isIdValid(id)) {
             throw new InputException(VantarKey.INVALID_ID, "User.id");
@@ -38,21 +38,15 @@ public class UserModel {
 
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("id", id);
-        try {
-            return CommonRepoMongo.getFirst(q);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.getFirst(q);
     }
 
-    public static List<User> getAll(Params params, User user)
-        throws ServerException, NoContentException, AuthException, InputException {
+    public static List<User> getAll(Params params, User user) throws VantarException {
 
         return getUsers(params.getString("project"), null, user);
     }
 
-    public static Map<Long, String> getAsKeyValue(Params param, User user)
-        throws ServerException, NoContentException, AuthException, InputException {
+    public static Map<Long, String> getAsKeyValue(Params param, User user) throws VantarException {
 
         Map<Long, String> users = new HashMap<>();
         for (User u : getAll(param, user)) {
@@ -61,14 +55,11 @@ public class UserModel {
         return users;
     }
 
-    public static List<User> getTechnicians(Params params, User user)
-        throws ServerException, NoContentException, AuthException, InputException {
+    public static List<User> getTechnicians(Params params, User user) throws VantarException {
         return getUsers(params.getString("project"), Role.TECHNICIAN, user);
     }
 
-    public static Map<Long, String> getTechniciansAsKeyValue(Params params, User user)
-        throws NoContentException, ServerException, AuthException, InputException {
-
+    public static Map<Long, String> getTechniciansAsKeyValue(Params params, User user) throws VantarException {
         Map<Long, String> users = new HashMap<>();
         for (User u : getTechnicians(params, user)) {
             users.put(u.id, u.fullName);
@@ -76,9 +67,7 @@ public class UserModel {
         return users;
     }
 
-    public static Map<Long, String> getAcTechniciansAsKeyValue(Params params, User user)
-        throws NoContentException, ServerException, AuthException, InputException {
-
+    public static Map<Long, String> getAcTechniciansAsKeyValue(Params params, User user) throws VantarException {
         Map<Long, String> users = new HashMap<>();
         for (User u : getTechnicians(params, user)) {
             users.put(u.id, u.fullName + " (" + u.username + ")");
@@ -87,7 +76,7 @@ public class UserModel {
     }
 
     private static List<User> getUsers(String project, Role role, User user)
-        throws ServerException, NoContentException, AuthException, InputException {
+        throws VantarException {
 
         if (user.role == Role.ENGINEER) {
             if (project == null) {
@@ -115,14 +104,10 @@ public class UserModel {
             q.condition().equal("role", role);
         }
 
-        try {
-            return CommonRepoMongo.getData(q);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        return CommonModelMongo.getData(q);
     }
 
-    public static ResponseMessage insert(Params params, User creator) throws ServerException, InputException {
+    public static ResponseMessage insert(Params params, User creator) throws VantarException {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT");
         return CommonModelMongo.insert(params, user, new CommonModel.WriteEvent() {
@@ -153,7 +138,7 @@ public class UserModel {
         });
     }
 
-    public static ResponseMessage update(Params params, User creator) throws ServerException, InputException {
+    public static ResponseMessage update(Params params, User creator) throws VantarException {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT", "password");
         return CommonModelMongo.update(params, user, new CommonModel.WriteEvent() {
@@ -189,7 +174,7 @@ public class UserModel {
         });
     }
 
-    public static ResponseMessage delete(Params params) throws ServerException, InputException {
+    public static ResponseMessage delete(Params params) throws VantarException {
         User user = new User();
         return CommonModelMongo.delete(params, user);
     }
@@ -244,7 +229,7 @@ public class UserModel {
                 ResponseMessage.success(AppLangKey.SIGNATURE_NOT_EXISTS, "");
     }
 
-    public static ResponseMessage changePassword(Params params, User user) throws InputException, ServerException, AuthException {
+    public static ResponseMessage changePassword(Params params, User user) throws VantarException {
         Long id = params.getLong("id");
         if (NumberUtil.isIdValid(id)) {
             if (user.role == Role.MANAGER || user.role == Role.ADMIN || user.role == Role.ROOT) {
@@ -263,19 +248,14 @@ public class UserModel {
         return updateUser(u);
     }
 
-    public static ResponseMessage unsubscribe(User signedInUser) throws ServerException {
+    public static ResponseMessage unsubscribe(User signedInUser) throws VantarException {
         User user = new User();
         user.id = signedInUser.id;
         user.accessStatus = AccessStatus.UNSUBSCRIBED;
         return updateUser(user);
     }
 
-    private static ResponseMessage updateUser(User user) throws ServerException {
-        try {
-            CommonRepoMongo.update(user);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.UPDATE_FAIL);
-        }
-        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
+    private static ResponseMessage updateUser(User user) throws VantarException {
+        return CommonModelMongo.update(user);
     }
 }

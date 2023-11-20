@@ -29,6 +29,22 @@ UTF8 EN and FA locales must be installed/enabled on the OS.
     
 ## deploy on ubuntu (first time)
 
+mkdir /opt/tc-tools/
+mkdir /opt/tc-tools/backup
+mkdir /opt/tc-tools/documents
+mkdir /opt/tc-tools/log
+mkdir /opt/tc-tools/templates
+mkdir /opt/tc-tools/templates/hse-audit
+mkdir /opt/tc-tools/templates/radiometric
+mkdir /opt/tc-tools/files
+mkdir /opt/tc-tools/files/user
+mkdir /opt/tc-tools/temp
+mkdir /opt/tc-tools/hse-audit
+mkdir /opt/tc-tools/radiometric
+
+
+
+
     sudo apt-get update
     sudo apt-get install tomcat9
     sudo service tomcat9 status
@@ -134,3 +150,29 @@ UTF8 EN and FA locales must be installed/enabled on the OS.
     sudo crontab -e
     >> add
     0 3 * * 1 ~/truncate-logs.sh
+
+
+#!/bin/sh
+echo "Restarting Tomcat Server"
+sudo service tomcat9 stop
+sudo service tomcat9 start
+
+
+#! /bin/bash
+shopt -s globstar                  # if needed
+sudo truncate -s 0 /var/log/*.log       # first-level logs
+sudo truncate -s 0 /var/log/**/*.log    # nested folders, like /var/log/nginx/access.log
+sudo find /var/log -type f -name '*.gz' -exec rm {} +
+
+sudo truncate -s 0 /opt/*.log       # first-level logs
+sudo truncate -s 0 /var/**/*.log    # nested folders, like /var/log/nginx/access.log
+sudo find /opt -type f -name '*.gz' -exec rm {} +
+
+
+0 3 * * 1 /opt/tc-tools/scripts/truncate-logs.sh
+0 8 * * * /opt/tc-tools/scripts/restart-tomcat.sh >/dev/null 2>&1
+0 12 * * * /opt/tc-tools/scripts/restart-tomcat.sh >/dev/null 2>&1
+0 18 * * * /opt/tc-tools/scripts/restart-tomcat.sh >/dev/null 2>&1
+0 22 * * * /opt/tc-tools/scripts/restart-tomcat.sh >/dev/null 2>&1
+
+

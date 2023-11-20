@@ -1,13 +1,10 @@
 package com.tctools.business.model.project.hseaudit;
 
 import com.tctools.business.dto.project.hseaudit.SubContractor;
-import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.business.*;
+import com.vantar.business.CommonModelMongo;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.query.QueryBuilder;
+import com.vantar.database.query.*;
 import com.vantar.exception.*;
-import com.vantar.locale.VantarKey;
-import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.Params;
 import java.util.*;
@@ -15,31 +12,18 @@ import java.util.*;
 
 public class SubcontractorModel {
 
-    public static Object search(Params params) throws ServerException, NoContentException, InputException {
-        return CommonModelMongo.searchX(params, new SubContractor(), new SubContractor.Viewable());
+    public static PageData search(Params params) throws VantarException {
+        return CommonModelMongo.search(params, new SubContractor.Viewable());
     }
 
-    public static SubContractor.Viewable get(Params params) throws ServerException, NoContentException, InputException {
-        SubContractor subContractor = new SubContractor();
-        subContractor.id = params.getLong("id");
-
-        if (NumberUtil.isIdInvalid(subContractor.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (SubContractor.id)");
-        }
-
-        QueryBuilder q = new QueryBuilder(subContractor, new RadioMetricFlow.Viewable());
-        q.setConditionFromDtoEqualTextMatch();
-        try {
-            return CommonRepoMongo.getFirst(q, params.getLang());
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+    public static SubContractor.Viewable get(Params params) throws VantarException {
+        return CommonModelMongo.getById(params, new SubContractor.Viewable());
     }
 
-    public static Map<Long, String> autoComplete(Params params) throws ServerException {
+    public static Map<Long, String> autoComplete(Params params) throws VantarException {
         String name = params.getString("name");
 
-        QueryBuilder q = new QueryBuilder(new SubContractor(), new SubContractor.Viewable());
+        QueryBuilder q = new QueryBuilder(new SubContractor.Viewable());
         q.sort("name desc");
         if (StringUtil.isNotEmpty(name)) {
             q.condition().like("name", name);
@@ -47,12 +31,10 @@ public class SubcontractorModel {
 
         Map<Long, String> values = new HashMap<>();
         try {
-            for (Dto item : CommonRepoMongo.getData(q, params.getLang())) {
+            for (Dto item : CommonModelMongo.getData(q, params.getLang())) {
                 SubContractor.Viewable s = (SubContractor.Viewable) item;
                 values.put(s.id, s.name + " - " + s.province.name);
             }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
         } catch (NoContentException ignore) {
 
         }
