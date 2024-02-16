@@ -3,8 +3,8 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.*;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -36,7 +36,7 @@ public class AdminSynchHseAudit {
         boolean doState = params.isChecked("synchallhse");
 
         try {
-            for (Dto site : CommonModelMongo.getAll(new Site())) {
+            for (Dto site : ModelMongo.getAll(new Site())) {
                 synchWithSite((Site) site, doState, ui);
             }
         } catch (VantarException e) {
@@ -54,7 +54,7 @@ public class AdminSynchHseAudit {
         QueryBuilder q = new QueryBuilder(flow);
         q.condition().equal("site.code", site.code);
 
-        if (CommonModelMongo.exists(q)) {
+        if (ModelMongo.exists(q)) {
             q = new QueryBuilder(flow);
             q.condition().equal("site.code", site.code);
             if (allStates) {
@@ -68,11 +68,11 @@ public class AdminSynchHseAudit {
             }
 
             try {
-                for (Dto dto : CommonModelMongo.getData(q)) {
+                for (Dto dto : ModelMongo.getData(q)) {
                     flow = (HseAuditQuestionnaire) dto;
                     flow.site = site;
 
-                    CommonModelMongo.update(flow);
+                    ModelMongo.update(flow);
                     if (ui != null) {
                         ui.addMessage(Locale.getString(AppLangKey.UPDATED, flow.getClass().getSimpleName(), flow.site.code)).write();
                     }
@@ -89,13 +89,7 @@ public class AdminSynchHseAudit {
             flow.state.add(new State(flow.lastState, flow.lastStateDateTime));
 
             if (site.provinceId != null) {
-                List<SubContractor> contractors;
-                try {
-                    contractors = Services.get(ServiceDtoCache.class).getList(SubContractor.class);
-                } catch (ServiceException e) {
-                    ui.addErrorMessage(e);
-                    return;
-                }
+                List<SubContractor> contractors = Services.get(ServiceDtoCache.class).getList(SubContractor.class);
                 for (SubContractor contractor : contractors) {
                     if (site.provinceId.equals(contractor.provinceId)) {
                         flow.subContractorId = contractor.id;
@@ -104,7 +98,7 @@ public class AdminSynchHseAudit {
                 }
             }
 
-            ResponseMessage res = CommonModelMongo.insert(flow);
+            ResponseMessage res = ModelMongo.insert(flow);
             if (ui != null) {
                 ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), res.value + " - " + title)).write();
             }
@@ -113,7 +107,7 @@ public class AdminSynchHseAudit {
 
     protected static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : CommonModelMongo.getAll(new HseAuditQuestionnaire())) {
+            for (Dto dto : ModelMongo.getAll(new HseAuditQuestionnaire())) {
                 HseAuditQuestionnaire flow = (HseAuditQuestionnaire) dto;
                 if (!AdminSiteImport.siteCodes.contains(flow.site.code)) {
 
@@ -130,7 +124,7 @@ public class AdminSynchHseAudit {
 
 
                     try {
-                        CommonModelMongo.deleteById(flow);
+                        ModelMongo.deleteById(flow);
                         ui.addMessage("deleted " + flow.id + ":"+ flow.site.code + " from HseAuditQuestionnaire");
                     } catch (VantarException e) {
                         ui.addErrorMessage(e);

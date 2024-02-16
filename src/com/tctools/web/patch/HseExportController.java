@@ -4,7 +4,7 @@ import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.util.*;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryResultBase;
 import com.vantar.exception.VantarException;
@@ -46,7 +46,7 @@ public class HseExportController extends RouteToMethod {
                 colIndex = XlsxStyled.setHeader(sheet, colIndex, "email");
                 colIndex = XlsxStyled.setHeader(sheet, colIndex, "mobile");
 
-                CommonModelMongo.forEach(new SubContractor(), new QueryResultBase.EventForeach() {
+                ModelMongo.forEach(new SubContractor(), new QueryResultBase.EventForeach() {
                     @Override
                     public void afterSetData(Dto dto) throws VantarException {
                         int colIndex = 0;
@@ -81,7 +81,7 @@ public class HseExportController extends RouteToMethod {
             return;
         }
 
-        CommonModelMongo.forEach(new User(), dto -> {
+        ModelMongo.forEach(new User(), dto -> {
             User user = (User) dto;
             if (user.projectTypes == null || !user.projectTypes.contains(ProjectType.HseAudit)) {
                 return;
@@ -134,7 +134,7 @@ public class HseExportController extends RouteToMethod {
 
         Set<String> siteCodes = new HashSet<>();
 
-        CommonModelMongo.forEach(new HseAuditQuestionnaire(), dto -> {
+        ModelMongo.forEach(new HseAuditQuestionnaire(), dto -> {
             HseAuditQuestionnaire audit = (HseAuditQuestionnaire) dto;
 
             if (audit.lastState.equals(HseAuditFlowState.Pending)) {

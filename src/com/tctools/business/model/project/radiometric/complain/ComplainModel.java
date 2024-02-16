@@ -22,7 +22,7 @@ public class ComplainModel {
     public static ResponseMessage insert(Params params, User user) throws VantarException {
         RadioMetricComplain complain = new RadioMetricComplain();
         complain.creatorId = user.id;
-        return CommonModelMongo.insert(params, complain, new CommonModel.WriteEvent() {
+        return ModelMongo.insert(params, complain, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {
@@ -44,9 +44,9 @@ public class ComplainModel {
     }
 
     public static ResponseMessage update(Params params) throws VantarException {
-        RadioMetricComplain complain = CommonModelMongo.getById(params, new RadioMetricComplain());
+        RadioMetricComplain complain = ModelMongo.getById(params, new RadioMetricComplain());
 
-        return CommonModelMongo.update(params, complain, new CommonModel.WriteEvent() {
+        return ModelMongo.update(params, complain, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {
@@ -73,7 +73,7 @@ public class ComplainModel {
                 RadioMetricFlow flow = new RadioMetricFlow();
                 flow.id = complain.workFlowId;
                 flow.complain = complain;
-                CommonModelMongo.update(flow);
+                ModelMongo.update(flow);
             }
         });
     }
@@ -109,19 +109,19 @@ public class ComplainModel {
     }
 
     public static ResponseMessage delete(Params params) throws VantarException {
-        RadioMetricComplain complain = CommonModelMongo.getById(params, new RadioMetricComplain());
+        RadioMetricComplain complain = ModelMongo.getById(params, new RadioMetricComplain());
 
         try {
             RadioMetricFlow r = new RadioMetricFlow();
             r.id = complain.workFlowId;
             if (NumberUtil.isIdValid(r.id)) {
-                CommonModelMongo.deleteById(r);
+                ModelMongo.deleteById(r);
             }
         } catch (VantarException ignore) {
 
         }
 
-        return CommonModelMongo.deleteById(complain);
+        return ModelMongo.deleteById(complain);
     }
 
     /**
@@ -134,7 +134,7 @@ public class ComplainModel {
         if (NumberUtil.isIdValid(complain.siteId)) {
             site.id = complain.siteId;
             try {
-                site = CommonModelMongo.getById(site);
+                site = ModelMongo.getById(site);
                 complain.siteCode = site.code;
                 complain.siteName = site.name;
                 return;
@@ -151,7 +151,7 @@ public class ComplainModel {
         QueryBuilder q = new QueryBuilder(site);
         q.condition().equal("code", complain.siteCode);
         try {
-            site = CommonModelMongo.getFirst(q);
+            site = ModelMongo.getFirst(q);
             complain.siteId = site.id;
             complain.siteName = site.name;
             return;
@@ -166,15 +166,15 @@ public class ComplainModel {
         site.cityId = complain.cityId;
         site.location = complain.location;
         site.address = complain.address;
-        complain.siteId = CommonModelMongo.insert(site).dto.getId();
+        complain.siteId = ModelMongo.insert(site).dto.getId();
     }
 
     public static RadioMetricComplain.Viewable get(Params params) throws VantarException {
-        return CommonModelMongo.getById(params, new RadioMetricComplain.Viewable());
+        return ModelMongo.getById(params, new RadioMetricComplain.Viewable());
     }
 
     public static PageData search(Params params) throws VantarException {
-        return CommonModelMongo.search(params, new RadioMetricComplain.Viewable());
+        return ModelMongo.search(params, new RadioMetricComplain.Viewable());
     }
 
     public static Object assignable(Params params) throws VantarException {
@@ -186,7 +186,7 @@ public class ComplainModel {
     }
 
     private static PageData getAssignQuery(Params params, boolean assignable) throws VantarException {
-        return CommonModelMongo.search(params, new RadioMetricComplain.Viewable()
+        return ModelMongo.search(params, new RadioMetricComplain.Viewable()
             , new CommonModel.QueryEvent() {
                 @Override
                 public void beforeQuery(QueryBuilder q) {

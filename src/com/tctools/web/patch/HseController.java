@@ -2,13 +2,13 @@ package com.tctools.web.patch;
 
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.common.Param;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.*;
-import com.vantar.util.file.*;
+import com.vantar.util.file.DirUtil;
 import com.vantar.web.*;
 import org.slf4j.*;
 import javax.servlet.annotation.WebServlet;
@@ -41,7 +41,7 @@ if (true) {
                 QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire());
                 q.condition().equal("site.code", siteCode);
                 try {
-                    List<Dto> data = CommonModelMongo.getData(q);
+                    List<Dto> data = ModelMongo.getData(q);
                     for (Dto dto : data) {
                         HseAuditQuestionnaire hse = (HseAuditQuestionnaire) dto;
                         if (HseAuditFlowState.Pending.equals(hse.lastState)) {

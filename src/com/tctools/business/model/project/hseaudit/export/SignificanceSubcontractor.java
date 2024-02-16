@@ -130,7 +130,7 @@ public class SignificanceSubcontractor extends ExportCommon {
             q.condition().inNumber("subContractorId", subContractorIds);
         }
 
-        List<HseAuditQuestionnaire.Viewable> questionnaires = CommonModelMongo.getData(q, LANG);
+        List<HseAuditQuestionnaire.Viewable> questionnaires = ModelMongo.getData(q, LANG);
 
         Result result = new Result();
         for (SubContractor subContractor : Services.get(ServiceDtoCache.class).getList(SubContractor.class)) {

@@ -1,8 +1,8 @@
 package com.tctools.web.patch;
 
 import com.tctools.business.dto.project.radiometric.workflow.*;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.*;
@@ -25,14 +25,14 @@ public class RadioController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().equal("lastState", RadioMetricFlowState.Planned.name());
 
-        CommonModelMongo.forEach(q, dto -> {
+        ModelMongo.forEach(q, dto -> {
             RadioMetricFlow flow = (RadioMetricFlow) dto;
             flow.lastState = RadioMetricFlowState.Pending;
             flow.assignorId = null;
             flow.assigneeId = null;
             flow.assignDateTime = null;
             flow.measurementDateTime = null;
-            CommonModelMongo.update(flow);
+            ModelMongo.update(flow);
             ui.addMessage(flow.site.code).write();
         });
 

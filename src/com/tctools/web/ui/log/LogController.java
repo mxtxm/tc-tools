@@ -1,6 +1,6 @@
 package com.tctools.web.ui.log;
 
-import com.vantar.service.log.LogEvent;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 public class LogController extends RouteToMethod {
 
     public void appLog(Params params, HttpServletResponse response) {
-        LogEvent.info("APP", params.getString("data", ""));
+        ServiceLog.info("APP", params.getString("data", ""));
     }
 
     public void appLogJson(Params params, HttpServletResponse response) {
-        LogEvent.info("APP", params.getJson());
+        ServiceLog.info("APP", params.getJson());
     }
 }

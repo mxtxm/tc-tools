@@ -4,8 +4,8 @@ import com.sun.management.HotSpotDiagnosticMXBean;
 import com.tctools.business.dto.project.hseaudit.HseAuditQuestionnaire;
 import com.tctools.business.dto.project.radiometric.complain.RadioMetricComplain;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -61,7 +61,7 @@ public class TestController extends RouteToMethod {
     public void t(Params params, HttpServletResponse response) throws VantarException, FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
-        CommonModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.EventForeach() {
+        ModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.EventForeach() {
             @Override
             public void afterSetData(Dto dto) throws VantarException {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
@@ -95,7 +95,7 @@ public class TestController extends RouteToMethod {
 
 
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
-        CommonModelMongo.forEach(new RadioMetricComplain(), new QueryResultBase.EventForeach() {
+        ModelMongo.forEach(new RadioMetricComplain(), new QueryResultBase.EventForeach() {
             @Override
             public void afterSetData(Dto dto) throws VantarException {
                 RadioMetricComplain complain = (RadioMetricComplain) dto;
@@ -103,7 +103,7 @@ public class TestController extends RouteToMethod {
                 q.condition().equal("complain.id", complain.id);
 
                 try {
-                    RadioMetricFlow r = CommonModelMongo.getFirst(q);
+                    RadioMetricFlow r = ModelMongo.getFirst(q);
                     complain.workFlowId = r.id;
                     complain.assigneeId = r.assigneeId;
                     complain.assignTime = r.assignDateTime;
@@ -114,7 +114,7 @@ public class TestController extends RouteToMethod {
                     complain.assignTime = null;
                     complain.assignable = true;
                 }
-                CommonModelMongo.update(complain);
+                ModelMongo.update(complain);
                 ui.addMessage("updated").write();
             }
         });
@@ -131,7 +131,7 @@ ui.addMessage("finish").finish();
 //        QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire());
 //        q.condition().inString("site.code", oldCodes);
 //
-//        log.error(">>>> {}", CommonModelMongo.getData(q).size());
+//        log.error(">>>> {}", ModelMongo.getData(q).size());
 //
 //        MongoBackup.dumpQuery("/home/lynx/downloads/mongo-missing-hse.zip", q, ui);
 
@@ -139,7 +139,7 @@ ui.addMessage("finish").finish();
 
     public void indexY(Params params, HttpServletResponse response) throws VantarException, FinishException {
         Set<String> oldCodes = StringUtil.splitToSet(FileUtil.getFileContent("/home/lynx/downloads/radiometrics"), "\n");
-        CommonModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.EventForeach() {
+        ModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.EventForeach() {
             @Override
             public void afterSetData(Dto dto) {
                 String code = ((RadioMetricFlow) dto).site.code;
@@ -151,7 +151,7 @@ ui.addMessage("finish").finish();
         FileUtil.write("/home/lynx/downloads/radiometrics-missing", CollectionUtil.join(oldCodes, "\n"));
 
         Set<String> oldCodesx = StringUtil.splitToSet(FileUtil.getFileContent("/home/lynx/downloads/hse"), "\n");
-        CommonModelMongo.forEach(new HseAuditQuestionnaire(), new QueryResultBase.EventForeach() {
+        ModelMongo.forEach(new HseAuditQuestionnaire(), new QueryResultBase.EventForeach() {
             @Override
             public void afterSetData(Dto dto) {
                 String code = ((HseAuditQuestionnaire) dto).site.code;
@@ -165,7 +165,7 @@ ui.addMessage("finish").finish();
 
     public void indexX(Params params, HttpServletResponse response) throws VantarException, FinishException {
         List<String> codes = new ArrayList<>(50000);
-        CommonModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.EventForeach() {
+        ModelMongo.forEach(new RadioMetricFlow(), new QueryResultBase.EventForeach() {
             @Override
             public void afterSetData(Dto dto) {
                 codes.add(((RadioMetricFlow) dto).site.code);
@@ -176,7 +176,7 @@ ui.addMessage("finish").finish();
 
 
         List<String> codesX = new ArrayList<>(50000);
-        CommonModelMongo.forEach(new HseAuditQuestionnaire(), new QueryResultBase.EventForeach() {
+        ModelMongo.forEach(new HseAuditQuestionnaire(), new QueryResultBase.EventForeach() {
             @Override
             public void afterSetData(Dto dto) {
                 codesX.add(((HseAuditQuestionnaire) dto).site.code);

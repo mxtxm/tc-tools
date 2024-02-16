@@ -37,9 +37,9 @@ public class ExportWaveControl extends ExportCommon {
                 q.sort("measurementDateTime:asc");
                 q.condition().in("lastState", RadioMetricFlowState.Approved, RadioMetricFlowState.Verified);
                 q.condition().greaterThan("measurementDateTime", date);
-                items = CommonModelMongo.getData(q, "fa");
+                items = ModelMongo.getData(q, "fa");
             } else {
-                items = CommonModelMongo.getAll(new RadioMetricFlow.Viewable(), "fa");
+                items = ModelMongo.getAll(new RadioMetricFlow.Viewable(), "fa");
             }
         } catch (VantarException e) {
             log.error("!", e);

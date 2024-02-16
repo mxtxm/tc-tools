@@ -3,13 +3,14 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.AdminData;
+import com.vantar.admin.model.database.AdminData;
 import com.vantar.database.dto.Dto;
-import com.vantar.exception.*;
+import com.vantar.exception.VantarException;
 import com.vantar.locale.Locale;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
-import com.vantar.util.file.*;
+import com.vantar.service.log.dto.*;
+import com.vantar.util.file.DirUtil;
 import com.vantar.web.Params;
 import java.util.*;
 
@@ -18,6 +19,20 @@ public class AdminApp {
 
     public static AdminData.Event getAdminDataEvent() {
         return new AdminData.Event() {
+            @Override
+            public Dto dtoExchange(Dto dto, String action) {
+                if ("list".equalsIgnoreCase(action)) {
+                    if (dto.getClass().equals(UserLog.class)) {
+                        return new UserLog.Mini();
+                    }
+                    if (dto.getClass().equals(UserWebLog.class)) {
+                        return new UserWebLog.Mini();
+                    }
+                }
+
+                return dto;
+            }
+
             @Override
             public void beforeInsert(Dto dto) {
 
@@ -61,12 +76,8 @@ public class AdminApp {
     }
 
     public static void extendMenu(Params params, Map<String, String> menu) {
-        try {
-            if (Services.get(ServiceAuth.class).hasAccess(params, Role.MANAGER)) {
-                menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
-            }
-        } catch (ServiceException ignore) {
-
+        if (Services.get(ServiceAuth.class).hasAccess(params, Role.MANAGER)) {
+            menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
         }
 
         menu.put(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), "/admin/image/browse");

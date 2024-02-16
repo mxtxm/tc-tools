@@ -3,7 +3,7 @@ package com.tctools.common;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.model.user.AuthModel;
 import com.tctools.business.service.locale.LocaleService;
-import com.vantar.admin.model.AdminDocument;
+import com.vantar.admin.model.document.AdminDocument;
 import com.vantar.common.Settings;
 import com.vantar.database.nosql.mongo.MongoConnection;
 import com.vantar.exception.*;
@@ -66,7 +66,7 @@ public class Application implements ServletContextListener {
                     public void onReceive(int type, ServiceMessaging.Message message) {
                         if (type == Param.MESSAGE_DATABASE_UPDATED && "User".equals(message.getString())) {
                             try {
-                                Services.get(ServiceAuth.class)
+                                Services.getService(ServiceAuth.class)
                                     .updateOnlineUsers((List) Services.get(ServiceDtoCache.class).getList(User.class));
                                 log.info(" >> online user data updated");
                             } catch (ServiceException e) {
@@ -82,7 +82,7 @@ public class Application implements ServletContextListener {
 
                 // > > > auth service
                 try {
-                    Services.get(ServiceAuth.class)
+                    Services.getService(ServiceAuth.class)
                         .restoreFromBackup()
                         .setEvent(AuthModel::getUserForAuth)
                         .startupSignin(User.getTemporaryRoot());
@@ -96,7 +96,7 @@ public class Application implements ServletContextListener {
                 MongoConnection.shutdown();
             }
         });
-        Services.start();
+        Services.startServer();
 
         AdminDocument.createDtoDocument();
 

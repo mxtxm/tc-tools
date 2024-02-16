@@ -2,7 +2,7 @@ package com.tctools.business.model.location;
 
 import com.tctools.business.dto.location.*;
 import com.tctools.common.util.ModelUtil;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.exception.*;
 import com.vantar.web.Params;
 import java.util.*;
@@ -11,7 +11,7 @@ import java.util.*;
 public class ProvinceModel {
 
     public static List<Province.Localed> getAll(Params params) throws VantarException {
-        return CommonModelMongo.getAllFromCache(params, Province.class, Province.Localed.class);
+        return ModelMongo.getAllFromCache(params, Province.class, Province.Localed.class);
     }
 
     public static Map<Long, String> getAsKeyValue(Params params) {

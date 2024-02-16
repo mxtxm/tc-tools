@@ -38,7 +38,7 @@ public class UserModel {
 
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("id", id);
-        return CommonModelMongo.getFirst(q);
+        return ModelMongo.getFirst(q);
     }
 
     public static List<User> getAll(Params params, User user) throws VantarException {
@@ -104,13 +104,13 @@ public class UserModel {
             q.condition().equal("role", role);
         }
 
-        return CommonModelMongo.getData(q);
+        return ModelMongo.getData(q);
     }
 
     public static ResponseMessage insert(Params params, User creator) throws VantarException {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT");
-        return CommonModelMongo.insert(params, user, new CommonModel.WriteEvent() {
+        return ModelMongo.insert(params, user, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {
@@ -141,7 +141,7 @@ public class UserModel {
     public static ResponseMessage update(Params params, User creator) throws VantarException {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT", "password");
-        return CommonModelMongo.update(params, user, new CommonModel.WriteEvent() {
+        return ModelMongo.update(params, user, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {
@@ -176,7 +176,7 @@ public class UserModel {
 
     public static ResponseMessage delete(Params params) throws VantarException {
         User user = new User();
-        return CommonModelMongo.delete(params, user);
+        return ModelMongo.delete(params, user);
     }
 
     public static ResponseMessage signatureSubmit(Params params) throws InputException, AuthException, ServiceException {
@@ -256,6 +256,6 @@ public class UserModel {
     }
 
     private static ResponseMessage updateUser(User user) throws VantarException {
-        return CommonModelMongo.update(user);
+        return ModelMongo.update(user);
     }
 }

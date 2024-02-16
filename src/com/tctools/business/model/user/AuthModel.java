@@ -38,7 +38,7 @@ public class AuthModel {
     public static ServiceAuth.SigninBundle getUserForAuth(String username) throws NoContentException {
         ServiceDtoCache cache;
         try {
-            cache = Services.get(ServiceDtoCache.class);
+            cache = Services.getService(ServiceDtoCache.class);
         } catch (ServiceException ignore) {
             throw new NoContentException();
         }

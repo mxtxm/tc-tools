@@ -16,7 +16,7 @@ public class ModelUtil {
     public static <D extends Dto, L extends Dto> List<L> getAll(D dto, L localizedDto, String locale) {
         List<L> localized = new ArrayList<>();
         try {
-            for (Dto d : Services.get(ServiceDtoCache.class).getList(dto.getClass())) {
+            for (Dto d : Services.getService(ServiceDtoCache.class).getList(dto.getClass())) {
                 localizedDto.set(d, locale);
                 localized.add(localizedDto);
                 try {
@@ -33,7 +33,7 @@ public class ModelUtil {
     public static Map<Long, String> getAsKeyValue(Dto dto, String locale) {
         Map<Long, String> keyVals = new LinkedHashMap<>();
         try {
-            for (Dto d : Services.get(ServiceDtoCache.class).getList(dto.getClass())) {
+            for (Dto d : Services.getService(ServiceDtoCache.class).getList(dto.getClass())) {
                 keyVals.put(d.getId(), ((Map<String, String>) d.getPropertyValue("name")).get(locale));
             }
         } catch (ServiceException e) {
@@ -45,7 +45,7 @@ public class ModelUtil {
     public static Map<Long, String> getAcAsKeyValue(Dto dto) {
         Map<Long, String> keyVals = new LinkedHashMap<>();
         try {
-            for (Dto d : Services.get(ServiceDtoCache.class).getList(dto.getClass())) {
+            for (Dto d : Services.getService(ServiceDtoCache.class).getList(dto.getClass())) {
                 StringBuilder v = new StringBuilder();
                 ((Map<String, String>) d.getPropertyValue("name")).forEach((lang, value) -> v.append(value).append(" - "));
                 if (v.length() > 0) {
@@ -60,7 +60,7 @@ public class ModelUtil {
 
     public static <D extends Dto> List<D> getAll(D dto) {
         try {
-            return (List<D>) Services.get(ServiceDtoCache.class).getList(dto.getClass());
+            return (List<D>) Services.getService(ServiceDtoCache.class).getList(dto.getClass());
         } catch (ServiceException e) {
             return null;
         }
@@ -69,7 +69,7 @@ public class ModelUtil {
     public static Map<Long, String> getAsKeyValue(Dto dto) {
         Map<Long, String> keyVals = new LinkedHashMap<>();
         try {
-            for (Dto d : Services.get(ServiceDtoCache.class).getList(dto.getClass())) {
+            for (Dto d : Services.getService(ServiceDtoCache.class).getList(dto.getClass())) {
                 keyVals.put(d.getId(), (String) d.getPropertyValue("name"));
             }
         } catch (ServiceException e) {

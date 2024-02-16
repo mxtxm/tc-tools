@@ -3,8 +3,8 @@ package com.tctools.business.admin.model;
 
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.Param;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.*;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.exception.*;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
@@ -22,15 +22,15 @@ public class AdminTools {
         WebUi ui = Admin.getUi("Tools", params, response, false);
 
         ui  .beginBox("Radio Metric")
-            .addBlockLink("CHANGE/ADD STATE", "/admin/tools/state/add")
-            .addBlockLink("UPDATE STATE", "/admin/tools/state/update")
-            .addLine()
-            .addBlockLink("UPDATE all records", "/admin/tools/update/all")
-            .addLine()
-            .addBlockLink("Docx templates", "/admin/tools/radiometric/templates")
-            .addLine()
-            .addBlockLink("Upload signature", "/admin/tools/radiometric/signature")
-            .containerEnd();
+            .addHrefBlock("CHANGE/ADD STATE", "/admin/tools/state/add")
+            .addHrefBlock("UPDATE STATE", "/admin/tools/state/update")
+            .addEmptyLine()
+            .addHrefBlock("UPDATE all records", "/admin/tools/update/all")
+            .addEmptyLine()
+            .addHrefBlock("Docx templates", "/admin/tools/radiometric/templates")
+            .addEmptyLine()
+            .addHrefBlock("Upload signature", "/admin/tools/radiometric/signature")
+            .blockEnd();
 
         ui.finish();
     }
@@ -67,7 +67,7 @@ public class AdminTools {
         ui.addInput("assignee user id", "assignee", assignee);
 
         ui.addSubmit();
-        ui.containerEnd().write();
+        ui.blockEnd().write();
 
         if (s == null) {
             return;
@@ -88,7 +88,7 @@ public class AdminTools {
         RadioMetricFlowState state = st == null ? null : RadioMetricFlowState.valueOf(st);
 
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (!codeSites.contains(f.site.code)) {
@@ -128,7 +128,7 @@ public class AdminTools {
                     }
                 }
 
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
@@ -160,7 +160,7 @@ public class AdminTools {
         ui.addInput("assignee user id", "assignee", assignee);
 
         ui.addSubmit();
-        ui.containerEnd().write();
+        ui.blockEnd().write();
 
         if (s == null) {
             return;
@@ -181,7 +181,7 @@ public class AdminTools {
         RadioMetricFlowState state = RadioMetricFlowState.valueOf(st);
 
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (!codeSites.contains(f.site.code)) {
@@ -217,7 +217,7 @@ public class AdminTools {
                     }
                 }
 
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
@@ -231,10 +231,10 @@ public class AdminTools {
     public static void updateAll(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi("Update all", params, response, false);
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
@@ -255,7 +255,7 @@ public class AdminTools {
                 return;
             }
 
-            ui.addLink("site-radiometric.docx", "/admin/tools/radiometric/templates/docx");
+            ui.addHref("site-radiometric.docx", "/admin/tools/radiometric/templates/docx");
             ui.beginUploadForm();
             ui.addFile("New template", "file");
             ui.addSubmit();
@@ -290,7 +290,7 @@ public class AdminTools {
                 .forEach((file) -> {
                     String fileUrl = Param.USERS_URL + file.getFileName();
                     String filePath = "/opt/tc-tools/files/user/" + file.getFileName();
-                    ui.addBlockLink(
+                    ui.addHrefBlock(
                         fileUrl + "   (" + FileUtil.getSizeMb(filePath) + "MB)",
                         fileUrl
                     );

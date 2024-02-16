@@ -4,7 +4,7 @@ import com.tctools.business.dto.location.Province;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.user.User;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -56,12 +56,7 @@ public class ReportModel {
     }
 
     private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, RadioMetricFlowState state) throws DatabaseException {
-        Map<Long, Province> provinces;
-        try {
-            provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
-        } catch (ServiceException e) {
-            return;
-        }
+        Map<Long, Province> provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().equal("lastState", state);
@@ -98,7 +93,7 @@ public class ReportModel {
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("projectTypes", ProjectType.RadioMetric);
 
-        List<User> users = CommonModelMongo.getData(q, params.getLang());
+        List<User> users = ModelMongo.getData(q, params.getLang());
 
         Map<String, Map<String, HashMap<String, Integer>>> allData = new HashMap<>(users.size());
         for (User user : users) {

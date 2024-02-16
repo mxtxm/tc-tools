@@ -9,8 +9,8 @@ import com.tctools.business.dto.site.Site;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.*;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -62,7 +62,7 @@ public class Patch2Controller extends RouteToMethod {
 
         QueryBuilder q = new QueryBuilder(new SubContractor());
         q.condition().inNumber("id", ids);
-        List<Dto> x = CommonModelMongo.getData(q);
+        List<Dto> x = ModelMongo.getData(q);
         log.error(">>{}",x);
 
     }
@@ -72,7 +72,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (f.sectors == null || f.sectors.isEmpty()) {
@@ -81,7 +81,7 @@ public class Patch2Controller extends RouteToMethod {
                 try {
                     WorkFlowModel.setNearestSector(f);
 
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
 
                     ui.addMessage(f.site.code).write();
                 } catch (Exception x) {
@@ -101,7 +101,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (f.sectors == null || f.sectors.isEmpty()) {
@@ -111,11 +111,11 @@ public class Patch2Controller extends RouteToMethod {
                 QueryBuilder q = new QueryBuilder(new Site());
                 q.condition().equal("code", f.site.code);
                 try {
-                    Site site = CommonModelMongo.getFirst(q);
+                    Site site = ModelMongo.getFirst(q);
 
                     f.site = site;
                     f.sectors = site.sectors;
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
 
                     ui.addMessage(site.code).write();
                 } catch (Exception x) {
@@ -399,7 +399,7 @@ public class Patch2Controller extends RouteToMethod {
                 QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
                 q.condition().equal("site.code", item);
 
-                for (Dto dd : CommonModelMongo.getData(q)) {
+                for (Dto dd : ModelMongo.getData(q)) {
                     RadioMetricFlow f = (RadioMetricFlow) dd;
 
                     if (f.state != null) {
@@ -413,7 +413,7 @@ public class Patch2Controller extends RouteToMethod {
 
                         f.measurementDateTime = d;
                         f.skipBeforeUpdate();
-                        CommonModelMongo.update(f);
+                        ModelMongo.update(f);
                         ui.addMessage(f.site.code).write();
                     }
                 }
@@ -431,7 +431,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<City> items = CommonModelMongo.getAll(new City());
+            List<City> items = ModelMongo.getAll(new City());
 
             for (City c: items) {
                 String oldName = c.name.get("fa");
@@ -444,7 +444,7 @@ public class Patch2Controller extends RouteToMethod {
                 c.name.put("fa", newName);
                 ui.addMessage(oldName + " >> " + newName).write();
 
-                CommonModelMongo.update(c);
+                ModelMongo.update(c);
             }
 
             for (City c: items) {
@@ -458,7 +458,7 @@ public class Patch2Controller extends RouteToMethod {
                 c.name.put("en", newName);
                 ui.addMessage(oldName + " >> " + newName).write();
 
-                CommonModelMongo.update(c);
+                ModelMongo.update(c);
             }
 
         } catch (VantarException e) {
@@ -473,7 +473,7 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (RadioMetricComplain.isEmpty(f.complain)) {
@@ -526,8 +526,8 @@ public class Patch2Controller extends RouteToMethod {
 
                 if (FileUtil.exists(f.complain.getImageFilePath(false))) {
                     f.complain.imageUrl = f.complain.getImageUrl(false);
-                    CommonModelMongo.update(f);
-                    CommonModelMongo.update(f.complain);
+                    ModelMongo.update(f);
+                    ModelMongo.update(f.complain);
                     ui.addMessage(f.site.code).write();
                 } else {
                     ui.addErrorMessage(f.site.code).write();
@@ -547,8 +547,8 @@ public class Patch2Controller extends RouteToMethod {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
 
         try {
-            List<RadioMetricFlow> items = CommonModelMongo.getAll(new RadioMetricFlow());
-            List<RadioMetricComplain> complains = CommonModelMongo.getAll(new RadioMetricComplain());
+            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricComplain> complains = ModelMongo.getAll(new RadioMetricComplain());
 
             Set<Long> cc = new HashSet<>(complains.size());
             for (RadioMetricComplain c : complains) {
@@ -577,14 +577,14 @@ public class Patch2Controller extends RouteToMethod {
         ui.beginFormGet();
         ui.addTextArea("dtos", "dtos", dtos);
         ui.addSubmit();
-        ui.containerEnd().write();
+        ui.blockEnd().write();
 
         if (dtos == null) {
             return;
         }
 
         try {
-            List<Site> items = CommonModelMongo.getAll(new Site());
+            List<Site> items = ModelMongo.getAll(new Site());
 
             String[] parts = StringUtil.split(dtos, ',');
             for (String part : parts) {
@@ -600,7 +600,7 @@ public class Patch2Controller extends RouteToMethod {
                     q.condition().greaterThanEqual("id", StringUtil.toLong(dtoId[1]));
                 }
 
-                List<Dto> dicItems = CommonModelMongo.getData(q);
+                List<Dto> dicItems = ModelMongo.getData(q);
 
                 String dtoIdFieldName = StringUtil.firstCharToLowerCase(dtoId[0]) + "Id";
                 for (Site s : items) {
@@ -632,43 +632,43 @@ public class Patch2Controller extends RouteToMethod {
 
         try {
             int i = 0;
-            List<RadioMetricComplain> cc = CommonModelMongo.getAll(c);
+            List<RadioMetricComplain> cc = ModelMongo.getAll(c);
 
             for (RadioMetricComplain ccc : cc) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonModelMongo.update(ccc);
+                ModelMongo.update(ccc);
             }
 
-            List<Site> ss = CommonModelMongo.getAll(s);
+            List<Site> ss = ModelMongo.getAll(s);
 
             ui.addMessage("11").write();
             ui.addMessage("11").write();
             for (Site sss : ss) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonModelMongo.update(sss);
+                ModelMongo.update(sss);
             }
             ui.addMessage("11").write();
 
-            List<RadioMetricFlow> rr = CommonModelMongo.getAll(r);
+            List<RadioMetricFlow> rr = ModelMongo.getAll(r);
 
             i = 0;
             for (RadioMetricFlow rrr : rr) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonModelMongo.update(rrr);
+                ModelMongo.update(rrr);
             }
             ui.addMessage("11").write();
 
             ui.addMessage("11").write();
-            List<HseAuditQuestionnaire> hh = CommonModelMongo.getAll(h);
+            List<HseAuditQuestionnaire> hh = ModelMongo.getAll(h);
 
             i = 0;
             for (HseAuditQuestionnaire hhh : hh) {
                 i++;
                 if (i %1000 == 0) ui.addMessage("1000").write();
-                CommonModelMongo.update(hhh);
+                ModelMongo.update(hhh);
             }
             ui.addMessage("11").write();
 

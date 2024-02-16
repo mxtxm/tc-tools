@@ -3,7 +3,7 @@ package com.tctools.business.model.project.radiometric;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.common.util.*;
 import com.tctools.web.patch.TestController;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.VantarException;
 import com.vantar.web.Params;
@@ -55,7 +55,7 @@ public class ExportWorkflowModel {
     }
 
     private void setData(Worksheet sheet) throws VantarException {
-        CommonModelMongo.forEach(q, dto -> {
+        ModelMongo.forEach(q, dto -> {
             RadioMetricFlow.Viewable flow = (RadioMetricFlow.Viewable) dto;
             ++rowIndex;
 

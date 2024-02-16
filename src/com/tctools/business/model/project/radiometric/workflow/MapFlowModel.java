@@ -2,7 +2,7 @@ package com.tctools.business.model.project.radiometric.workflow;
 
 import com.tctools.business.dto.project.map.radiometric.RadioMetricMapFlow;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.PageData;
 import com.vantar.exception.*;
@@ -15,7 +15,7 @@ import java.util.*;
 public class MapFlowModel {
 
     public static List<RadioMetricMapFlow> searchForMap(Params params) throws VantarException {
-        PageData data = CommonModelMongo.search(
+        PageData data = ModelMongo.search(
             params,
             new RadioMetricFlow.ViewableTiny()
         );
@@ -46,6 +46,6 @@ public class MapFlowModel {
         if (flow.spotLocation == null || !flow.spotLocation.isValid()) {
             throw new InputException(VantarKey.INVALID_VALUE, "RadioMetricFlow.spotLocation");
         }
-        return CommonModelMongo.update(flow);
+        return ModelMongo.update(flow);
     }
 }

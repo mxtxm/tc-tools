@@ -3,13 +3,14 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
 import com.vantar.locale.*;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
@@ -32,7 +33,7 @@ public class AdminSynchRadiometric {
         }
 
         try {
-            for (Dto site : CommonModelMongo.getAll(new Site())) {
+            for (Dto site : ModelMongo.getAll(new Site())) {
                 synchWithSite((Site) site, ui);
             }
         } catch (VantarException e) {
@@ -50,12 +51,12 @@ public class AdminSynchRadiometric {
         QueryBuilder q = new QueryBuilder(flow);
         q.condition().equal("site.code", site.code);
 
-        if (CommonModelMongo.exists(q)) {
+        if (ModelMongo.exists(q)) {
             q = new QueryBuilder(flow);
             q.condition().equal("site.code", site.code);
 
             try {
-                for (Dto dto : CommonModelMongo.getData(q)) {
+                for (Dto dto : ModelMongo.getData(q)) {
                     flow = (RadioMetricFlow) dto;
 
                     if (flow.lastState == RadioMetricFlowState.Pending
@@ -110,12 +111,14 @@ public class AdminSynchRadiometric {
 
                     }
 
-                    CommonModelMongo.updateNoLog(flow);
+                    ModelMongo.updateNoLog(flow);
                     if (ui != null) {
                         ui.addMessage(
                             Locale.getString(AppLangKey.UPDATED, flow.getClass().getSimpleName(),
                                 flow.site.code) + " " + flow.lastState
                         ).write();
+                    } else {
+                        ServiceLog.log.info("synched radiometric {} {}", flow.site.code, flow.site.id);
                     }
                 }
             } catch (NoContentException ignore) {
@@ -151,7 +154,7 @@ public class AdminSynchRadiometric {
                 flow.collocations = flow.site.collocations;
             }
 
-            ResponseMessage res = CommonModelMongo.insertNoLog(flow);
+            ResponseMessage res = ModelMongo.insertNoLog(flow);
             if (ui != null) {
                 ui.addMessage(Locale.getString(AppLangKey.ADDED, flow.getClass().getSimpleName(), res.value + " - " + title)).write();
             }
@@ -160,7 +163,7 @@ public class AdminSynchRadiometric {
 
     protected static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : CommonModelMongo.getAll(new RadioMetricFlow())) {
+            for (Dto dto : ModelMongo.getAll(new RadioMetricFlow())) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (!AdminSiteImport.siteCodes.contains(flow.site.code)) {
 //                    if (RadioMetricFlowState.Completed.equals(flow.lastState)
@@ -172,7 +175,7 @@ public class AdminSynchRadiometric {
                         continue;
                     }
                     try {
-                        CommonModelMongo.deleteById(flow);
+                        ModelMongo.deleteById(flow);
                         ui.addMessage("deleted " + flow.id + ":"+ flow.site.code + " from RadioMetricFlow");
                     } catch (VantarException e) {
                         ui.addErrorMessage(e);

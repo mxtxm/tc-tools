@@ -137,7 +137,7 @@ public class SignificanceSubcontractorProvince extends ExportCommon {
             q.condition().inNumber("subContractorId", subContractorIds);
         }
 
-        List<HseAuditQuestionnaire.Viewable> questionnaires = CommonModelMongo.getData(q, LANG);
+        List<HseAuditQuestionnaire.Viewable> questionnaires = ModelMongo.getData(q, LANG);
 
         Result result = new Result();
         for (SubContractor subContractor : Services.get(ServiceDtoCache.class).getList(SubContractor.class)) {
@@ -226,7 +226,7 @@ public class SignificanceSubcontractorProvince extends ExportCommon {
 
         public QuestionStatistics(List<Long> provinceIds) {
             try {
-                for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
+                for (Province province : Services.getService(ServiceDtoCache.class).getList(Province.class)) {
                     if (provinceIds != null && !provinceIds.isEmpty()) {
                         if (provinceIds.contains(province.id)) {
                             statistics.put(province.name.get(LANG), new Statistics());

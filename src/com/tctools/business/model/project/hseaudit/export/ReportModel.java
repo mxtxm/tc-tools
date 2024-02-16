@@ -85,7 +85,7 @@ public class ReportModel {
     private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, HseAuditFlowState state) throws DatabaseException {
         Map<Long, Province> provinces;
         try {
-            provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
+            provinces = Services.getService(ServiceDtoCache.class).getMap(Province.class);
         } catch (ServiceException e) {
             return;
         }
@@ -195,7 +195,7 @@ public class ReportModel {
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("projectTypes", ProjectType.HseAudit);
 
-        List<User> users = CommonModelMongo.getData(q, params.getLang());
+        List<User> users = ModelMongo.getData(q, params.getLang());
 
         Map<String, Map<String, HashMap<String, Integer>>> allData = new HashMap<>(users.size());
         for (User user : users) {

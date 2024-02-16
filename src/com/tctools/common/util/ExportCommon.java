@@ -49,11 +49,11 @@ public class ExportCommon {
         try {
             QueryBuilder q = new QueryBuilder(new Settings());
             q.condition().equal("key", key);
-            CommonModelMongo.delete(q);
+            ModelMongo.delete(q);
             Settings settings = new Settings();
             settings.key = key;
             settings.value = Json.d.toJson(value);
-            CommonModelMongo.insert(settings);
+            ModelMongo.insert(settings);
         } catch (Exception e) {
             log.error("! {}=>{}", key, value, e);
         }
@@ -62,7 +62,7 @@ public class ExportCommon {
     public static String getFromCache(String key) throws VantarException {
         QueryBuilder q = new QueryBuilder(new Settings());
         q.condition().equal("key", key);
-        return (String) CommonModelMongo.getFirst(q).getPropertyValue("value");
+        return (String) ModelMongo.getFirst(q).getPropertyValue("value");
     }
 
     public static String numberToMonth(int m) {

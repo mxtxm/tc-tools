@@ -1,8 +1,11 @@
 # TC-Tools #
 
+todo: user
+todo: email --> servers
+todo: monitoring
+
+
 https://www.rf-emf.nak-mci.ir
-
-
 http://185.147.162.67:8080/ui/radio/metric/site/zip?id=38806
 
 ## Todo ##
@@ -56,4 +59,20 @@ http://185.147.162.67:8080/ui/radio/metric/site/zip?id=38806
 * change: code review and memory management enhancements
 * change: JSON lib changed to Jackson
 * change: documents updated
+
+
+---------------------------------------------------
+FRONTEND/BACKEND SERVER:
+frontend: https://www.rf-emf.nak-mci.ir
+backend admin: https://www.rf-emf.nak-mci.ir:8443/admin/signin
+user: nak-root
+password: nak-947#85-root
+
+server login: sudo ssh ubuntu@185.147.162.67
+password: QAZqaz@1234
+---------------------------------------------------
+MAP SERVER:
+panel: http://www.peakpointmap.com:2082/
+user: نام کاربری
+password: In7en87C7f
 

@@ -149,7 +149,7 @@ public class QuestionProvince extends ExportCommon {
         }
 
         List<HseAuditQuestionnaire.Viewable> questionnaires;
-        questionnaires = CommonModelMongo.getData(q, LANG);
+        questionnaires = ModelMongo.getData(q, LANG);
 
         Result result = new Result();
         // for all option type questions
@@ -278,7 +278,7 @@ public class QuestionProvince extends ExportCommon {
 
         public QuestionStatistics(List<Long> provinceIds) {
             try {
-                for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
+                for (Province province : Services.getService(ServiceDtoCache.class).getList(Province.class)) {
                     if (provinceIds != null && !provinceIds.isEmpty()) {
                         if (provinceIds.contains(province.id)) {
                             statistics.put(province.name.get(LANG), new Statistics());

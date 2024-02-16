@@ -33,7 +33,7 @@ public class ProvinceReport extends ExportCommon {
         int yMin = 5000;
         int yMax = 0;
         try {
-            for (Dto dto : CommonModelMongo.getData(q, LOCALE)) {
+            for (Dto dto : ModelMongo.getData(q, LOCALE)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (flow.provinceId == null || flow.lastStateDateTime == null) {
                     continue;
@@ -64,7 +64,7 @@ public class ProvinceReport extends ExportCommon {
             log.error("!", e);
         }
 
-        CommonModelMongo.purge(new ProvinceStatistic());
+        ModelMongo.purge(new ProvinceStatistic());
 
         for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
             Map<Integer, ProvinceStatistic> dateStat = statistics.get(province.id);
@@ -87,7 +87,7 @@ public class ProvinceReport extends ExportCommon {
                     stat.yearMonth = ymToInt(y, m);
 
                     try {
-                        CommonModelMongo.insert(stat);
+                        ModelMongo.insert(stat);
                     } catch (VantarException e) {
                         log.error("! {}=>", stat, e);
                     }
@@ -128,7 +128,7 @@ public class ProvinceReport extends ExportCommon {
             q.condition().inNumber("provinceId", provinceIds);
         }
 
-        List<Dto> dtos = CommonModelMongo.getData(q);
+        List<Dto> dtos = ModelMongo.getData(q);
 
         // <provinceName, <ym, ProvinceStatistic>>
         Map<String, Map<String ,ProvinceStatistic.Viewable>> statistics = new LinkedHashMap<>(500);

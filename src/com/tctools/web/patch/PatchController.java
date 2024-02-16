@@ -6,8 +6,8 @@ import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.Param;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
@@ -65,7 +65,7 @@ public class PatchController extends RouteToMethod {
 
         DateTime now = new DateTime();
 
-        CommonModelMongo.forEach(q, dto -> {
+        ModelMongo.forEach(q, dto -> {
             RadioMetricFlow flow = (RadioMetricFlow) dto;
 
             if (flow.state == null) {
@@ -86,7 +86,7 @@ public class PatchController extends RouteToMethod {
                 flow.lastStateDateTime = now;
             }
             try {
-                CommonModelMongo.update(flow);
+                ModelMongo.update(flow);
                 ui.addErrorMessage(flow.site.code).write();
             } catch (VantarException e) {
                 ui.addErrorMessage(e).write();
@@ -108,8 +108,8 @@ public class PatchController extends RouteToMethod {
         List<Site> sites;
         List<RadioMetricFlow> flows;
         try {
-            sites = CommonModelMongo.getAll(new Site());
-            flows = CommonModelMongo.getAll(new RadioMetricFlow());
+            sites = ModelMongo.getAll(new Site());
+            flows = ModelMongo.getAll(new RadioMetricFlow());
         } catch (VantarException e) {
             ui.addErrorMessage(e).finish();
             return;
@@ -178,7 +178,7 @@ public class PatchController extends RouteToMethod {
             }
 
             try {
-                CommonModelMongo.update(flow);
+                ModelMongo.update(flow);
                 ui.addMessage(flow.site.code).write();
             } catch (VantarException e) {
                 ui.addErrorMessage(e).finish();
@@ -204,7 +204,7 @@ public class PatchController extends RouteToMethod {
                 try {
                     RadioMetricFlow flow = new RadioMetricFlow();
                     flow.id = id;
-                    CommonModelMongo.getById(flow);
+                    ModelMongo.getById(flow);
                 } catch (NoContentException e) {
                     ui.addMessage("dir exists, flow not exists code=" + siteCode + " id=" + id).write();
                 } catch (VantarException e) {
@@ -233,7 +233,7 @@ public class PatchController extends RouteToMethod {
             RadioMetricFlowState.Approved
         );
         try {
-            List<RadioMetricFlow> flows = CommonModelMongo.getData(q);
+            List<RadioMetricFlow> flows = ModelMongo.getData(q);
             for (RadioMetricFlow f : flows) {
                 if (f.sectors == null || f.sectors.isEmpty()) {
                     continue;
@@ -293,7 +293,7 @@ public class PatchController extends RouteToMethod {
             RadioMetricFlowState.Approved
         );
         try {
-            List<RadioMetricFlow> flows = CommonModelMongo.getData(q);
+            List<RadioMetricFlow> flows = ModelMongo.getData(q);
             for (RadioMetricFlow f : flows) {
                 if (f.sectors == null || f.sectors.isEmpty()) {
                     continue;
@@ -325,7 +325,7 @@ public class PatchController extends RouteToMethod {
                     for (Sector s : f.sectors) {
                         s.selected = s.title.equals(calculatedSelected);
                     }
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
 
                     continue;
                 }
@@ -336,7 +336,7 @@ public class PatchController extends RouteToMethod {
                     for (Sector s : f.sectors) {
                         s.selected = s.title.equals(calculatedSelected);
                     }
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
                 }
             }
         } catch (VantarException e) {
@@ -357,7 +357,7 @@ public class PatchController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire.Viewable());
         q.condition().in("lastState", HseAuditFlowState.PreApproved, HseAuditFlowState.Approved);
         try {
-            List<HseAuditQuestionnaire.Viewable> flows = CommonModelMongo.getData(q, "fa");
+            List<HseAuditQuestionnaire.Viewable> flows = ModelMongo.getData(q, "fa");
             for (HseAuditQuestionnaire.Viewable f : flows) {
                 if (f.subContractor == null) {
                     ui.addErrorMessage(f.site.code + " (" + f.id + ")").write();
@@ -383,7 +383,7 @@ public class PatchController extends RouteToMethod {
         Set<Long> subIds = new HashSet<>();
 
         try {
-            List<HseAuditQuestionnaire> flows = CommonModelMongo.getAll(new HseAuditQuestionnaire(), "fa");
+            List<HseAuditQuestionnaire> flows = ModelMongo.getAll(new HseAuditQuestionnaire(), "fa");
             for (HseAuditQuestionnaire f : flows) {
                 if (f.subContractorId != null && !subContractor.containsKey(f.subContractorId)) {
                     ui.addErrorMessage(f.site.code + " (" + f.id + ") > " + f.subContractorId).write();

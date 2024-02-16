@@ -12,8 +12,8 @@ import com.tctools.business.model.project.radiometric.workflow.Measurement;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.*;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
@@ -70,7 +70,7 @@ public class ConvertController extends RouteToMethod {
 
     static {
         try {
-            shahsanam = Services.get(ServiceDtoCache.class).getDto(User.class, SHAHSANAM);
+            shahsanam = Services.getService(ServiceDtoCache.class).getDto(User.class, SHAHSANAM);
         } catch (ServiceException e) {
             e.printStackTrace();
         }
@@ -82,7 +82,7 @@ public class ConvertController extends RouteToMethod {
 
         ui.write();
         try {
-            for (RadioMetricFlow f : CommonModelMongo.getAll(new RadioMetricFlow())) {
+            for (RadioMetricFlow f : ModelMongo.getAll(new RadioMetricFlow())) {
                 if (f.sectors == null) {
                     ui.addErrorMessage(f.site.code).write();
                     continue;
@@ -100,7 +100,7 @@ public class ConvertController extends RouteToMethod {
                     continue;
                 }
                 f.sectors.get(bestFitIndex).selected = true;
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
         } catch (VantarException ee) {
@@ -125,7 +125,7 @@ public class ConvertController extends RouteToMethod {
 
         ui.write();
         try {
-            for (RadioMetricFlow f : CommonModelMongo.getAll(new RadioMetricFlow())) {
+            for (RadioMetricFlow f : ModelMongo.getAll(new RadioMetricFlow())) {
                 if (f.comments == null || (!f.comments.contains("MANU") && !f.comments.contains("CONVERT"))) {
                     continue;
                 }
@@ -153,7 +153,7 @@ public class ConvertController extends RouteToMethod {
                     f.assignDateTime = d2 == null ? d : d2;
                     f.measurementDateTime = d3 == null ? d: d3;
 
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
                     ui.addMessage(f.site.code).write();
                 }
             }
@@ -185,7 +185,7 @@ public class ConvertController extends RouteToMethod {
 
         ui.write();
         try {
-            for (RadioMetricFlow f : CommonModelMongo.getAll(new RadioMetricFlow())) {
+            for (RadioMetricFlow f : ModelMongo.getAll(new RadioMetricFlow())) {
                 boolean update = false;
                 if (f.assigneeId != null && oldId == f.assigneeId) {
                     f.assigneeId = newId;
@@ -206,7 +206,7 @@ public class ConvertController extends RouteToMethod {
                 }
 
                 if (update) {
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
                     ui.addMessage(f.site.code).write();
                 }
             }
@@ -246,7 +246,7 @@ public class ConvertController extends RouteToMethod {
             QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
             q.condition().equal("site.code", code);
             try {
-                List<RadioMetricFlow> data = CommonModelMongo.getData(q);
+                List<RadioMetricFlow> data = ModelMongo.getData(q);
                 for (RadioMetricFlow f : data) {
                     ui.addMessage("found: " + f.id + " " + code).write();
 
@@ -271,7 +271,7 @@ public class ConvertController extends RouteToMethod {
                     s5.comments = f.comments;
                     f.state.add(s5);
 
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
 
                     ui.addMessage("done: " + f.id + " " + code).write();
                 }
@@ -347,7 +347,7 @@ public class ConvertController extends RouteToMethod {
 
         DateTime d = new DateTime();
         try {
-            List<RadioMetricFlow> data = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> data = ModelMongo.getAll(new RadioMetricFlow());
             for (RadioMetricFlow f : data) {
                 if (f.lastState == null || f.site == null) {
                     ui.addErrorMessage("" + f.id);
@@ -355,15 +355,15 @@ public class ConvertController extends RouteToMethod {
                 }
 
                 if (!RadioMetricComplain.isEmpty(f.complain)) {
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
                     continue;
                 }
                 if (f.lastState.equals(RadioMetricFlowState.Approved)) {
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
                     continue;
                 }
                 if (!sp.contains(f.site.code)) {
-                    CommonModelMongo.update(f);
+                    ModelMongo.update(f);
                     continue;
                 }
 
@@ -381,7 +381,7 @@ public class ConvertController extends RouteToMethod {
                 s5.comments = f.comments;
                 f.state.add(s5);
 
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
 
                 ui.addMessage(f.site.code).write();
             }
@@ -399,7 +399,7 @@ public class ConvertController extends RouteToMethod {
         ui.write();
 
         try {
-            for (RadioMetricFlow f : CommonModelMongo.getAll(new RadioMetricFlow())) {
+            for (RadioMetricFlow f : ModelMongo.getAll(new RadioMetricFlow())) {
                 if (f.state == null || f.isEmpty()) {
                     continue;
                 }
@@ -408,7 +408,7 @@ public class ConvertController extends RouteToMethod {
                     continue;
                 }
 
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
         } catch (VantarException e) {
@@ -422,7 +422,7 @@ public class ConvertController extends RouteToMethod {
         ui.write();
 
         try {
-            List<User> data = CommonModelMongo.getAll(new User());
+            List<User> data = ModelMongo.getAll(new User());
 
             Map<String, List<Long>> users = new HashMap<>();
             Map<String, User> usersBase = new HashMap<>();
@@ -469,7 +469,7 @@ public class ConvertController extends RouteToMethod {
             log.error("{}", Json.d.toJsonPretty(idMap));
 
 
-            for (RadioMetricFlow f : CommonModelMongo.getAll(new RadioMetricFlow())) {
+            for (RadioMetricFlow f : ModelMongo.getAll(new RadioMetricFlow())) {
                 boolean nakon = true;
                 Long id = idMap.get(f.assigneeId);
                 if (id != null) {
@@ -502,13 +502,13 @@ public class ConvertController extends RouteToMethod {
                 if (nakon) {
                     continue;
                 }
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
 
 
 
-            for (RadioMetricComplain f : CommonModelMongo.getAll(new RadioMetricComplain())) {
+            for (RadioMetricComplain f : ModelMongo.getAll(new RadioMetricComplain())) {
                 boolean nakon = true;
                 Long id = idMap.get(f.assigneeId);
                 if (id != null) {
@@ -524,7 +524,7 @@ public class ConvertController extends RouteToMethod {
                 if (nakon) {
                     continue;
                 }
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.siteCode).write();
             }
 
@@ -532,7 +532,7 @@ public class ConvertController extends RouteToMethod {
                 User u = new User();
                 u.id = k;
                 try {
-                    CommonModelMongo.deleteById(u);
+                    ModelMongo.deleteById(u);
                 } catch (VantarException e) {
                     e.printStackTrace();
                 }
@@ -550,7 +550,7 @@ public class ConvertController extends RouteToMethod {
         ui.write();
 
         try {
-            List<RadioMetricFlow> data = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> data = ModelMongo.getAll(new RadioMetricFlow());
             for (RadioMetricFlow f : data) {
 
                 boolean pass = false;
@@ -579,7 +579,7 @@ public class ConvertController extends RouteToMethod {
                     continue;
                 }
 
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addMessage(f.site.code).write();
             }
         } catch (VantarException e) {
@@ -591,7 +591,7 @@ public class ConvertController extends RouteToMethod {
     public void fix(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi(Locale.getString(VantarKey.ADMIN_IMPORT), params, response, true);
         try {
-            List<RadioMetricFlow> data = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> data = ModelMongo.getAll(new RadioMetricFlow());
             for (RadioMetricFlow f : data) {
 
                 List<Proximity> proximities = f.proximities;
@@ -615,7 +615,7 @@ public class ConvertController extends RouteToMethod {
 
 
 
-                CommonModelMongo.update(f);
+                ModelMongo.update(f);
                 ui.addErrorMessage(f.site.code).write();
             }
         } catch (VantarException ignore) {
@@ -688,7 +688,7 @@ public class ConvertController extends RouteToMethod {
 
         Set<String> siteCodes = new HashSet<>(35000);
         try {
-            List<RadioMetricFlow> data = CommonModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> data = ModelMongo.getAll(new RadioMetricFlow());
             for (RadioMetricFlow f : data) {
                 siteCodes.add(f.site.code);
             }
@@ -809,10 +809,10 @@ public class ConvertController extends RouteToMethod {
         List<SiteType> siteTypes;
         List<Operator> operators;
         try {
-            propertyTypes = Services.get(ServiceDtoCache.class).getList(PropertyType.class);
-            propertySections = Services.get(ServiceDtoCache.class).getList(PropertySection.class);
-            siteTypes = Services.get(ServiceDtoCache.class).getList(SiteType.class);
-            operators = Services.get(ServiceDtoCache.class).getList(Operator.class);
+            propertyTypes = Services.getService(ServiceDtoCache.class).getList(PropertyType.class);
+            propertySections = Services.getService(ServiceDtoCache.class).getList(PropertySection.class);
+            siteTypes = Services.getService(ServiceDtoCache.class).getList(SiteType.class);
+            operators = Services.getService(ServiceDtoCache.class).getList(Operator.class);
         } catch (ServiceException e) {
             ui.addErrorMessage(e);
             return;
@@ -1238,7 +1238,7 @@ public class ConvertController extends RouteToMethod {
             }
 
             try {
-                CommonModelMongo.update(flow);
+                ModelMongo.update(flow);
             } catch (VantarException e) {
                 ui.addErrorMessage("    database error: " + siteCode);
                 log.error("! {}", siteCode, e);
@@ -1292,7 +1292,7 @@ public class ConvertController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(new Site());
         q.condition().equal("code", siteCode);
         try {
-            CommonModelMongo.getFirst(q);
+            ModelMongo.getFirst(q);
             flow.reRadioMetric = true;
         } catch (VantarException ignore) {
             flow.reRadioMetric = false;
@@ -1301,7 +1301,7 @@ public class ConvertController extends RouteToMethod {
         flow.complain.assignable = false;
 
         try {
-            flow.site = CommonModelMongo.getFirst(q);
+            flow.site = ModelMongo.getFirst(q);
         } catch (NoContentException e) {
             ui.addErrorMessage("    " + siteCode + " site not exists");
             return null;
@@ -1323,8 +1323,8 @@ public class ConvertController extends RouteToMethod {
         complainToUpdate.assignable = false;
 
         try {
-            complainToUpdate.workFlowId = (Long) CommonModelMongo.insert(flow).value;
-            CommonModelMongo.update(complainToUpdate);
+            complainToUpdate.workFlowId = (Long) ModelMongo.insert(flow).value;
+            ModelMongo.update(complainToUpdate);
             return flow;
         } catch (VantarException e) {
             log.error("{}", siteCode, e);
@@ -1349,7 +1349,7 @@ public class ConvertController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(site);
         q.condition().equal("code", siteCode);
         try {
-            site = CommonModelMongo.getFirst(q);
+            site = ModelMongo.getFirst(q);
         } catch (NoContentException e) {
             ui.addErrorMessage("    " + siteCode + " site not exists");
             return null;
@@ -1390,7 +1390,7 @@ public class ConvertController extends RouteToMethod {
         complain.unitNumber = StringUtil.toInteger(StringUtil.remove(getData(data, "unitNumber", isIndexed, isOld), "واحد:"));
 
         try {
-            complain.id = (Long) CommonModelMongo.insert(complain).value;
+            complain.id = (Long) ModelMongo.insert(complain).value;
             return complain;
         } catch (VantarException e) {
             log.error("! {}", siteCode, e);
@@ -1430,7 +1430,7 @@ public class ConvertController extends RouteToMethod {
         }
 
         try {
-            flow.complain = CommonModelMongo.getById(params, flow.complain);
+            flow.complain = ModelMongo.getById(params, flow.complain);
         } catch (VantarException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
@@ -1439,7 +1439,7 @@ public class ConvertController extends RouteToMethod {
         Site site = new Site();
         site.id = flow.complain.siteId;
         try {
-            site = CommonModelMongo.getById(site, params.getLang());
+            site = ModelMongo.getById(site, params.getLang());
         } catch (VantarException e) {
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
@@ -1447,7 +1447,7 @@ public class ConvertController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().equal("site.code", site.code);
         try {
-            CommonModelMongo.getFirst(q);
+            ModelMongo.getFirst(q);
             flow.reRadioMetric = true;
         } catch (VantarException ignore) {
             flow.reRadioMetric = false;
@@ -1485,8 +1485,8 @@ public class ConvertController extends RouteToMethod {
         complainToUpdate.assignable = false;
 
         try {
-            complainToUpdate.workFlowId = (Long) CommonModelMongo.insert(flow).value;
-            CommonModelMongo.update(complainToUpdate);
+            complainToUpdate.workFlowId = (Long) ModelMongo.insert(flow).value;
+            ModelMongo.update(complainToUpdate);
 
             String imagePath = flow.complain.getImageFilePath(true);
             if (imagePath != null) {
@@ -1598,7 +1598,7 @@ public class ConvertController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().equal("site.code", siteCode);
         try {
-            return CommonModelMongo.getFirst(q, "en");
+            return ModelMongo.getFirst(q, "en");
         } catch (NoContentException e) {
             ui.addErrorMessage("    " + siteCode + " flow and site not exists").write();
         } catch (VantarException e) {
@@ -1681,7 +1681,7 @@ public class ConvertController extends RouteToMethod {
         QueryBuilder q = new QueryBuilder(user);
         q.condition().equal("fullName", name);
         try {
-            return CommonModelMongo.getFirst(q, "en");
+            return ModelMongo.getFirst(q, "en");
         } catch (NoContentException e) {
             String[] parts = StringUtil.split(name, ' ');
             user.username = name;
@@ -1697,7 +1697,7 @@ public class ConvertController extends RouteToMethod {
             user.projectTypes.add(ProjectType.RadioMetric);
 
             try {
-                user.id = (Long) CommonModelMongo.insert(user).value;
+                user.id = (Long) ModelMongo.insert(user).value;
             } catch (VantarException databaseException) {
                 ui.addErrorMessage("database error: " + name).write();
                 log.error("! ", e);

@@ -3,8 +3,8 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -14,7 +14,7 @@ import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
-import com.vantar.util.file.*;
+import com.vantar.util.file.FileUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
 import org.apache.poi.ss.usermodel.*;
@@ -42,13 +42,8 @@ public class AdminImportHseAudit {
             }
 
             Map<Integer, HseAuditQuestion> questions = new HashMap<>();
-            try {
-                for (HseAuditQuestion q : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
-                    questions.put(q.order, q);
-                }
-            } catch (ServiceException e) {
-                ui.addErrorMessage(e);
-                return;
+            for (HseAuditQuestion q : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
+                questions.put(q.order, q);
             }
 
             String filepath = FileUtil.getTempFilename();
@@ -76,7 +71,7 @@ public class AdminImportHseAudit {
                 String siteCode = cells.getCell(4).getStringCellValue().toUpperCase();
                 q.condition().equal("site.code", siteCode);
                 try {
-                    List<Dto> flows = CommonModelMongo.getData(q);
+                    List<Dto> flows = ModelMongo.getData(q);
                     if (flows.size() != 1) {
                         ui.addErrorMessage(siteCode + ": " + flows.size() + " items found!").write();
                         return;
@@ -201,7 +196,7 @@ public class AdminImportHseAudit {
                     flow.state.add(state);
                 }
                 try {
-                    CommonModelMongo.updateNoLog(flow);
+                    ModelMongo.updateNoLog(flow);
                     ui.addMessage("Inserted : " + flow.site.code);
                 } catch (VantarException e) {
                     ui.addErrorMessage(e);
@@ -248,23 +243,13 @@ public class AdminImportHseAudit {
             return;
         }
 
-        List<HseAuditQuestion> questions;
-        try {
-            questions = Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class);
-        } catch (ServiceException e) {
-            return;
-        }
+        List<HseAuditQuestion> questions = Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class);
         Map<Long, HseAuditQuestion> questionMap = new HashMap<>();
         for (HseAuditQuestion q : questions) {
             questionMap.put(q.id, q);
         }
 
-        List<User> users;
-        try {
-            users = Services.get(ServiceDtoCache.class).getList(User.class);
-        } catch (ServiceException e) {
-            return;
-        }
+        List<User> users = Services.get(ServiceDtoCache.class).getList(User.class);
         Map<Long, User> userMap = new HashMap<>();
         for (User u : users) {
             userMap.put(u.id, u);
@@ -272,7 +257,7 @@ public class AdminImportHseAudit {
 
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
         try {
-            for (Dto dto : CommonModelMongo.getAll(flow)) {
+            for (Dto dto : ModelMongo.getAll(flow)) {
                 boolean updated = false;
                 flow = (HseAuditQuestionnaire) dto;
 
@@ -321,7 +306,7 @@ public class AdminImportHseAudit {
                 }
 
                 if (updated) {
-                    CommonModelMongo.update(flow);
+                    ModelMongo.update(flow);
                     ui.addMessage("updated HSE > " + flow.site.code);
                 }
             }
@@ -391,7 +376,7 @@ public class AdminImportHseAudit {
                         QueryBuilder q = new QueryBuilder(new HseAuditQuestionnaire());
                         q.condition().equal("site.code", parts[0].toUpperCase());
                         try {
-                            dtos = CommonModelMongo.getData(q);
+                            dtos = ModelMongo.getData(q);
                         } catch (VantarException e) {
                             ui.addErrorMessage(e).write();
                             return;
@@ -430,7 +415,7 @@ public class AdminImportHseAudit {
                     FileUtil.move(filePath, dir + '/' + newFilename);
                 }
 
-                ui.addPre(
+                ui.addBlock("pre",
                     (dtos == null ? "" : (dtos.size() > 1 ? "*** " : ""))
                         + filename + msg
                         + " .... (" + FileUtil.getSizeMb(filePath) + "MB - "
@@ -438,6 +423,6 @@ public class AdminImportHseAudit {
                 ).write();
             });
 
-        ui.containerEnd().write();
+        ui.blockEnd().write();
     }
 }

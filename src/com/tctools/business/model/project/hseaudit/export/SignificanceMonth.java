@@ -5,7 +5,7 @@ import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -193,7 +193,7 @@ public class SignificanceMonth extends ExportCommon {
         }
 
         List<HseAuditQuestionnaire.Viewable> questionnaires;
-        questionnaires = CommonModelMongo.getData(q, LANG);
+        questionnaires = ModelMongo.getData(q, LANG);
 
         Result result = new Result();
         for (String yMonth : getMonthsBetween(params.getString("from"), params.getString("to"))) {
@@ -284,7 +284,7 @@ public class SignificanceMonth extends ExportCommon {
 
         public SignificanceStatistics(List<Long> provinceIds) {
             try {
-                for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
+                for (Province province : Services.getService(ServiceDtoCache.class).getList(Province.class)) {
                     if (provinceIds != null && !provinceIds.isEmpty()) {
                         if (provinceIds.contains(province.id)) {
                             statistics.put(province.name.get(LANG), new Statistics());

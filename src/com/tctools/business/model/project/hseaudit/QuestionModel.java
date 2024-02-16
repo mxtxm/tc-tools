@@ -13,7 +13,7 @@ public class QuestionModel {
     public static List<HseAuditQuestion.Viewable> get(Params params) {
         List<HseAuditQuestion.Viewable> items = new ArrayList<>();
         try {
-            for (HseAuditQuestion question : Services.get(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
+            for (HseAuditQuestion question : Services.getService(ServiceDtoCache.class).getList(HseAuditQuestion.class)) {
                 HseAuditQuestion.Viewable viewable = new HseAuditQuestion.Viewable();
                 viewable.set(question, params.getLang());
                 items.add(viewable);

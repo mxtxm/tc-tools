@@ -2,8 +2,8 @@ package com.tctools.web.patch;
 
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.model.project.radiometric.workflow.Measurement;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.common.ValidationError;
 import com.vantar.exception.*;
 import com.vantar.locale.Locale;
@@ -30,7 +30,7 @@ public class MeasurementController extends RouteToMethod {
         String siteCode = params.getString("siteCode");
         Long id = params.getLong("id");
 
-        CommonModelMongo.forEach(new RadioMetricFlow(), dto -> {
+        ModelMongo.forEach(new RadioMetricFlow(), dto -> {
             RadioMetricFlow flow = (RadioMetricFlow) dto;
             if (siteCode != null && !flow.site.code.equals(siteCode)) {
                 return;
@@ -80,7 +80,7 @@ public class MeasurementController extends RouteToMethod {
 
                 if (hasCsv && errors.isEmpty()) {
                     try {
-                        CommonModelMongo.update(dto);
+                        ModelMongo.update(dto);
                         ui.addMessage(flow.site.code).write();
                     } catch (InputException | ServerException e) {
                         ui.addErrorMessage(e).write();

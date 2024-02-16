@@ -93,7 +93,7 @@ public class UserController extends RouteToMethod {
     }
 
     @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
-    public void userSignatureExists(Params params, HttpServletResponse response) throws AuthException, ServiceException {
+    public void userSignatureExists(Params params, HttpServletResponse response) {
         Response.writeJson(response, UserModel.signatureExists(((User) Services.get(ServiceAuth.class).getCurrentUser(params))));
     }
 

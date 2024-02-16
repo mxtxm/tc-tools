@@ -13,7 +13,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import java.util.*;
 
-
 @Cache
 @Mongo
 @Storage("Users")
@@ -36,7 +35,7 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
     public String firstName;
     @Required
     public String lastName;
-    @Tags("none")
+    //@Tags("none")
     public String fullName;
 
     public String email;
@@ -46,12 +45,12 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
 
     @CreateTime
     @Timestamp
-    @Tags("none")
+    //@Tags("none")
     public DateTime createT;
 
     @UpdateTime
     @Timestamp
-    @Tags("none")
+    //@Tags("none")
     public DateTime signinT;
 
     @NoStore

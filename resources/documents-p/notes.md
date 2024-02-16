@@ -2,6 +2,8 @@ sudo ssh ubuntu@185.147.162.67
 sudo scp /home/lynx/projects/tc-tools/target/ROOT-1.0.war ubuntu@185.147.162.67:~
 QAZqaz@1234
 
+mehdi
+mehdi@root123
 
 https://rf-emf.nak-mci.ir
 user@172.16.1.161

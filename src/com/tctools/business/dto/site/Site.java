@@ -1,9 +1,12 @@
 package com.tctools.business.dto.site;
 
+import com.tctools.business.admin.model.AdminSynchRadiometric;
 import com.tctools.business.dto.location.*;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.Date;
 import com.vantar.database.dto.*;
+import com.vantar.exception.VantarException;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.string.StringUtil;
 import java.util.*;
@@ -13,6 +16,7 @@ import java.util.*;
 public class Site extends DtoBase {
 
     public Long id;
+    @Unique
     @Required
     public String code;
 
@@ -85,6 +89,15 @@ public class Site extends DtoBase {
         code = code.toUpperCase();
         address = normaliseAddress(address);
         return true;
+    }
+
+    @Override
+    public void afterUpdate() {
+        try {
+            AdminSynchRadiometric.synchWithSite(this, null);
+        } catch (VantarException e) {
+            ServiceLog.log.error("!!!", e);
+        }
     }
 
     public static String normaliseAddress(String a) {

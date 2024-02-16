@@ -34,7 +34,7 @@ public class TechReport extends ExportCommon {
         int yMin = 5000;
         int yMax = 0;
         try {
-            for (Dto dto : CommonModelMongo.getData(q, LOCALE)) {
+            for (Dto dto : ModelMongo.getData(q, LOCALE)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (flow.assigneeId == null || flow.lastStateDateTime == null) {
                     continue;
@@ -64,7 +64,7 @@ public class TechReport extends ExportCommon {
             log.error("!", e);
         }
 
-        CommonModelMongo.purge(new TechStatistic());
+        ModelMongo.purge(new TechStatistic());
 
         for (User user : Services.get(ServiceDtoCache.class).getList(User.class)) {
             if (user.projectTypes == null || !user.projectTypes.contains(ProjectType.RadioMetric) ||
@@ -91,7 +91,7 @@ public class TechReport extends ExportCommon {
                     stat.userName = user.fullName;
                     stat.yearMonth = ymToInt(y, m);
 
-                    CommonModelMongo.insert(stat);
+                    ModelMongo.insert(stat);
                 }
             }
         }
@@ -128,7 +128,7 @@ public class TechReport extends ExportCommon {
             q.condition().inNumber("userId", userIds);
         }
 
-        List<Dto> dtos = CommonModelMongo.getData(q);
+        List<Dto> dtos = ModelMongo.getData(q);
 
         // <userName, <ym, TechStatistic>>
         Map<String, Map<String ,TechStatistic.Viewable>> statistics = new LinkedHashMap<>(500);

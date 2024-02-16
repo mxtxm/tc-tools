@@ -1,6 +1,6 @@
 package com.tctools.business.admin.web;
 
-import com.vantar.admin.model.AdminDocument;
+import com.vantar.admin.model.document.AdminDocument;
 import com.vantar.common.Settings;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;

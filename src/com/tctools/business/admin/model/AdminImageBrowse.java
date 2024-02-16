@@ -1,7 +1,7 @@
 package com.tctools.business.admin.model;
 
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.Admin;
+import com.vantar.admin.model.index.Admin;
 import com.vantar.exception.FinishException;
 import com.vantar.locale.Locale;
 import com.vantar.util.datetime.DateTime;
@@ -45,13 +45,13 @@ public class AdminImageBrowse {
                 String fileUrl = path + file.getFileName();
                 String filePath = dir + '/' + file.getFileName();
                 DateTime lastModify = FileUtil.getLastModify(filePath);
-                ui.addBlockLink(
+                ui.addHrefBlock(
                     fileUrl + "   (" + FileUtil.getSizeMb(filePath) + "MB"
                         + (lastModify == null ? "" : " - " + lastModify.toString()) + ")",
                     fileUrl
                 );
             });
 
-        ui.containerEnd();
+        ui.blockEnd();
     }
 }

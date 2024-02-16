@@ -28,7 +28,8 @@ public class DtoInfo {
 
         // user
         DtoDictionary.setCategory("کاربران");
-        DtoDictionary.add("کاربران", User.class, "insert-exclude:signinT,token;present:id,fullName");
+        //DtoDictionary.add("کاربران", User.class, "insert-exclude:signinT,token;present:id,fullName");
+        DtoDictionary.add("کاربران", User.class);
         DtoDictionary.add( "لاگ کاربران", UserLog.class);
 
         // location

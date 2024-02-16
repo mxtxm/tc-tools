@@ -5,10 +5,9 @@ import com.tctools.business.dto.project.radiometric.complain.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
-import com.vantar.exception.ServiceException;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.util.bool.BoolUtil;
@@ -227,9 +226,9 @@ public class RadioMetricFlow extends DtoBase {
                 try {
                     RadioMetricComplain complainX = new RadioMetricComplain();
                     complainX.id = complain.id;
-                    complainX = CommonModelMongo.getById(complainX);
+                    complainX = ModelMongo.getById(complainX);
                     complainX.lastState = lastState;
-                    CommonModelMongo.update(complainX);
+                    ModelMongo.update(complainX);
                 } catch (Exception ignore) {
 
                 }
@@ -270,17 +269,8 @@ public class RadioMetricFlow extends DtoBase {
         }
 
         if (RadioMetricFlowState.Planned.equals(lastState)) {
-            try {
-                reportedCity = Services.get(ServiceDtoCache.class).getDto(City.class, site.cityId).name.get("fa");
-            } catch (ServiceException ignore) {
-
-            }
-
-            try {
-                reportedProvince = Services.get(ServiceDtoCache.class).getDto(Province.class, site.provinceId).name.get("fa");
-            } catch (ServiceException ignore) {
-
-            }
+            reportedCity = Services.get(ServiceDtoCache.class).getDto(City.class, site.cityId).name.get("fa");
+            reportedProvince = Services.get(ServiceDtoCache.class).getDto(Province.class, site.provinceId).name.get("fa");
 
             StringBuilder msg = new StringBuilder();
             if (densityAverage6min100 == null) {

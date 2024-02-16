@@ -7,8 +7,8 @@ import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.system.Settings;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.Excel;
-import com.vantar.admin.model.Admin;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.admin.model.index.Admin;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.common.ValidationError;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
@@ -125,11 +125,12 @@ public class AdminSiteImport {
 
             ui.beginUploadForm()
                 .addEmptyLine()
-                .addFile(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "csv")
-                .addInput(Locale.getString(AppLangKey.IMPORT_BTS_FILE), "csv-on-server")
+                .addFile("CSV file", "csv")
+                .addInput("CSV on server", "csv-on-server")
                 .addTextArea(Locale.getString(AppLangKey.IMPORT_BTS_FIELD_ORDER), "fields", fields)
-                .addCheckbox("Synch all Radio Metric states", "synchallradiometric")
-                .addCheckbox("Synch all HSE Audit states", "synchallhse")
+                .addCheckbox("REMOVE SITE IF NOT IN csx/xlsx", "remove")
+//                .addCheckbox("Synch all Radio Metric states", "synchallradiometric")
+//                .addCheckbox("Synch all HSE Audit states", "synchallhse")
                 .addSubmit(Locale.getString(VantarKey.ADMIN_IMPORT))
                 .finish();
             return;
@@ -140,8 +141,9 @@ public class AdminSiteImport {
         long t1 = System.currentTimeMillis();
         siteCodes = new HashSet<>(40000);
         int recordCount = 0;
-        boolean doAllStatesRadioMetric = params.isChecked("synchallradiometric");
-        boolean doAllStatesHseAudit = params.isChecked("synchallhse");
+//        boolean doAllStatesRadioMetric = params.isChecked("synchallradiometric");
+//        boolean doAllStatesHseAudit = params.isChecked("synchallhse");
+        boolean remove = params.isChecked("remove");
 
         ui.addMessage("db > sites").write();
         loadSites(ui);
@@ -152,15 +154,11 @@ public class AdminSiteImport {
         ui.addMessage("db > operators").write();
         Map<String, Long> operatorIds = new HashMap<>();
         Set<String> operatorNames = new HashSet<>();
-        try {
-            for (Operator operator : Services.get(ServiceDtoCache.class).getList(Operator.class)) {
-                String name = normalizeMore(operator.name.get("fa"));
-                operatorIds.put(name, operator.id);
-                operatorNames.add(name);
-                operatorNames.add(operator.name.get("en"));
-            }
-        } catch (ServiceException ignore) {
-
+        for (Operator operator : Services.get(ServiceDtoCache.class).getList(Operator.class)) {
+            String name = normalizeMore(operator.name.get("fa"));
+            operatorIds.put(name, operator.id);
+            operatorNames.add(name);
+            operatorNames.add(operator.name.get("en"));
         }
 
         try {
@@ -196,15 +194,11 @@ public class AdminSiteImport {
                 if (++i == 1) {
                     continue;
                 }
-                if (!record[3].equals("KZ4970")
-                ) {
-                    continue;
-                }
 
                 String cityEn = record[6];
-//                if (StringUtil.isEmpty(record[2])) {
-//                    record[2] = record[5];
-//                }
+                if (StringUtil.isEmpty(record[2])) {
+                    record[2] = record[5];
+                }
 
                 Site site = new Site();
                 Long provinceId = null;
@@ -448,13 +442,13 @@ public class AdminSiteImport {
                     if (id != null) {
                         QueryBuilder q = new QueryBuilder(site);
                         q.condition().equal("id", id);
-                        CommonModelMongo.updateNoLog(q);
+                        ModelMongo.updateNoLog(q);
                         ui.addMessage(
                             (i-1) + " " + Locale.getString(AppLangKey.UPDATED, site.getClass().getSimpleName(), site.code)
                         ).write();
-                        site = CommonModelMongo.getFirst(q);
+                        site = ModelMongo.getFirst(q);
                     } else {
-                        CommonModelMongo.insertNoLog(site);
+                        ModelMongo.insertNoLog(site);
                         ui.addMessage(
                             (i-1) + " " + Locale.getString(AppLangKey.ADDED, site.getClass().getSimpleName(), site.code)
                         ).write();
@@ -480,16 +474,18 @@ public class AdminSiteImport {
         try {
             QueryBuilder q = new QueryBuilder(new Settings());
             q.condition().equal("key", Settings.KEY_ARAS_UPDATE);
-            CommonModelMongo.deleteNoLog(q);
+            ModelMongo.deleteNoLog(q);
             Settings settings = new Settings();
             settings.key = Settings.KEY_ARAS_UPDATE;
             settings.value = new DateTime().formatter().getDate();
-            CommonModelMongo.insertNoLog(settings);
+            ModelMongo.insertNoLog(settings);
         } catch (Exception e) {
             ui.addErrorMessage(e);
         }
 
-        removeRemovedSited(ui);
+        if (remove) {
+            removeRemovedSited(ui);
+        }
 
         stringMaps = null;
         codeIdMap = null;
@@ -532,7 +528,7 @@ public class AdminSiteImport {
     private static void loadSites(WebUi ui) {
         codeIdMap = new HashMap<>();
         try {
-            for (Dto dto : CommonModelMongo.getAll(new Site.ViewableIdCode())) {
+            for (Dto dto : ModelMongo.getAll(new Site.ViewableIdCode())) {
                 codeIdMap.put(((Site.ViewableIdCode) dto).code, ((Site.ViewableIdCode) dto).id);
             }
         } catch (NoContentException e) {
@@ -555,12 +551,7 @@ public class AdminSiteImport {
 //                continue;
 //            }
 
-            List<T> dtos = null;
-            try {
-                dtos = (List<T>) Services.get(ServiceDtoCache.class).getList(obj.getClass());
-            } catch (ServiceException e) {
-                return null;
-            }
+            List<T> dtos = (List<T>) Services.get(ServiceDtoCache.class).getList(obj.getClass());
             for (T dto : dtos) {
                 if (dto.hasAnnotation("name", Localized.class)) {
                     for (String v : ((Map<String, String>) dto.getPropertyValue("name")).values()) {
@@ -602,7 +593,7 @@ public class AdminSiteImport {
                 }
             }
 
-            ResponseMessage res = CommonModelMongo.insertNoLog(obj);
+            ResponseMessage res = ModelMongo.insertNoLog(obj);
             ui.addMessage(
                 Locale.getString(AppLangKey.ADDED, obj.getClass().getSimpleName(), "(" + res.value + ") " + values[0])
             ).write();
@@ -666,11 +657,11 @@ public class AdminSiteImport {
 
     private static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : CommonModelMongo.getAll(new Site())) {
+            for (Dto dto : ModelMongo.getAll(new Site())) {
                 Site site = (Site) dto;
                 if (!siteCodes.contains(site.code)) {
                     try {
-                        CommonModelMongo.deleteById(site);
+                        ModelMongo.deleteById(site);
                         ui.addMessage("deleted " + site.code + " from Site");
                     } catch (VantarException e) {
                         Admin.log.error("! can not delete {}", site);

@@ -6,7 +6,7 @@ import com.tctools.business.dto.site.Sector;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.*;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.collection.CollectionUtil;
@@ -32,7 +32,7 @@ public class ExportSite extends ExportCommon {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 
-        flow = CommonModelMongo.getById(flow, params.getLang());
+        flow = ModelMongo.getById(flow, params.getLang());
 
         String zipTempDir = DirUtil.getTempDirectory();
         String zipFile = flow.site.code
@@ -87,7 +87,7 @@ public class ExportSite extends ExportCommon {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 
-        flow = CommonModelMongo.getById(flow, "fa");
+        flow = ModelMongo.getById(flow, "fa");
 
         if (flow.site == null || flow.site.code == null) {
             throw new ServerException(AppLangKey.EXPORT_FAIL);

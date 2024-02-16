@@ -3,7 +3,7 @@ package com.tctools.business.model.project.hseaudit.export;
 import com.tctools.business.dto.project.hseaudit.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -148,7 +148,7 @@ public class QuestionSubcontractor extends ExportCommon {
         }
 
         List<HseAuditQuestionnaire.Viewable> questionnaires;
-        questionnaires = CommonModelMongo.getData(q, LANG);
+        questionnaires = ModelMongo.getData(q, LANG);
 
         Result result = new Result();
         // for all option type questions
@@ -286,7 +286,7 @@ public class QuestionSubcontractor extends ExportCommon {
 
         public QuestionStatistics(List<Long> subContractorIds) {
             try {
-                for (SubContractor subContractor : Services.get(ServiceDtoCache.class).getList(SubContractor.class)) {
+                for (SubContractor subContractor : Services.getService(ServiceDtoCache.class).getList(SubContractor.class)) {
                     if (subContractorIds != null && !subContractorIds.isEmpty()) {
                         if (subContractorIds.contains(subContractor.id)) {
                             statistics.put(subContractor.name, new Statistics());

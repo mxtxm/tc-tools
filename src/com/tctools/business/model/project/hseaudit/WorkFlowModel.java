@@ -16,7 +16,7 @@ import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.service.cache.ServiceDtoCache;
-import com.vantar.service.log.LogEvent;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.*;
@@ -45,7 +45,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
 
-        flow = CommonModelMongo.getById(flow, params.getLang());
+        flow = ModelMongo.getById(flow, params.getLang());
         flow.answers = null;
         flow.inCompleteImages = new HashSet<>();
         flow.lastStateDateTime = new DateTime();
@@ -64,7 +64,7 @@ public class WorkFlowModel {
             questions.put(question.id, question);
         }
 
-        return CommonModelMongo.updateJson(params, flow, new CommonModel.WriteEvent() {
+        return ModelMongo.updateJson(params, flow, new CommonModel.WriteEvent() {
 
             @Override
             public void beforeSet(Dto dto) {
@@ -164,7 +164,7 @@ public class WorkFlowModel {
 
         String destinationPath = null;
         try {
-            flow = CommonModelMongo.getById(flow, params.getLang());
+            flow = ModelMongo.getById(flow, params.getLang());
             if (flow.answers == null) {
                 throw new InputException(VantarKey.REQUIRED, "answers");
             }
@@ -209,15 +209,15 @@ public class WorkFlowModel {
                 }
             }
 
-            CommonModelMongo.update(flow);
+            ModelMongo.update(flow);
             notifyFailed(flow);
 
         } catch (NoContentException e) {
-            LogEvent.error("AppImageUpload", "invalid id (no data)",
+            ServiceLog.error("AppImageUpload", "invalid id (no data)",
                 flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
             throw new InputException(AppLangKey.UNKNOWN_FILE, originalFilename);
         } catch (VantarException e) {
-            LogEvent.error("AppImageUpload", "db error",
+            ServiceLog.error("AppImageUpload", "db error",
                 flow.id, tempPath, uploaded.getOriginalFilename(), uploaded.getSize(), uploaded.getType());
             throw new ServerException(VantarKey.FETCH_FAIL);
         }
@@ -234,7 +234,7 @@ public class WorkFlowModel {
         QueryBuilder q = new QueryBuilder(settings);
         q.condition().equal("key", Settings.HSE_SMS);
         try {
-            settings = CommonModelMongo.getFirst(q);
+            settings = ModelMongo.getFirst(q);
             numbers = settings.value;
         } catch (VantarException e) {
             numbers = SMS_NOTIFY_NUMBERS;
@@ -288,7 +288,7 @@ public class WorkFlowModel {
             String destinationPath = null;
 
             try {
-                flow = CommonModelMongo.getById(flow, params.getLang());
+                flow = ModelMongo.getById(flow, params.getLang());
                 if (flow.answers == null) {
                     throw new InputException(VantarKey.REQUIRED, "answers in db");
                 }
@@ -311,7 +311,7 @@ public class WorkFlowModel {
     }
 
     public static ResponseMessage delete(Params params) throws VantarException {
-        return CommonModelMongo.delete(params, new HseAuditQuestionnaire());
+        return ModelMongo.delete(params, new HseAuditQuestionnaire());
     }
 
     public static ResponseMessage update(Params params) throws VantarException {
@@ -328,10 +328,10 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire)");
         }
 
-        flow = CommonModelMongo.getById(flow, params.getLang());
+        flow = ModelMongo.getById(flow, params.getLang());
 
         //params.set("action", Dto.Action.UPDATE_ALL_COLS);
-        return CommonModelMongo.updateJson(params, flow);
+        return ModelMongo.updateJson(params, flow);
     }
 
     public static ResponseMessage updateState(Params params, User user) throws VantarException {
@@ -357,7 +357,7 @@ public class WorkFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
-        flow = CommonModelMongo.getById(flow);
+        flow = ModelMongo.getById(flow);
 
         int i = flow.state.size();
         if (i > 0 && flow.state.get(i-1).state.equals(state)) {
@@ -372,11 +372,11 @@ public class WorkFlowModel {
         flow.lastStateDateTime = new DateTime();
         flow.state.add(new State(state, flow.lastStateDateTime, user, comments));
 
-        return CommonModelMongo.update(flow);
+        return ModelMongo.update(flow);
     }
 
     public static PageData search(Params params) throws VantarException {
-        return CommonModelMongo.search(params, new HseAuditQuestionnaire.Viewable());
+        return ModelMongo.search(params, new HseAuditQuestionnaire.Viewable());
     }
 //%7B%22operator%22%3A%22AND%22%2C%22items%22%3A%5B%7B%22col%22%3A%22site.provinceId%22%2C%22type%22%3A%22IN%22%2C%22values%22%3A%5B1%5D%7D%2C%7B%22col%22%3A%22site.cityId%22%2C%22type%22%3A%22EQUAL%22%2C%22value%22%3A1%7D%2C%7B%22col%22%3A%22measurementDateTime%22%2C%22type%22%3A%22BETWEEN%22%2C%22values%22%3A%5B%221402-04-11%2B14%3A33%22%2C%221402-04-11%2B15%3A33%22%5D%7D%5D%7D
     public static List<HseAuditQuestionnaire.ViewableTiny> getAssigned(Params params, User user) throws VantarException {
@@ -384,11 +384,11 @@ public class WorkFlowModel {
         q   .sort("scheduledDateTimeFrom:asc")
             .condition().equal("assigneeId", user.id);
 
-        return CommonModelMongo.getData(q, params.getLang());
+        return ModelMongo.getData(q, params.getLang());
     }
 
     public static HseAuditQuestionnaire.Viewable get(Params params) throws VantarException {
-        return CommonModelMongo.getById(params, new HseAuditQuestionnaire.Viewable());
+        return ModelMongo.getById(params, new HseAuditQuestionnaire.Viewable());
     }
 
     public static ResponseMessage deleteImage(Params params) throws InputException {

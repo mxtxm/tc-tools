@@ -19,7 +19,7 @@ import java.util.*;
 public class MapFlowModel {
 
     public static List<HseAuditMapFlow> searchForMap(Params params) throws VantarException {
-        PageData data = CommonModelMongo.search(
+        PageData data = ModelMongo.search(
             params,
             new HseAuditQuestionnaire.ViewableTiny()
         );
@@ -37,7 +37,7 @@ public class MapFlowModel {
 
     public static ResponseMessage assign(Params params, User assignor) throws VantarException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow = CommonModelMongo.getById(params, flow);
+        flow = ModelMongo.getById(params, flow);
 
         flow.assigneeId = params.getLong("assigneeId");
         if (NumberUtil.isIdInvalid(flow.assigneeId)) {
@@ -67,7 +67,7 @@ public class MapFlowModel {
         flow.assignDateTime = flow.lastStateDateTime;
         flow.state.add(new State(flow.lastState, flow.lastStateDateTime, assignor));
 
-        return CommonModelMongo.update(flow);
+        return ModelMongo.update(flow);
     }
 
     public static ResponseMessage removeAssign(Params params, User remover) throws VantarException {
@@ -77,7 +77,7 @@ public class MapFlowModel {
             throw new InputException(VantarKey.INVALID_ID, "id (HseAuditQuestionnaire.id)");
         }
 
-        flow = CommonModelMongo.getById(params, flow);
+        flow = ModelMongo.getById(params, flow);
 
         flow.assignable = true;
         flow.copyable = false;
@@ -113,12 +113,12 @@ public class MapFlowModel {
             "isFailed"
         );
 
-        return CommonModelMongo.update(flow);
+        return ModelMongo.update(flow);
     }
 
     public static ResponseMessage createChild(Params params) throws VantarException {
         HseAuditQuestionnaire flow = new HseAuditQuestionnaire();
-        flow = CommonModelMongo.getById(params, flow);
+        flow = ModelMongo.getById(params, flow);
 
         Long assigneeId = flow.assigneeId;
 
@@ -147,6 +147,6 @@ public class MapFlowModel {
         flow.state = new ArrayList<>();
         flow.state.add(new State(flow.lastState, flow.lastStateDateTime));
 
-        return CommonModelMongo.insert(flow);
+        return ModelMongo.insert(flow);
     }
 }

@@ -52,7 +52,7 @@ public class StateReport extends ExportCommon {
         q.sort("lastStateDateTime");
 
         try {
-            for (Dto dto : CommonModelMongo.getData(q)) {
+            for (Dto dto : ModelMongo.getData(q)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 String ym = flow.lastStateDateTime.formatter().getDatePersianYmonth();
 
@@ -75,7 +75,7 @@ public class StateReport extends ExportCommon {
         Map<String, StateStatistic> withTarget = new LinkedHashMap<>();
 
         try {
-            List<RadioMetricTarget> data = CommonModelMongo.getAll(new RadioMetricTarget());
+            List<RadioMetricTarget> data = ModelMongo.getAll(new RadioMetricTarget());
             for (RadioMetricTarget t : data) {
                 String ym = new DateTime(t.year + "-" + t.month + "-01").formatter().getDatePersianYmonth();
                 withTarget.put(ym, new StateStatistic(t.value));

@@ -35,7 +35,7 @@ public class ExportModel {
 
         if (flow == null) {
             flow = new HseAuditQuestionnaire.Viewable();
-            flow = CommonModelMongo.getById(params, flow);
+            flow = ModelMongo.getById(params, flow);
         }
 
         Map<String, Object> mapping = new HashMap<>(100);
@@ -153,7 +153,7 @@ public class ExportModel {
         String dir = Param.TEMP_DIR + dt + "/";
         DirUtil.makeDirectory(dir);
 
-        List<Dto> data = CommonModelMongo.getData(q);
+        List<Dto> data = ModelMongo.getData(q);
         for (Dto dto : data) {
             try {
                 auditData(
@@ -241,7 +241,7 @@ public class ExportModel {
             q.condition().in("lastState", HseAuditFlowState.Approved, HseAuditFlowState.PreApproved);
             List<Dto> items;
             try {
-                items = CommonModelMongo.getData(q, params.getLang());
+                items = ModelMongo.getData(q, params.getLang());
             } catch (NoContentException e) {
                 throw new ServerException(VantarKey.FETCH_FAIL);
             }

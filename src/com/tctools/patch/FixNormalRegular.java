@@ -2,7 +2,7 @@ package com.tctools.patch;
 
 import com.tctools.business.dto.project.radiometric.complain.*;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
-import com.vantar.business.CommonModelMongo;
+import com.vantar.business.ModelMongo;
 import com.vantar.exception.VantarException;
 import com.vantar.service.patch.*;
 import com.vantar.web.WebUi;
@@ -19,28 +19,28 @@ public class FixNormalRegular implements Patcher.PatchInterface {
     public Patcher.Result run() {
         Patcher.Result result = new Patcher.Result();
         try {
-            CommonModelMongo.forEach(new RadioMetricComplain(), dto -> {
+            ModelMongo.forEach(new RadioMetricComplain(), dto -> {
                 try {
                     RadioMetricComplain flow = (RadioMetricComplain) dto;
                     if (flow.type == null || flow.type.equals(ComplainType.CustomerComplain)) {
                         return;
                     }
                     flow.type = ComplainType.Normal;
-                    CommonModelMongo.updateNoLog(dto);
+                    ModelMongo.updateNoLog(dto);
                     result.countSuccess();
                 } catch (VantarException e) {
                     result.addFail(e).countFail();
                 }
             });
 
-            CommonModelMongo.forEach(new RadioMetricFlow(), dto -> {
+            ModelMongo.forEach(new RadioMetricFlow(), dto -> {
                 try {
                     RadioMetricFlow flow = (RadioMetricFlow) dto;
                     if (flow.complain == null || flow.complain.type == null || flow.complain.type.equals(ComplainType.CustomerComplain)) {
                         return;
                     }
                     flow.complain.type = ComplainType.NormalRequest;
-                    CommonModelMongo.updateNoLog(dto);
+                    ModelMongo.updateNoLog(dto);
                     result.countSuccess();
                 } catch (VantarException e) {
                     result.addFail(e).countFail();
