@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class OperatorController extends RouteToMethod {
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void operatorsGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, OperatorModel.getAll(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void operatorsKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, OperatorModel.getAsKeyValue(params));
     }

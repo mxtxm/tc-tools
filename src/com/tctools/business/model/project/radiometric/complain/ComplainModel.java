@@ -5,8 +5,8 @@ import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
-import com.vantar.business.*;
-import com.vantar.database.common.ValidationError;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.*;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -20,62 +20,55 @@ import java.util.*;
 public class ComplainModel {
 
     public static ResponseMessage insert(Params params, User user) throws VantarException {
-        RadioMetricComplain complain = new RadioMetricComplain();
-        complain.creatorId = user.id;
-        return ModelMongo.insert(params, complain, new CommonModel.WriteEvent() {
-
-            @Override
-            public void beforeSet(Dto dto) {
-
-            }
-
-            @Override
-            public void beforeWrite(Dto dto) throws VantarException {
-                RadioMetricComplain complain = (RadioMetricComplain) dto;
-                completeData(complain);
-                uploadImage(params, complain);
-            }
-
-            @Override
-            public void afterWrite(Dto dto) {
-
-            }
-        });
+        RadioMetricComplain complainX = new RadioMetricComplain();
+        complainX.creatorId = user.id;
+        return Db.modelMongo.insert(
+            new ModelCommon.Settings(params, complainX)
+                .mutex(false)
+                .setEventBeforeValidation(dto -> {
+                    RadioMetricComplain complain = (RadioMetricComplain) dto;
+                    completeData(complain);
+                    uploadImage(params, complain);
+                })
+        );
     }
 
     public static ResponseMessage update(Params params) throws VantarException {
-        RadioMetricComplain complain = ModelMongo.getById(params, new RadioMetricComplain());
+        RadioMetricComplain complainX = Db.modelMongo.getById(params, new RadioMetricComplain());
+        return Db.modelMongo.update(
+            new ModelCommon.Settings(params, complainX).mutex(false)
+                .setEventBeforeValidation(dto -> {
+                    RadioMetricComplain complain = (RadioMetricComplain) dto;
+                    if (NumberUtil.isIdInvalid(complain.id)) {
+                        throw new InputException(VantarKey.INVALID_ID);
+                    }
+                    completeData(complain);
+                    try {
+                        uploadImage(params, complain);
+                    } catch (Exception ignore) {
 
-        return ModelMongo.update(params, complain, new CommonModel.WriteEvent() {
+                    }
+                })
+                .setEventAfterWrite(dto -> {
+                    RadioMetricComplain complain = (RadioMetricComplain) dto;
+                    RadioMetricFlow flow = new RadioMetricFlow();
 
-            @Override
-            public void beforeSet(Dto dto) {
+                    if (NumberUtil.isIdInvalid(complain.workFlowId)) {
+                        QueryBuilder q = new QueryBuilder(flow);
+                        q.condition().equal("complain.ccnumber", complain.ccnumber);
+                        try {
+                            flow = Db.modelMongo.getFirst(q);
+                        } catch (Exception e) {
+                            return;
+                        }
+                    } else {
+                        flow.id = complain.workFlowId;
+                    }
+                    flow.complain = complain;
 
-            }
-
-            @Override
-            public void beforeWrite(Dto dto) throws VantarException {
-                RadioMetricComplain complain = (RadioMetricComplain) dto;
-                if (NumberUtil.isIdInvalid(complain.id)) {
-                    throw new InputException(VantarKey.INVALID_ID);
-                }
-                completeData(complain);
-                uploadImage(params, complain);
-            }
-
-            @Override
-            public void afterWrite(Dto dto) throws VantarException {
-                RadioMetricComplain complain = (RadioMetricComplain) dto;
-                if (NumberUtil.isIdInvalid(complain.workFlowId)) {
-                    return;
-                }
-
-                RadioMetricFlow flow = new RadioMetricFlow();
-                flow.id = complain.workFlowId;
-                flow.complain = complain;
-                ModelMongo.update(flow);
-            }
-        });
+                    Db.modelMongo.update(new ModelCommon.Settings(flow).mutex(false));
+                })
+        );
     }
 
     private static void uploadImage(Params params, RadioMetricComplain complain) throws InputException {
@@ -109,19 +102,19 @@ public class ComplainModel {
     }
 
     public static ResponseMessage delete(Params params) throws VantarException {
-        RadioMetricComplain complain = ModelMongo.getById(params, new RadioMetricComplain());
+        RadioMetricComplain complain = Db.modelMongo.getById(params, new RadioMetricComplain());
 
         try {
             RadioMetricFlow r = new RadioMetricFlow();
             r.id = complain.workFlowId;
             if (NumberUtil.isIdValid(r.id)) {
-                ModelMongo.deleteById(r);
+                Db.modelMongo.delete(new ModelCommon.Settings(r));
             }
         } catch (VantarException ignore) {
 
         }
 
-        return ModelMongo.deleteById(complain);
+        return Db.modelMongo.delete(new ModelCommon.Settings(complain));
     }
 
     /**
@@ -134,7 +127,7 @@ public class ComplainModel {
         if (NumberUtil.isIdValid(complain.siteId)) {
             site.id = complain.siteId;
             try {
-                site = ModelMongo.getById(site);
+                site = Db.modelMongo.getById(site);
                 complain.siteCode = site.code;
                 complain.siteName = site.name;
                 return;
@@ -151,7 +144,7 @@ public class ComplainModel {
         QueryBuilder q = new QueryBuilder(site);
         q.condition().equal("code", complain.siteCode);
         try {
-            site = ModelMongo.getFirst(q);
+            site = Db.modelMongo.getFirst(q);
             complain.siteId = site.id;
             complain.siteName = site.name;
             return;
@@ -166,15 +159,15 @@ public class ComplainModel {
         site.cityId = complain.cityId;
         site.location = complain.location;
         site.address = complain.address;
-        complain.siteId = ModelMongo.insert(site).dto.getId();
+        complain.siteId = Db.modelMongo.insert(new ModelCommon.Settings(site).mutex(false)).dto.getId();
     }
 
     public static RadioMetricComplain.Viewable get(Params params) throws VantarException {
-        return ModelMongo.getById(params, new RadioMetricComplain.Viewable());
+        return Db.modelMongo.getById(params, new RadioMetricComplain.Viewable());
     }
 
     public static PageData search(Params params) throws VantarException {
-        return ModelMongo.search(params, new RadioMetricComplain.Viewable());
+        return Db.modelMongo.search(params, new RadioMetricComplain.Viewable());
     }
 
     public static Object assignable(Params params) throws VantarException {
@@ -186,8 +179,8 @@ public class ComplainModel {
     }
 
     private static PageData getAssignQuery(Params params, boolean assignable) throws VantarException {
-        return ModelMongo.search(params, new RadioMetricComplain.Viewable()
-            , new CommonModel.QueryEvent() {
+        return Db.modelMongo.search(params, new RadioMetricComplain.Viewable()
+            , new ModelCommon.QueryEvent() {
                 @Override
                 public void beforeQuery(QueryBuilder q) {
                     q.condition().equal("assignable", assignable);

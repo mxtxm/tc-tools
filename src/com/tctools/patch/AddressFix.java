@@ -3,7 +3,8 @@ package com.tctools.patch;
 import com.tctools.business.dto.project.radiometric.complain.RadioMetricComplain;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.dto.site.Site;
-import com.vantar.business.ModelMongo;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.exception.VantarException;
 import com.vantar.service.patch.*;
 import com.vantar.web.WebUi;
@@ -20,29 +21,32 @@ public class AddressFix implements Patcher.PatchInterface {
     public Patcher.Result run() {
         Patcher.Result result = new Patcher.Result();
         try {
-            ModelMongo.forEach(new Site(), dto -> {
+            Db.modelMongo.forEach(new Site(), dto -> {
                 try {
-                    ModelMongo.updateNoLog(dto);
+                    Db.modelMongo.update(new ModelCommon.Settings(dto).mutex(false).logEvent(false));
                     result.countSuccess();
                 } catch (VantarException e) {
                     result.addFail(e).countFail();
                 }
+                return true;
             });
-            ModelMongo.forEach(new RadioMetricFlow(), dto -> {
+            Db.modelMongo.forEach(new RadioMetricFlow(), dto -> {
                 try {
-                    ModelMongo.updateNoLog(dto);
+                    Db.modelMongo.update(new ModelCommon.Settings(dto).mutex(false).logEvent(false));
                     result.countSuccess();
                 } catch (VantarException e) {
                     result.addFail(e).countFail();
                 }
+                return true;
             });
-            ModelMongo.forEach(new RadioMetricComplain(), dto -> {
+            Db.modelMongo.forEach(new RadioMetricComplain(), dto -> {
                 try {
-                    ModelMongo.updateNoLog(dto);
+                    Db.modelMongo.update(new ModelCommon.Settings(dto).mutex(false).logEvent(false));
                     result.countSuccess();
                 } catch (VantarException e) {
                     result.addFail(e).countFail();
                 }
+                return true;
             });
         } catch (Exception e) {
             result.addFail(e).countFail();

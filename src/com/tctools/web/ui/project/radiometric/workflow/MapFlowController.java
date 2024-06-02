@@ -29,27 +29,27 @@ public class MapFlowController extends RouteToMethod {
     }
 
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR", "READONLY",})
     public void radioMetricFlowsSearchMap(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, MapFlowModel.searchForMap(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR",})
     public void radioMetricSiteAssign(Params params, HttpServletResponse response) throws VantarException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assign(params, user));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR",})
     public void radioMetricSiteAssignRemove(Params params, HttpServletResponse response) throws VantarException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, Assigning.assignRemove(params, user));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR",})
     public void radioMetricUpdateMeasurementLocation(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, MapFlowModel.updateSpotLocation(params));

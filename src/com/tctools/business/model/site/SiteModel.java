@@ -2,7 +2,8 @@ package com.tctools.business.model.site;
 
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.business.ModelMongo;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -18,15 +19,15 @@ public class SiteModel {
 
 
     public static ResponseMessage insert(Params params) throws VantarException {
-        return ModelMongo.insertJson(params, new Site());
+        return Db.modelMongo.insert(new ModelCommon.Settings(params, new Site()).isJson().mutex(false));
     }
 
     public static ResponseMessage update(Params params) throws VantarException {
-        return ModelMongo.updateJson(params, new Site());
+        return Db.modelMongo.update(new ModelCommon.Settings(params, new Site()).isJson());
     }
 
     public static ResponseMessage delete(Params params) throws VantarException {
-        return ModelMongo.delete(params, new Site());
+        return Db.modelMongo.delete(new ModelCommon.Settings(params, new Site()));
     }
 
     public static Site.Viewable getByIdOrCode(Params params) throws VantarException {
@@ -42,11 +43,11 @@ public class SiteModel {
         } else {
             q.condition().equal("code", code);
         }
-        return ModelMongo.getFirst(params, q);
+        return Db.modelMongo.getFirst(params, q);
     }
 
     public static PageData search(Params params) throws VantarException {
-        return ModelMongo.search(params, new Site.Viewable());
+        return Db.modelMongo.search(params, new Site.Viewable());
     }
 
     public static List<Site.ViewableTiny> autoComplete(Params params) throws VantarException {
@@ -60,7 +61,7 @@ public class SiteModel {
         q.condition().like("code", code);
 
         try {
-            return ModelMongo.getData(params, q);
+            return Db.modelMongo.getData(params, q);
         } catch (NoContentException e) {
             return new ArrayList<>(1);
         }
@@ -78,7 +79,7 @@ public class SiteModel {
         q.condition(QueryOperator.AND).near("location", location, params.getDouble("radius", DEFAULT_NEAR_SITE_RADIUS_METER));
 
         try {
-            List<Site.Viewable> items = ModelMongo.getData(params, q);
+            List<Site.Viewable> items = Db.modelMongo.getData(params, q);
             if (exclude) {
                 for (int i = 0, l = items.size(); i < l; ++i) {
                     Site.Viewable item = items.get(i);
@@ -97,7 +98,7 @@ public class SiteModel {
     public static List<String> sitesCodes(Params params) throws VantarException {
         List<String> codes = new ArrayList<>(40000);
         try {
-            List<Site> sites = ModelMongo.getAll(new Site());
+            List<Site> sites = Db.modelMongo.getAll(new Site());
             for (Site site : sites) {
                 codes.add(site.code);
             }

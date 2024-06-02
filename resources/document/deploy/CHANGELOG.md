@@ -14,6 +14,50 @@ http://185.147.162.67:8080/ui/radio/metric/site/zip?id=38806
 * date time --> handle
 
 
+site import
+framework update
+site duplicate patch
+fix cc missing file in report as1356 6part 1png
+
+
+## 2024-4-21 2.5 ##
+* user signature upload
+* user signature bug fix
+
+
+## 2024-4-21 2.5 ##
+* fix: bug when import site
+
+## 2024-3-5 2.4.4 ##
+* import site updates
+* bug: fix measurements
+
+## 2024-3-5 2.4.4 ##
+* add: role ATOMI add to map
+
+
+## 2024-3-4 2.4.3 ##
+* add: role ATOMI add to front
+
+
+## 2024-3-3 2.4.2 ##
+* fix: bug > de assign
+* fix: bug in data type mapping when reading from database
+
+
+## 2024-3-2 2.4.1 ##
+* add: role ATOMI add to backend
+
+
+## 2024-03-1 2.4 ##
+* add: health check service 
+* add: system monitoring 
+
+
+## 2024-02-27 2.3 ##
+* update: framework update
+
+
 ## 2023-05-22 2.1.3 ##
 * change: radiometrics > rounding numbers in word report
 * change: __ok file unit
@@ -26,6 +70,7 @@ http://185.147.162.67:8080/ui/radio/metric/site/zip?id=38806
 * add: isMwCm2150;
 * add: isMwCm2170;
 
+as1356 6part 1png
 
 
 ## 2022-10-30 2.1.1 ##

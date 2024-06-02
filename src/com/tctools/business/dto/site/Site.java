@@ -53,6 +53,7 @@ public class Site extends DtoBase {
     public String frequencyBand;
 
     // sector
+    @NoList
     public List<Sector> sectors;
 
     // location > > >
@@ -68,8 +69,10 @@ public class Site extends DtoBase {
     public Long districtId;
     //@Depends(LocationType.class)
     public Long locationTypeId;
+    @NoList
     public String address;
     @Required
+    @NoList
     public Location location;
 
     // collocation > > >

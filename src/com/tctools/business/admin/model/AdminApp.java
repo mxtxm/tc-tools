@@ -3,7 +3,7 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.database.AdminData;
+import com.vantar.admin.database.data.panel.DataUtil;
 import com.vantar.database.dto.Dto;
 import com.vantar.exception.VantarException;
 import com.vantar.locale.Locale;
@@ -17,8 +17,8 @@ import java.util.*;
 
 public class AdminApp {
 
-    public static AdminData.Event getAdminDataEvent() {
-        return new AdminData.Event() {
+    public static DataUtil.Event getAdminDataEvent() {
+        return new DataUtil.Event() {
             @Override
             public Dto dtoExchange(Dto dto, String action) {
                 if ("list".equalsIgnoreCase(action)) {
@@ -45,7 +45,6 @@ public class AdminApp {
                     // > > > hook to projects
                     try {
                         AdminSynchRadiometric.synchWithSite(site, null);
-                        AdminSynchHseAudit.synchWithSite(site, false, null);
                     } catch (VantarException ignore) {
 
                     }
@@ -79,9 +78,6 @@ public class AdminApp {
         if (Services.get(ServiceAuth.class).hasAccess(params, Role.MANAGER)) {
             menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
         }
-
-        menu.put(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), "/admin/image/browse");
-        menu.put("Tools", "/admin/tools/index");
     }
 
     public static void extendShortcuts(Params params, Map<String, List<String>> shortcuts) {
@@ -99,7 +95,6 @@ public class AdminApp {
     public static void factoryResetAfter() {
         DirUtil.makeDirectory("/opt/tc-tools/backup/");
         DirUtil.makeDirectory("/opt/tc-tools/documents/");
-        DirUtil.makeDirectory("/opt/tc-tools/files/hse-audit/");
         DirUtil.makeDirectory("/opt/tc-tools/files/radiometric/");
         DirUtil.makeDirectory("/opt/tc-tools/files/temp/");
         DirUtil.makeDirectory("/opt/tc-tools/files/user/");

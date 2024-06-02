@@ -1,9 +1,12 @@
+/**
+ * version: 4.9.18
+ */
 * {
     background: transparent;
     font-family: Lato, Helvetica, Arial, sans-serif;
     line-height: 100%;
     direction: ltr;
-    color: #444;
+    color: #333;
     margin: 0;
     padding: 0;
     vertical-align: baseline;
@@ -18,106 +21,171 @@ body {
     margin: 0;
 }
 
-pre {
-    font-family: Courier, monospace !important;
-    /*white-space: pre-wrap;*/
-    direction: ltr!important;
-    margin-bottom: 10px;
-    padding: 5px 80px;
-}
-
 li,
 li *,
 pre, code {
     font-family: Courier, monospace !important;
+    font-size: 13px;
+    color: #0e32b1;
+    direction: ltr!important;
 }
+
+
+li {
+    color: #333;
+}
+
 
 pre, code {
-    font-family: Courier, monospace !important;
     color: #0e32b1;
     line-height: 130%;
-    font-size: 13px;
 }
 
-
-p {
-    padding: 0 70px 10px 80px;
-    font-size: 14px;
-    line-height: 150%;
+pre {
+    margin-bottom: 5px;
+    padding: 5px 60px;
 }
 
 strong {
-    color: #0e32b1;
+    color: #9b1793;
+    font-weight: bold;
 }
-
 strong.key {
     color: #c40f37;
+    font-weight: bold;
+}
+
+em {
+    font-style: normal;
+    font-weight: bold;
+    color: #555!important;
+}
+
+p {
+    padding: 1px 20px;
+    font-size: 13px;
+    line-height: 150%;
+    color: #444;
 }
 
 h1 {
-    color: #728823;
-    background-color: #eefde5;
-    padding: 20px 30px;
-    font-size: 24px;
-    margin-bottom: 20px;
+    color: #7194ca;
+    background-color: #dbf8ff;
+    padding: 10px 20px;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+h1 + ul {
+    margin-left: 35px!important;
 }
 
 h2 {
-    border-top: 1px solid #444;
-    color: #444;
-    padding: 20px 30px;
-    margin-top: 20px;
-    font-size: 22px;
+    border-top: 1px dotted #aaa;
+    color: #5ac64a;
+    padding: 10px 20px 7px 20px;
+    margin-top: 10px;
+    font-size: 20px;
     font-weight: bold;
+}
+
+h2 + p {
+    padding: 5px 40px!important;
+    color: #444;
+}
+
+h2 + ul {
+    margin-left: 50px!important;
+    margin-top: 0;
 }
 
 h3 {
-    color: #9b0404;
-    padding: 0 50px 10px 50px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-h4 {
-    border-top: 1px solid #444;
-    color: #aaa;
-    padding: 20px 30px;
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-h6 {
-    border-top: 1px solid #444;
-    color: #9cd76c;
-    padding: 20px 30px;
-    margin-top: 20px;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-h5 {
-    color: #ff7474;
-    padding: 0 50px 10px 50px;
+    color: #96b5e6;
+    padding: 3px 40px;
     font-size: 16px;
     font-weight: bold;
 }
 
-ul {
-    margin: 0 70px 10px 70px;
+h3 + p {
+    padding: 2px 60px!important;
+    font-family: Courier, monospace !important;
+    font-size: 13px;
+    color: #333;
 }
 
-ul ul {
-    margin: 0 50px 10px 50px!important;
+h4 {
+    border-top: 1px dotted #ccc;
+    color: #9cd76c;
+    padding: 10px 20px 7px 20px;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+h4 + p {
+    padding: 5px 40px!important;
+    color: #444;
+}
+
+h4 + ul {
+    margin-left: 50px!important;
+    margin-top: 0;
+}
+
+h6 {
+    border-top: 1px dotted #ccc;
+    color: #e1f1d7;
+    padding: 10px 20px 7px 20px;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+h6 + p {
+    padding: 5px 40px!important;
+    color: #444;
+}
+
+h6 + ul {
+    margin-left: 50px!important;
+    margin-top: 0;
+}
+
+h5 {
+    color: #0e32b1;
+    padding: 3px 40px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+h5.enum {
+    margin-left: 40px;
+}
+ul.enum {
+    margin-left: 110px;
+}
+
+
+ul {
+    margin: 5px 75px 3px 75px;
+}
+
+li ul {
+    margin: 0 50px 3px 50px!important;
 }
 
 li {
-    padding: 3px 5px;
-    font-size: 14px;
+    padding: 2px 5px;
+    font-size: 13px;
+}
+
+li p {
+    padding: 0 0 10px 0;
 }
 
 a {
-    color: #47a705;
+    color: #05a790;
     font-weight: bold;
     border-bottom: 1px solid #d2ffc7;
     text-decoration: none;
@@ -131,9 +199,9 @@ a:hover {
 
 label.database {
     font-size: 10px;
-    color: #aaa;
+    color: #e1a40a;
 }
 
 .b-field {
-    color: #7e9d71;
+    color: #638157;
 }

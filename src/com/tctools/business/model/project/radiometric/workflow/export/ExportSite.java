@@ -6,7 +6,8 @@ import com.tctools.business.dto.site.Sector;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.*;
-import com.vantar.business.ModelMongo;
+import com.vantar.database.common.Db;
+import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.util.collection.CollectionUtil;
@@ -26,13 +27,9 @@ public class ExportSite extends ExportCommon {
 
 
     public static void zip(Params params, HttpServletResponse response) throws VantarException {
-        RadioMetricFlow.Viewable flow = new RadioMetricFlow.Viewable();
-        flow.id = params.getLong("id");
-        if (NumberUtil.isIdInvalid(flow.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "flow.id");
-        }
-
-        flow = ModelMongo.getById(flow, params.getLang());
+//        boolean x = FileUtil.exists("/opt/tc-tools/files/radiometric/AS1356/complain/غلامرضا خالقی -  درخواست شماره 1131239 - تبریز.png");
+//        TestController.log.error(">>>>>>>>{}", x);
+        RadioMetricFlow.Viewable flow = Db.modelMongo.getById(params, new RadioMetricFlow.Viewable());
 
         String zipTempDir = DirUtil.getTempDirectory();
         String zipFile = flow.site.code
@@ -41,14 +38,45 @@ public class ExportSite extends ExportCommon {
         docx(params, response, false);
 
         if (!RadioMetricComplain.isEmpty(flow.complain)) {
+            QueryBuilder q = new QueryBuilder(new RadioMetricComplain.Viewable());
+            q.condition().equal("ccnumber", flow.complain.ccnumber);
+            try {
+                flow.complain = Db.modelMongo.getFirst(q);
+            } catch (Exception e) {
+//                log.info(">>>>");
+            }
+
+  //          log.info(">>>>{}", flow.complain);
+
+            //39841
             String imagePath = flow.complain.getImageFilePath(true);
+    //        log.info(">>>>{}", imagePath);
+            //        'غلامرضا خالقی -  درخواست شماره 1131239 - تبریز.png'
             if (imagePath != null) {
                 FileUtil.copy(imagePath, flow.getPath() + flow.complain.getImageFilename());
+            }
+
+            try {
+                String ccnumber = flow.complain.ccnumber;
+                String path = flow.getPath();
+
+//                log.error(">>>>>>{}", imagePath);
+//                log.error(">>>>>>{}", ccnumber);
+//                log.error(">>>>>>{}", path);
+
+                DirUtil.browseDir(Param.RADIO_METRIC_FILES + flow.site.code + "/complain/", file -> {
+                    if (file.getName().contains(ccnumber)) {
+                        log.error(">>>>>>{} ---> {}", file.getAbsolutePath(), path + file.getName());
+
+                        FileUtil.copy(file.getAbsolutePath(), path + file.getName());
+                    }
+                });
+            } catch (Exception e) {
+                log.error(">>>>>>", e);
             }
         }
 
         String dir = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id;
-
 
         try {
             String csv100 = flow.getPath() + flow.site.code + "__100CM__OK.csv";
@@ -73,7 +101,6 @@ public class ExportSite extends ExportCommon {
 
         }
 
-
         FileUtil.zip(dir, zipTempDir + zipFile, filename -> !filename.endsWith(".jpg.png"));
 
         response.setContentType("application/zip");
@@ -87,7 +114,7 @@ public class ExportSite extends ExportCommon {
             throw new InputException(VantarKey.INVALID_ID, "flow.id");
         }
 
-        flow = ModelMongo.getById(flow, "fa");
+        flow = Db.modelMongo.getById(flow, "fa");
 
         if (flow.site == null || flow.site.code == null) {
             throw new ServerException(AppLangKey.EXPORT_FAIL);

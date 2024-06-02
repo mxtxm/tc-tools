@@ -6,8 +6,8 @@ import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.SendMessage;
-import com.vantar.business.*;
-import com.vantar.database.nosql.mongo.Mongo;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -33,25 +33,25 @@ public class Assigning {
         flow.assignDateTime = now;
         flow.lastStateDateTime = now;
 
-        CommonModel.validateRequired("complain.id", flow.complain.id, "assigneeId", flow.assigneeId);
+        ModelCommon.validateRequired("complain.id", flow.complain.id, "assigneeId", flow.assigneeId);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().equal("complain.id", flow.complain.id);
-        if (ModelMongo.exists(q)) {
+        if (Db.modelMongo.exists(q)) {
             ServiceLog.error(Assigning.class, "Duplicate complain assign attempt", flow.complain.id);
             throw new InputException(AppLangKey.DUPLICATE, "radiometric flow for complain", flow.complain.id);
         }
 
-        flow.complain = ModelMongo.getById(flow.complain, params.getLang());
+        flow.complain = Db.modelMongo.getById(flow.complain, params.getLang());
 
         Site site = new Site();
         site.id = flow.complain.siteId;
-        site = ModelMongo.getById(site, params.getLang());
+        site = Db.modelMongo.getById(site, params.getLang());
 
         if (ComplainType.Normal.equals(flow.complain.type)) {
             q = new QueryBuilder(new RadioMetricFlow());
             q.condition().equal("site.code", site.code);
-            flow.reRadioMetric = ModelMongo.exists(q);
+            flow.reRadioMetric = Db.modelMongo.exists(q);
         }
 
         flow.site = site;
@@ -85,24 +85,20 @@ public class Assigning {
         complainToUpdate.assignable = false;
         complainToUpdate.assignTime = now;
 
-        try {
-            flow.id = Mongo.Sequence.getNext(flow);
-            flow.complain.workFlowId = flow.id;
-            ModelMongo.update(flow.complain);
-            flow.setClearIdOnInsert(false);
-            ModelMongo.insert(flow);
+        flow.id = Db.mongo.autoIncrementGetNext(flow);
+        flow.complain.workFlowId = flow.id;
+        Db.modelMongo.update(new ModelCommon.Settings(flow.complain));
+        flow.autoIncrementOnInsert(false);
+        Db.modelMongo.insert(new ModelCommon.Settings(flow).mutex(false));
 
-            if (StringUtil.isNotEmpty(assignee.mobile)) {
-                SendMessage.sendSms(
-                    assignee.mobile,
-                    "با سلام" + "\n" + " سایت شکایتی " + flow.site.code + " برای پرتوسنجی به کاربر شما اساین شد "
-                );
-            }
-
-            return ResponseMessage.success(VantarKey.INSERT_SUCCESS, flow.complain.workFlowId);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.INSERT_FAIL);
+        if (StringUtil.isNotEmpty(assignee.mobile)) {
+            SendMessage.sendSms(
+                assignee.mobile,
+                "با سلام" + "\n" + " سایت شکایتی " + flow.site.code + " برای پرتوسنجی به کاربر شما اساین شد "
+            );
         }
+
+        return ResponseMessage.success(VantarKey.SUCCESS_INSERT, flow.complain.workFlowId);
     }
 
     public static ResponseMessage assign(Params params, User assignor) throws VantarException {
@@ -127,7 +123,7 @@ public class Assigning {
         for (long id : flowIds) {
             RadioMetricFlow flow = new RadioMetricFlow();
             flow.id = id;
-            flow = ModelMongo.getById(flow);
+            flow = Db.modelMongo.getById(flow);
             flow.assigneeId = assigneeId;
             flow.assignorId = assignor.getId();
             flow.sectors = flow.site.sectors;
@@ -135,7 +131,7 @@ public class Assigning {
             flow.assignDateTime = now;
             flow.lastState = RadioMetricFlowState.Planned;
             flow.state.add(state);
-            ModelMongo.update(flow);
+            Db.modelMongo.update(new ModelCommon.Settings(flow));
         }
 
         if (StringUtil.isNotEmpty(assignee.mobile)) {
@@ -145,25 +141,25 @@ public class Assigning {
             );
         }
 
-        return ResponseMessage.success(VantarKey.UPDATE_SUCCESS);
+        return ResponseMessage.success(VantarKey.SUCCESS_UPDATE);
     }
 
     public static ResponseMessage assignRemove(Params params, User remover) throws VantarException {
         try {
-            RadioMetricFlow flow = ModelMongo.getById(params, new RadioMetricFlow());
+            RadioMetricFlow flow = Db.modelMongo.getById(params, new RadioMetricFlow());
             if (!RadioMetricComplain.isEmpty(flow.complain)) {
-                ModelMongo.deleteById(flow);
+                Db.modelMongo.delete(new ModelCommon.Settings(flow));
 
                 RadioMetricComplain complain = new RadioMetricComplain();
                 complain.id = flow.complain.id;
-                complain = ModelMongo.getById(complain, params.getLang());
+                complain = Db.modelMongo.getById(complain, params.getLang());
                 complain.assignable = true;
                 complain.assigneeId = null;
                 complain.workFlowId = null;
                 complain.assignTime = null;
                 complain.setNullProperties("assigneeId", "workFlowId", "assignTime");
-                ModelMongo.update(complain);
-                return ResponseMessage.success(VantarKey.DELETE_SUCCESS);
+                Db.modelMongo.update(new ModelCommon.Settings(complain));
+                return ResponseMessage.success(VantarKey.SUCCESS_DELETE);
             }
 
             flow.setNullProperties("assigneeId", "assignorId", "assignDateTime", "measurementDateTime");
@@ -179,21 +175,21 @@ public class Assigning {
             state.assignorId = remover.id;
             state.assignorName = remover.fullName;
             state.assigneeId = flow.assigneeId;
-            state.assigneeName = assignee.fullName;
+            state.assigneeName = assignee == null? null : assignee.fullName;
             flow.state.add(state);
 
-            return ModelMongo.update(flow);
+            return Db.modelMongo.update(new ModelCommon.Settings(flow));
 
         } catch (NoContentException e) {
             QueryBuilder q = new QueryBuilder(new RadioMetricComplain());
             q.condition().equal("workFlowId", params.getLong("id"));
-            RadioMetricComplain complain = ModelMongo.getFirst(q);
+            RadioMetricComplain complain = Db.modelMongo.getFirst(q);
             complain.assignable = true;
             complain.assigneeId = null;
             complain.workFlowId = null;
             complain.assignTime = null;
             complain.setNullProperties("assigneeId", "workFlowId", "assignTime");
-            return ModelMongo.update(complain);
+            return Db.modelMongo.update(new ModelCommon.Settings(complain));
         }
     }
 }

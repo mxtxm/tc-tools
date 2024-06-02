@@ -1,8 +1,9 @@
 package com.tctools.web.webtest;
 
 import com.tctools.business.dto.system.WebTest;
-import com.vantar.business.ModelMongo;
-import com.vantar.exception.*;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
+import com.vantar.exception.VantarException;
 import com.vantar.web.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WebTestController extends RouteToMethod {
 
     public void webInsert(Params params, HttpServletResponse response) throws VantarException {
-        Response.writeJson(response, ModelMongo.insert(params, new WebTest()));
+        Response.writeJson(response, Db.modelMongo.insert(new ModelCommon.Settings(params, new WebTest())));
     }
 
     public void web(Params params, HttpServletResponse response) {

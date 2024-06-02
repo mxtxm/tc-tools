@@ -15,27 +15,27 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ProjectController extends RouteToMethod {
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER",})
     public void projectInsert(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, ProjectModel.insert(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI",  "ENGINEER",})
     public void projectUpdate(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, ProjectModel.update(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI",  "ENGINEER",})
     public void projectDelete(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, ProjectModel.delete(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI",  "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void projectGet(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, ProjectModel.get(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI",  "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void projectsGetAll(Params params, HttpServletResponse response) throws VantarException {
         Response.writeJson(response, ProjectModel.getAll(params));
     }

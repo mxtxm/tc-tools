@@ -179,9 +179,12 @@ public class Measurement {
         // > > > validation
         Set<String> msg = new HashSet<>(10);
         if (flow.validationMessage != null) {
-            for (String m : StringUtil.splitToSet(flow.validationMessage, '\n')) {
-                if (!m.startsWith(height + ":")) {
-                    msg.add(m);
+            Set<String> msgs = StringUtil.splitToSet(flow.validationMessage, '\n');
+            if (msgs != null) {
+                for (String m : msgs) {
+                    if (!m.startsWith(height + ":")) {
+                        msg.add(m);
+                    }
                 }
             }
         }

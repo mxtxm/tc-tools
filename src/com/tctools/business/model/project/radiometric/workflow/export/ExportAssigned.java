@@ -5,7 +5,7 @@ import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.user.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.ModelMongo;
+import com.vantar.database.common.Db;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -26,6 +26,7 @@ public class ExportAssigned extends ExportCommon {
             Role.ROOT.equals(user.role) ||
             Role.ADMIN.equals(user.role) ||
             Role.MANAGER.equals(user.role) ||
+            Role.ATOMI.equals(user.role) ||
             Role.VENDOR.equals(user.role)
             ? null : user.id
         );
@@ -36,7 +37,7 @@ public class ExportAssigned extends ExportCommon {
         }
         q.condition().equal("lastState", RadioMetricFlowState.Planned);
 
-        List<RadioMetricFlow.Viewable> items = ModelMongo.getData(q, params.getLang());
+        List<RadioMetricFlow.Viewable> items = Db.modelMongo.getData(q, params.getLang());
 
         try (Workbook wb = new HSSFWorkbook()) {
             Sheet sheet = wb.createSheet("Planned sites");

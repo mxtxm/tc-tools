@@ -4,7 +4,8 @@ import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.user.*;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.*;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
@@ -34,7 +35,7 @@ public class TechReport extends ExportCommon {
         int yMin = 5000;
         int yMax = 0;
         try {
-            for (Dto dto : ModelMongo.getData(q, LOCALE)) {
+            for (Dto dto : Db.modelMongo.getData(q, LOCALE)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (flow.assigneeId == null || flow.lastStateDateTime == null) {
                     continue;
@@ -64,7 +65,7 @@ public class TechReport extends ExportCommon {
             log.error("!", e);
         }
 
-        ModelMongo.purge(new TechStatistic());
+        Db.modelMongo.purge(new TechStatistic());
 
         for (User user : Services.get(ServiceDtoCache.class).getList(User.class)) {
             if (user.projectTypes == null || !user.projectTypes.contains(ProjectType.RadioMetric) ||
@@ -91,14 +92,13 @@ public class TechReport extends ExportCommon {
                     stat.userName = user.fullName;
                     stat.yearMonth = ymToInt(y, m);
 
-                    ModelMongo.insert(stat);
+                    Db.modelMongo.insert(new ModelCommon.Settings(stat).mutex(false));
                 }
             }
         }
     }
 
     public static Map<String, Map<String ,TechStatistic.Viewable>> getMonthlyPerformance(Params params) throws VantarException {
-
         String from = params.getString("from");
         String to = params.getString("to");
         if (from == null || to == null) {
@@ -128,7 +128,7 @@ public class TechReport extends ExportCommon {
             q.condition().inNumber("userId", userIds);
         }
 
-        List<Dto> dtos = ModelMongo.getData(q);
+        List<Dto> dtos = Db.modelMongo.getData(q);
 
         // <userName, <ym, TechStatistic>>
         Map<String, Map<String ,TechStatistic.Viewable>> statistics = new LinkedHashMap<>(500);
@@ -141,9 +141,9 @@ public class TechReport extends ExportCommon {
         return statistics;
     }
 
-    public static Map<String, Integer> getTotalPerformance(Params params) throws ServerException {
+    public static Map<String, Integer> getTotalPerformance(Params params) throws VantarException {
         QueryBuilder q = new QueryBuilder(new TechStatistic());
-        q.addGroup("userName", Mongo.ID);
+        q.addGroup("userName", DbMongo.ID);
         q.addGroup(QueryGroupType.SUM, "count", "total");
 
         List<Long> userIds = params.getLongList("userids");
@@ -153,12 +153,8 @@ public class TechReport extends ExportCommon {
 
         // <techName, count>
         Map<String, Integer> statistics = new LinkedHashMap<>(500);
-        try {
-            for (Document document : MongoQuery.getAggregate(q)) {
-                statistics.put((String) document.get(Mongo.ID), (int) document.get("count"));
-            }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
+        for (Document document : Db.mongo.getAggregate(q)) {
+            statistics.put((String) document.get(DbMongo.ID), (int) document.get("count"));
         }
         return statistics;
     }

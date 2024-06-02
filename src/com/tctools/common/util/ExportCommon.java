@@ -1,7 +1,8 @@
 package com.tctools.common.util;
 
 import com.tctools.business.dto.system.Settings;
-import com.vantar.business.*;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.VantarException;
 import com.vantar.util.json.Json;
@@ -49,11 +50,11 @@ public class ExportCommon {
         try {
             QueryBuilder q = new QueryBuilder(new Settings());
             q.condition().equal("key", key);
-            ModelMongo.delete(q);
+            Db.modelMongo.delete(new ModelCommon.Settings(q));
             Settings settings = new Settings();
             settings.key = key;
             settings.value = Json.d.toJson(value);
-            ModelMongo.insert(settings);
+            Db.modelMongo.insert(new ModelCommon.Settings(settings));
         } catch (Exception e) {
             log.error("! {}=>{}", key, value, e);
         }
@@ -62,7 +63,7 @@ public class ExportCommon {
     public static String getFromCache(String key) throws VantarException {
         QueryBuilder q = new QueryBuilder(new Settings());
         q.condition().equal("key", key);
-        return (String) ModelMongo.getFirst(q).getPropertyValue("value");
+        return (String) Db.modelMongo.getFirst(q).getPropertyValue("value");
     }
 
     public static String numberToMonth(int m) {

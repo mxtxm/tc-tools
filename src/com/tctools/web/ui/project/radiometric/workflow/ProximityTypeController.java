@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ProximityTypeController extends RouteToMethod {
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void radioMetricProximityTypeGet(Params params, HttpServletResponse response) throws AuthException, ServiceException {
         Response.writeJson(response, EnumUtil.getEnumValues(RadioMetricProximityType.values()));
     }

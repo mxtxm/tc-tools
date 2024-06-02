@@ -5,7 +5,7 @@ import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.*;
+import com.vantar.database.common.Db;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -37,13 +37,13 @@ public class ExportWaveControl extends ExportCommon {
                 q.sort("measurementDateTime:asc");
                 q.condition().in("lastState", RadioMetricFlowState.Approved, RadioMetricFlowState.Verified);
                 q.condition().greaterThan("measurementDateTime", date);
-                items = ModelMongo.getData(q, "fa");
+                items = Db.modelMongo.getData(q, "fa");
             } else {
-                items = ModelMongo.getAll(new RadioMetricFlow.Viewable(), "fa");
+                items = Db.modelMongo.getAll(new RadioMetricFlow.Viewable(), "fa");
             }
         } catch (VantarException e) {
             log.error("!", e);
-            throw new ServerException(VantarKey.FETCH_FAIL);
+            throw new ServerException(VantarKey.FAIL_FETCH);
         }
 
         try (Workbook wb = new XSSFWorkbook()) {

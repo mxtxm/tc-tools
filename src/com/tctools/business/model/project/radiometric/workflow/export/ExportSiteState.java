@@ -4,7 +4,7 @@ import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.ModelMongo;
+import com.vantar.database.common.Db;
 import com.vantar.exception.*;
 import com.vantar.util.file.FileUtil;
 import org.apache.poi.ss.usermodel.*;
@@ -58,7 +58,7 @@ public class ExportSiteState extends ExportCommon {
             setHeader(wb, row, c, "Status");
             sheetSp.setColumnWidth(c++, 5000);
 
-            ModelMongo.forEach(new RadioMetricFlow.Viewable(), dto -> {
+            Db.modelMongo.forEach(new RadioMetricFlow.Viewable(), dto -> {
                 RadioMetricFlow.Viewable flow = (RadioMetricFlow.Viewable) dto;
 
                 Row row1 = sheetSp.createRow(++rowIndex);
@@ -74,6 +74,7 @@ public class ExportSiteState extends ExportCommon {
                 setDataYellow(wb, row1, c1++,   flow.site.location == null ? "" : getValue(flow.site.location.longitude));
                 setDataYellow(wb, row1, c1++,   getValue(flow.site.btsStatus == null ? "" : flow.site.btsStatus.name));
                 ++i;
+                return true;
             });
 
             wb.write(outputStream);

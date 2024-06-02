@@ -18,26 +18,26 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ReportController extends RouteToMethod {
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void radioMetricStateAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "READONLY", "VENDOR",})
+    public void radioMetricStateAggregate(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.stateAggregate());
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void radioMetricProvinceAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "READONLY", "VENDOR",})
+    public void radioMetricProvinceAggregate(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.provinceAudit());
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "READONLY", "VENDOR",})
     public void radioMetricUsersDoneAggregate(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.usersDoneAggregate(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "READONLY", "VENDOR",})
-    public void radioMetricUserDoneAggregate(Params params, HttpServletResponse response) throws AuthException, ServerException, InputException {
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "READONLY", "VENDOR",})
+    public void radioMetricUserDoneAggregate(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, ReportModel.userDoneAggregate(params));
     }

@@ -4,15 +4,14 @@ import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.user.*;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.Param;
-import com.vantar.business.*;
-import com.vantar.database.common.ValidationError;
-import com.vantar.database.dto.Dto;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.*;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
 import com.vantar.service.Services;
 import com.vantar.service.auth.*;
-import com.vantar.util.file.*;
+import com.vantar.util.file.FileUtil;
 import com.vantar.util.number.NumberUtil;
 import com.vantar.util.string.StringUtil;
 import com.vantar.web.*;
@@ -38,7 +37,7 @@ public class UserModel {
 
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("id", id);
-        return ModelMongo.getFirst(q);
+        return Db.modelMongo.getFirst(q);
     }
 
     public static List<User> getAll(Params params, User user) throws VantarException {
@@ -104,79 +103,57 @@ public class UserModel {
             q.condition().equal("role", role);
         }
 
-        return ModelMongo.getData(q);
+        return Db.modelMongo.getData(q);
     }
 
     public static ResponseMessage insert(Params params, User creator) throws VantarException {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT");
-        return ModelMongo.insert(params, user, new CommonModel.WriteEvent() {
-
-            @Override
-            public void beforeSet(Dto dto) {
-
-            }
-
-            @Override
-            public void beforeWrite(Dto dto) throws InputException {
-                if (creator.role == Role.ENGINEER) {
-                    if (((User) dto).role == Role.MANAGER) {
-                        throw new InputException("engineer can not create manager");
-                    }
-                    for (ProjectType projectType : ((User) dto).projectTypes) {
-                        if (!creator.projectTypes.contains(projectType)) {
-                            throw new InputException("engineer does not have access to project");
+        return Db.modelMongo.insert(
+            new ModelCommon.Settings(params, user)
+                .setEventBeforeWrite(dto -> {
+                    if (creator.role == Role.ENGINEER) {
+                        if (((User) dto).role == Role.MANAGER) {
+                            throw new InputException("engineer can not create manager");
+                        }
+                        for (ProjectType projectType : ((User) dto).projectTypes) {
+                            if (!creator.projectTypes.contains(projectType)) {
+                                throw new InputException("engineer does not have access to project");
+                            }
                         }
                     }
-                }
-            }
-
-            @Override
-            public void afterWrite(Dto dto) {
-
-            }
-        });
+                })
+        );
     }
 
     public static ResponseMessage update(Params params, User creator) throws VantarException {
         User user = new User();
         user.setExclude("role", "emailVerified", "mobileVerified", "createT", "signinT", "password");
-        return ModelMongo.update(params, user, new CommonModel.WriteEvent() {
-
-            @Override
-            public void beforeSet(Dto dto) {
-
-            }
-
-            @Override
-            public void beforeWrite(Dto dto) throws InputException {
-                User u = (User) dto;
-                if (creator.role == Role.ENGINEER) {
-                    if (((User) dto).role == Role.MANAGER) {
-                        throw new InputException("engineer can not update manager");
-                    }
-                    for (ProjectType projectType : ((User) dto).projectTypes) {
-                        if (!creator.projectTypes.contains(projectType)) {
-                            throw new InputException("engineer does not have access to project");
+        return Db.modelMongo.update(
+            new ModelCommon.Settings(params, user)
+                .setEventBeforeWrite(dto -> {
+                    User u = (User) dto;
+                    if (creator.role == Role.ENGINEER) {
+                        if (((User) dto).role == Role.MANAGER) {
+                            throw new InputException("engineer can not update manager");
+                        }
+                        for (ProjectType projectType : ((User) dto).projectTypes) {
+                            if (!creator.projectTypes.contains(projectType)) {
+                                throw new InputException("engineer does not have access to project");
+                            }
                         }
                     }
-                }
 
-                if (u.id == null) {
-                    dto.setId(creator.id);
-                }
-            }
-
-            @Override
-            public void afterWrite(Dto dto) {
-
-            }
-        });
+                    if (u.id == null) {
+                        dto.setId(creator.id);
+                    }
+                })
+        );
     }
 
     public static ResponseMessage delete(Params params) throws VantarException {
         User user = new User();
-        return ModelMongo.delete(params, user);
+        return Db.modelMongo.delete(new ModelCommon.Settings(params, user));
     }
 
     public static ResponseMessage signatureSubmit(Params params) throws InputException, AuthException, ServiceException {
@@ -218,7 +195,7 @@ public class UserModel {
 
             FileUtil.move(tempPath, user.getSignature(false));
 
-            return ResponseMessage.success(VantarKey.UPDATE_SUCCESS, user.getSignature(true));
+            return ResponseMessage.success(VantarKey.SUCCESS_UPDATE, user.getSignature(true));
         }
     }
 
@@ -256,6 +233,6 @@ public class UserModel {
     }
 
     private static ResponseMessage updateUser(User user) throws VantarException {
-        return ModelMongo.update(user);
+        return Db.modelMongo.update(new ModelCommon.Settings(user));
     }
 }

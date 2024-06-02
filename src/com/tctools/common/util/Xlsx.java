@@ -79,7 +79,7 @@ public class Xlsx {
                 + new DateTime().formatter().getDateTimePersianAsFilename() + ".xlsx");
 
             if (!uploaded.moveTo(config.uploadDir, filename)) {
-                throw new ServerException(VantarKey.UPLOAD_FAIL);
+                throw new ServerException(VantarKey.FAIL_UPLOAD);
             }
 
             try (InputStream inputStream = new FileInputStream(config.uploadDir + filename);

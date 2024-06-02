@@ -1,7 +1,7 @@
 package com.tctools.business.admin.model;
 
 import com.tctools.business.service.locale.AppLangKey;
-import com.vantar.admin.model.index.Admin;
+import com.vantar.admin.index.Admin;
 import com.vantar.exception.FinishException;
 import com.vantar.locale.Locale;
 import com.vantar.util.datetime.DateTime;

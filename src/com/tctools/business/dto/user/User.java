@@ -166,7 +166,7 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
     }
 
     public void projectAccess(ProjectType projectType) throws AuthException {
-        if (role == Role.MANAGER || role == Role.ADMIN || role == Role.ROOT) {
+        if (role == Role.MANAGER || role == Role.ATOMI || role == Role.ADMIN || role == Role.ROOT) {
             return;
         }
         if (projectTypes != null && projectTypes.contains(projectType)) {
@@ -186,6 +186,8 @@ public class User extends DtoBase implements CommonUser, CommonUserPassword {
         if (!FileUtil.exists(filePath)) {
             return null;
         }
-        return Param.USERS_URL + id + "/" + id + "-signature.jpg";
+        return Param.USERS_URL + "/" + id + "-signature.jpg";
     }
 }
+
+

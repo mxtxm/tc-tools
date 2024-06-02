@@ -3,8 +3,9 @@ package com.tctools.business.admin.model;
 
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.Param;
-import com.vantar.admin.model.index.Admin;
-import com.vantar.business.ModelMongo;
+import com.vantar.admin.index.Admin;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.exception.*;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
@@ -88,7 +89,7 @@ public class AdminTools {
         RadioMetricFlowState state = st == null ? null : RadioMetricFlowState.valueOf(st);
 
         try {
-            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = Db.modelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (!codeSites.contains(f.site.code)) {
@@ -128,7 +129,7 @@ public class AdminTools {
                     }
                 }
 
-                ModelMongo.update(f);
+                Db.modelMongo.update(new ModelCommon.Settings(f));
                 ui.addMessage(f.site.code).write();
             }
 
@@ -181,7 +182,7 @@ public class AdminTools {
         RadioMetricFlowState state = RadioMetricFlowState.valueOf(st);
 
         try {
-            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = Db.modelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
                 if (!codeSites.contains(f.site.code)) {
@@ -217,7 +218,7 @@ public class AdminTools {
                     }
                 }
 
-                ModelMongo.update(f);
+                Db.modelMongo.update(new ModelCommon.Settings(f));
                 ui.addMessage(f.site.code).write();
             }
 
@@ -231,10 +232,10 @@ public class AdminTools {
     public static void updateAll(Params params, HttpServletResponse response) throws FinishException {
         WebUi ui = Admin.getUi("Update all", params, response, false);
         try {
-            List<RadioMetricFlow> items = ModelMongo.getAll(new RadioMetricFlow());
+            List<RadioMetricFlow> items = Db.modelMongo.getAll(new RadioMetricFlow());
 
             for (RadioMetricFlow f: items) {
-                ModelMongo.update(f);
+                Db.modelMongo.update(new ModelCommon.Settings(f));
                 ui.addMessage(f.site.code).write();
             }
 

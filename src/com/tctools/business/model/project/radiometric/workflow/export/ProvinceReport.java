@@ -3,7 +3,8 @@ package com.tctools.business.model.project.radiometric.workflow.export;
 import com.tctools.business.dto.location.Province;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.*;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.database.dto.Dto;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
@@ -33,7 +34,7 @@ public class ProvinceReport extends ExportCommon {
         int yMin = 5000;
         int yMax = 0;
         try {
-            for (Dto dto : ModelMongo.getData(q, LOCALE)) {
+            for (Dto dto : Db.modelMongo.getData(q, LOCALE)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 if (flow.provinceId == null || flow.lastStateDateTime == null) {
                     continue;
@@ -64,7 +65,7 @@ public class ProvinceReport extends ExportCommon {
             log.error("!", e);
         }
 
-        ModelMongo.purge(new ProvinceStatistic());
+        Db.modelMongo.purge(new ProvinceStatistic());
 
         for (Province province : Services.get(ServiceDtoCache.class).getList(Province.class)) {
             Map<Integer, ProvinceStatistic> dateStat = statistics.get(province.id);
@@ -87,7 +88,7 @@ public class ProvinceReport extends ExportCommon {
                     stat.yearMonth = ymToInt(y, m);
 
                     try {
-                        ModelMongo.insert(stat);
+                        Db.modelMongo.insert(new ModelCommon.Settings(stat).mutex(false));
                     } catch (VantarException e) {
                         log.error("! {}=>", stat, e);
                     }
@@ -128,7 +129,7 @@ public class ProvinceReport extends ExportCommon {
             q.condition().inNumber("provinceId", provinceIds);
         }
 
-        List<Dto> dtos = ModelMongo.getData(q);
+        List<Dto> dtos = Db.modelMongo.getData(q);
 
         // <provinceName, <ym, ProvinceStatistic>>
         Map<String, Map<String ,ProvinceStatistic.Viewable>> statistics = new LinkedHashMap<>(500);
@@ -141,9 +142,9 @@ public class ProvinceReport extends ExportCommon {
         return statistics;
     }
 
-    public static Map<String, Integer> getTotalPerformance(Params params) throws ServerException {
+    public static Map<String, Integer> getTotalPerformance(Params params) throws VantarException {
         QueryBuilder q = new QueryBuilder(new ProvinceStatistic());
-        q.addGroup("provinceName", Mongo.ID);
+        q.addGroup("provinceName", DbMongo.ID);
         q.addGroup(QueryGroupType.SUM, "count", "total");
 
         List<Long> provinceIds = params.getLongList("provinceids");
@@ -153,12 +154,8 @@ public class ProvinceReport extends ExportCommon {
 
         // <provinceName, count>
         Map<String, Integer> statistics = new LinkedHashMap<>(500);
-        try {
-            for (Document document : MongoQuery.getAggregate(q)) {
-                statistics.put((String) document.get(Mongo.ID), (int) document.get("count"));
-            }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
+        for (Document document : Db.mongo.getAggregate(q)) {
+            statistics.put((String) document.get(DbMongo.ID), (int) document.get("count"));
         }
         return statistics;
     }

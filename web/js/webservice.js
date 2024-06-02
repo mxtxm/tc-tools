@@ -1,3 +1,6 @@
+/**
+ * version: 4.9.18
+ */
 function showMsg(msg) {
     let html =
         '<p id="message">' + msg + '</p>' +
@@ -29,7 +32,7 @@ function showConfirm(msg, fn) {
 
 function loading(status) {
     if (status) {
-        $("#loading").show();    
+        $("#loading").show();
     } else {
         $("#loading").hide();
     }
@@ -77,7 +80,7 @@ function getString(url, data, auth, lang, success, fail) {
         type: "GET",
         data: data,
         timeout: 10800000,
-        beforeSend: function(request) {
+        beforeSend: function (request) {
             if (auth) {
                 request.setRequestHeader("X-Auth-Token", auth);
             }
@@ -297,6 +300,21 @@ function postSynch(url, data, auth, lang, success, fail) {
     });
 }
 
+function isempty(v) {
+    if (typeof v === "undefined" || v === null) {
+        return true;
+    }
+    if (typeof v === 'string' && $.trim(v) === "") {
+        return true;
+    }
+    if (typeof v === 'object') {
+        return jQuery.isEmptyObject(v);
+    }
+    if (typeof v === 'number' && isNaN(v)) {
+        return true;
+    }
+    return false;
+}
 
 function inspect() {
 

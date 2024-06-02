@@ -5,7 +5,7 @@ import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.dto.site.Sector;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.ModelMongo;
+import com.vantar.database.common.Db;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
@@ -25,7 +25,7 @@ public class ExportSearchControl extends ExportCommon {
         if (q == null) {
             throw new InputException("NO SEARCH COMMAND");
         }
-        List<RadioMetricFlow.Viewable> items = ModelMongo.getData(q);
+        List<RadioMetricFlow.Viewable> items = Db.modelMongo.getData(q);
         try (Workbook wb = new XSSFWorkbook()) {
 
             Sheet sheetSp = wb.createSheet("Normal");

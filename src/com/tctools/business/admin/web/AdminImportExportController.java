@@ -11,12 +11,7 @@ import javax.servlet.http.HttpServletResponse;
     "/admin/import/sites",
 
     "/admin/synch/radiometric",
-    "/admin/synch/hseaudit",
 
-    "/admin/import/hseaudit/work",
-
-    "/admin/hseaudit/fix",
-    "/admin/hseaudit/fix/files",
 })
 @MultipartConfig(
     location="/tmp",
@@ -38,21 +33,5 @@ public class AdminImportExportController extends RouteToMethod {
 
     public void synchRadiometric(Params params, HttpServletResponse response) throws FinishException {
         AdminSynchRadiometric.index(params, response);
-    }
-
-    public void synchHseaudit(Params params, HttpServletResponse response) throws FinishException {
-        AdminSynchHseAudit.index(params, response);
-    }
-
-    public void importHseauditWork(Params params, HttpServletResponse response) throws FinishException {
-        AdminImportHseAudit.work(params, response);
-    }
-
-    public void hseauditFix(Params params, HttpServletResponse response) throws FinishException {
-        AdminImportHseAudit.fix(params, response);
-    }
-
-    public void hseauditFixFiles(Params params, HttpServletResponse response) throws FinishException {
-        AdminImportHseAudit.fixFiles(params, response);
     }
 }

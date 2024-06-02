@@ -25,13 +25,13 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class FlowController extends RouteToMethod {
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR",})
     public void radioMetricFlowDelete(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.delete(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR", "TECHNICIAN",})
     public void radioMetricFlowUpdateState(Params params, HttpServletResponse response) throws VantarException {
         User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
         user.projectAccess(ProjectType.RadioMetric);
@@ -45,13 +45,13 @@ public class FlowController extends RouteToMethod {
         Response.writeJson(response, WorkFlowModel.commitMeasurements(params, user));
     }
 
-    //@Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    //@Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricFlowGet(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.get(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR", "TECHNICIAN", "READONLY",})
     public void radioMetricFlowsSearch(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.search(params));
@@ -71,13 +71,13 @@ public class FlowController extends RouteToMethod {
         Response.writeJson(response, WorkFlowModel.getFinishedTasks(params, user));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR",})
     public void radioMetricImageDelete(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.deleteImage(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR",})
     public void radioMetricLogDelete(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.deleteLog(params));

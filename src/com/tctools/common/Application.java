@@ -3,53 +3,52 @@ package com.tctools.common;
 import com.tctools.business.dto.user.User;
 import com.tctools.business.model.user.AuthModel;
 import com.tctools.business.service.locale.LocaleService;
-import com.vantar.admin.model.document.AdminDocument;
-import com.vantar.common.Settings;
-import com.vantar.database.nosql.mongo.MongoConnection;
+import com.vantar.common.*;
 import com.vantar.exception.*;
 import com.vantar.http.Ssl;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.service.cache.ServiceDtoCache;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.service.messaging.ServiceMessaging;
-import com.vantar.web.Response;
+import com.vantar.util.object.ClassUtil;
+import com.vantar.web.*;
 import org.aeonbits.owner.ConfigFactory;
-import org.slf4j.*;
 import javax.servlet.*;
-import java.util.*;
+import java.util.List;
 
 
 public class Application implements ServletContextListener {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
-
-
     @Override
     public void contextInitialized(ServletContextEvent e) {
-        log.info("> Initializing application\n\n\n");
+        ServiceLog.log.info("----> Initializing radiometric\n\n");
 
         Settings.setConfig(Config.class, ConfigFactory.create(Config.class));
         Settings.setTune(Tune.class, ConfigFactory.create(Tune.class));
-        log.info(" >> settings set");
+        ServiceLog.log.info(" > settings loaded");
 
         Response.setJsonError();
-        log.info(" >> error responses set to be JSON");
+        ServiceLog.log.info(" > error responses set to be JSON");
         Response.setAllowOrigin("*");
-        log.info(" >> allowed origin = '*'");
+        ServiceLog.log.info(" > allowed origin = '*'");
         ServiceAuth.setUserClass(User.class);
 
+        Params.start();
+        ServiceLog.log.info(" > serverUpCount={}", Params.serverUpCount);
         DtoInfo.start();
-        log.info(" >> dto info loaded");
+        ServiceLog.log.info(" > dto info loaded");
         Ssl.disable();
-        log.info(" >> disabled SSL connection checking");
+        ServiceLog.log.info(" > disabled SSL connection checking");
         LocaleService.start(Settings.locale());
-        log.info(" >> localization started");
+        ServiceLog.log.info(" > localization started");
 
+        ClassUtil.checkControllers("com.tctools.web.ui");
 
         Services.setEvents(new Services.Event() {
             @Override
-            public void beforeStart(Set<Class<?>> dependencies) {
-                Services.connectToDataSources(dependencies);
+            public void beforeStart() {
+
             }
 
             @Override
@@ -64,19 +63,18 @@ public class Application implements ServletContextListener {
                     @Override
                     @SuppressWarnings({"unchecked", "rawtypes"})
                     public void onReceive(int type, ServiceMessaging.Message message) {
-                        if (type == Param.MESSAGE_DATABASE_UPDATED && "User".equals(message.getString())) {
-                            try {
-                                Services.getService(ServiceAuth.class)
-                                    .updateOnlineUsers((List) Services.get(ServiceDtoCache.class).getList(User.class));
-                                log.info(" >> online user data updated");
-                            } catch (ServiceException e) {
-                                log.error("! failed to update online user data", e);
+                        if (type == Param.MESSAGE_DATABASE_UPDATED) {
+                            if ("User".equals(message.getString())) {
+                                Services.get(ServiceAuth.class)
+                                    .updateOnlineUsers((List) ServiceDtoCache.asList(User.class));
+                                ServiceLog.log.info(" >> online user data updated");
                             }
                         }
                     }
 
                     @Override
                     public void onMessageQueueFail(String queue) {
+
                     }
                 });
 
@@ -87,26 +85,24 @@ public class Application implements ServletContextListener {
                         .setEvent(AuthModel::getUserForAuth)
                         .startupSignin(User.getTemporaryRoot());
                 } catch (ServiceException | AuthException e) {
-                    log.error("! ", e);
+                    ServiceLog.log.error(" ! ", e);
                 }
             }
 
             @Override
             public void afterStop() {
-                MongoConnection.shutdown();
+
             }
         });
-        Services.startServer();
+        Services.startServices();
 
-        AdminDocument.createDtoDocument();
-
-        log.info("\n\n< Initializing application\n\n");
+        ServiceLog.log.info("\n\n<---- Initializing radiometric\n\n");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        log.info("\n\n> Stopping application\n");
-        Services.stop();
-        log.info("\n\n< Stopping application\n\n");
+        ServiceLog.log.info("\n\n----> Stopping radiometric\n");
+        Services.stopServices();
+        ServiceLog.log.info("\n\n<---- Stopping radiometric\n\n");
     }
 }

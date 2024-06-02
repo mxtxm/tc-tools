@@ -5,7 +5,8 @@ import com.tctools.business.dto.project.radiometric.complain.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
-import com.vantar.business.ModelMongo;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.Db;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
 import com.vantar.service.Services;
@@ -28,6 +29,9 @@ public class RadioMetricFlow extends DtoBase {
 
     @Default("false")
     public Boolean isCc;
+
+    @Default("false")
+    public Boolean isDrone;
 
     @Required
     public Site site;
@@ -226,9 +230,9 @@ public class RadioMetricFlow extends DtoBase {
                 try {
                     RadioMetricComplain complainX = new RadioMetricComplain();
                     complainX.id = complain.id;
-                    complainX = ModelMongo.getById(complainX);
+                    complainX = Db.modelMongo.getById(complainX);
                     complainX.lastState = lastState;
-                    ModelMongo.update(complainX);
+                    Db.modelMongo.update(new ModelCommon.Settings(complainX).mutex(false));
                 } catch (Exception ignore) {
 
                 }

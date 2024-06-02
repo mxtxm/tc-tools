@@ -8,6 +8,7 @@ public enum Role implements CommonUserRole {
     ROOT,
     ADMIN,
     MANAGER,
+    ATOMI,
     ENGINEER,
     TECHNICIAN,
     VENDOR,

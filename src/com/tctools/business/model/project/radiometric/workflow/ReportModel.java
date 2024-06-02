@@ -4,7 +4,7 @@ import com.tctools.business.dto.location.Province;
 import com.tctools.business.dto.project.container.ProjectType;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.user.User;
-import com.vantar.business.ModelMongo;
+import com.vantar.database.common.Db;
 import com.vantar.database.nosql.mongo.*;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
@@ -20,53 +20,45 @@ import java.util.*;
 
 public class ReportModel {
 
-    public static Map<String, Integer> stateAggregate() throws ServerException {
+    public static Map<String, Integer> stateAggregate() throws VantarException {
         Map<String, Integer> data = new HashMap<>();
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
-        q.addGroup("lastState", Mongo.ID);
+        q.addGroup("lastState", DbMongo.ID);
         q.addGroup(QueryGroupType.COUNT, "count");
 
         int total = 0;
-        try {
-            for (Document document : MongoQuery.getAggregate(q)) {
-                Integer count = document.getInteger("count");
-                data.put(document.getString(Mongo.ID), count);
-                if (count != null) {
-                    total += count;
-                }
+        for (Document document : Db.mongo.getAggregate(q)) {
+            Integer count = document.getInteger("count");
+            data.put(document.getString(DbMongo.ID), count);
+            if (count != null) {
+                total += count;
             }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
         }
 
         data.put("total", total);
         return data;
     }
 
-    public static Map<String, HashMap<String, Integer>> provinceAudit() throws ServerException {
+    public static Map<String, HashMap<String, Integer>> provinceAudit() throws VantarException {
         Map<String, HashMap<String, Integer>> data = new HashMap<>();
-        try {
-            putProvinceAudit(data, RadioMetricFlowState.Completed);
-            putProvinceAudit(data, RadioMetricFlowState.Approved);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        putProvinceAudit(data, RadioMetricFlowState.Completed);
+        putProvinceAudit(data, RadioMetricFlowState.Approved);
         return data;
     }
 
-    private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, RadioMetricFlowState state) throws DatabaseException {
+    private static void putProvinceAudit(Map<String, HashMap<String, Integer>> data, RadioMetricFlowState state) throws VantarException {
         Map<Long, Province> provinces = Services.get(ServiceDtoCache.class).getMap(Province.class);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().equal("lastState", state);
-        q.addGroup("site.provinceId", Mongo.ID);
+        q.addGroup("site.provinceId", DbMongo.ID);
         q.addGroup(QueryGroupType.COUNT, "count");
 
         int total = 0;
-        for (Document document : MongoQuery.getAggregate(q)) {
+        for (Document document : Db.mongo.getAggregate(q)) {
             Integer count = document.getInteger("count");
-            String name = provinces.get(document.getLong(Mongo.ID)).name.get("fa");
+            String name = provinces.get(document.getLong(DbMongo.ID)).name.get("fa");
 
             HashMap<String, Integer> d = data.get(name);
             if (d == null) {
@@ -93,63 +85,55 @@ public class ReportModel {
         QueryBuilder q = new QueryBuilder(new User());
         q.condition().equal("projectTypes", ProjectType.RadioMetric);
 
-        List<User> users = ModelMongo.getData(q, params.getLang());
+        List<User> users = Db.modelMongo.getData(q, params.getLang());
 
         Map<String, Map<String, HashMap<String, Integer>>> allData = new HashMap<>(users.size());
         for (User user : users) {
             Map<String, HashMap<String, Integer>> data = new HashMap<>();
-            try {
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Completed);
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Approved);
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Verified);
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Planned);
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Problematic);
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Revise);
-                putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Returned);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Completed);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Approved);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Verified);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Planned);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Problematic);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Revise);
+            putUserDoneAggregateMonth(data, user.id, RadioMetricFlowState.Returned);
 
-                allData.put(user.id + "||" + user.username + "||" + user.fullName, data);
-            } catch (DatabaseException e) {
-                throw new ServerException(VantarKey.FETCH_FAIL);
-            }
+            allData.put(user.id + "||" + user.username + "||" + user.fullName, data);
         }
 
         return allData;
     }
 
-    public static Map<String, HashMap<String, Integer>> userDoneAggregate(Params params) throws ServerException, InputException {
+    public static Map<String, HashMap<String, Integer>> userDoneAggregate(Params params) throws VantarException {
         Long userId = params.getLong("userId");
         if (userId == null || userId < 1) {
             throw new InputException(VantarKey.INVALID_ID, "userId");
         }
 
         Map<String, HashMap<String, Integer>> data = new HashMap<>();
-        try {
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Completed);
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Approved);
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Verified);
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Planned);
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Problematic);
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Revise);
-            putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Returned);
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
-        }
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Completed);
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Approved);
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Verified);
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Planned);
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Problematic);
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Revise);
+        putUserDoneAggregateMonth(data, userId, RadioMetricFlowState.Returned);
         return data;
     }
 
     private static void putUserDoneAggregate(Map<String, HashMap<String, Integer>> data,
-        long userId, RadioMetricFlowState state) throws DatabaseException {
+        long userId, RadioMetricFlowState state) throws VantarException {
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().in("lastState", state);
         q.condition().equal("assigneeId", userId);
-        q.addGroup("auditDateTime", Mongo.ID);
+        q.addGroup("auditDateTime", DbMongo.ID);
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTime ts = new DateTime();
-        for (Document document : MongoQuery.getAggregate(q)) {
+        for (Document document : Db.mongo.getAggregate(q)) {
             Integer count = document.getInteger("count");
-            Long date = document.getLong(Mongo.ID);
+            Long date = document.getLong(DbMongo.ID);
             if (date == null) {
                 continue;
             }
@@ -166,18 +150,18 @@ public class ReportModel {
     }
 
     private static void putUserDoneAggregateMonth(Map<String, HashMap<String, Integer>> data,
-        long userId, RadioMetricFlowState state) throws DatabaseException {
+        long userId, RadioMetricFlowState state) throws VantarException {
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().in("lastState", state);
         q.condition().equal("assigneeId", userId);
-        q.addGroup("auditDateTime", Mongo.ID);
+        q.addGroup("auditDateTime", DbMongo.ID);
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTime ts = new DateTime();
-        for (Document document : MongoQuery.getAggregate(q)) {
+        for (Document document : Db.mongo.getAggregate(q)) {
             Integer count = document.getInteger("count");
-            Long date = document.getLong(Mongo.ID);
+            Long date = document.getLong(DbMongo.ID);
             if (date == null) {
                 continue;
             }

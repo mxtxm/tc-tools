@@ -5,6 +5,7 @@ import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlowStat
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
+import com.tctools.web.patch.TestController;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
 import com.vantar.service.Services;
@@ -102,6 +103,7 @@ public class RadioMetricComplain extends DtoBase {
     private static String getImagePathX(String filename, String siteCode, boolean isUrl, boolean exists) {
         try {
             String filePath = Param.RADIO_METRIC_FILES + siteCode + "/complain/" + filename;
+            TestController.log.error(">>>>>>{}", filePath);
             if (exists && !FileUtil.exists(filePath)) {
                 return null;
             }

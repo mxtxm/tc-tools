@@ -7,9 +7,9 @@ import com.tctools.business.dto.site.*;
 import com.tctools.business.dto.system.Settings;
 import com.tctools.business.service.locale.AppLangKey;
 import com.tctools.common.util.Excel;
-import com.vantar.admin.model.index.Admin;
-import com.vantar.business.ModelMongo;
-import com.vantar.database.common.ValidationError;
+import com.vantar.admin.index.Admin;
+import com.vantar.business.ModelCommon;
+import com.vantar.database.common.*;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
 import com.vantar.database.query.QueryBuilder;
@@ -18,6 +18,7 @@ import com.vantar.locale.Locale;
 import com.vantar.locale.*;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.*;
 import com.vantar.util.object.ClassUtil;
@@ -396,7 +397,7 @@ public class AdminSiteImport {
                             // > > > lang
                             Map<String, String> propertyValue = (Map<String, String>) site.getPropertyValue(fieldName);
                             if (propertyValue == null) {
-                                propertyValue = new HashMap<>(2);
+                                propertyValue = new HashMap<>(2, 1);
                                 site.setPropertyValue(fieldName, propertyValue);
                             }
                             propertyValue.put(fieldInfo, value);
@@ -432,7 +433,7 @@ public class AdminSiteImport {
 
                 List<ValidationError> validationErrors = site.validate(Dto.Action.INSERT);
                 if (validationErrors != null && !validationErrors.isEmpty()) {
-                    Admin.log.error("! validation error site not added {} > {}", site.code, validationErrors);
+                    ServiceLog.log.error("! validation error site not added {} > {}", site.code, validationErrors);
                     ui.addErrorMessage("ERROR " + site.code + " > " + ValidationError.toString(validationErrors)).write();
                     continue;
                 }
@@ -440,15 +441,17 @@ public class AdminSiteImport {
                 try {
                     Long id = codeIdMap.get(site.code);
                     if (id != null) {
-                        QueryBuilder q = new QueryBuilder(site);
-                        q.condition().equal("id", id);
-                        ModelMongo.updateNoLog(q);
+//                        ServiceLog.log.error(">>>>>>>{}", site);
+//                        QueryBuilder q = new QueryBuilder(site);
+//                        q.condition().equal("id", id);
+                        site.id = id;
+                        Db.modelMongo.update(new ModelCommon.Settings(site).logEvent(false).mutex(false));
                         ui.addMessage(
                             (i-1) + " " + Locale.getString(AppLangKey.UPDATED, site.getClass().getSimpleName(), site.code)
                         ).write();
-                        site = ModelMongo.getFirst(q);
+                        site = Db.modelMongo.getById(site);
                     } else {
-                        ModelMongo.insertNoLog(site);
+                        Db.modelMongo.insert(new ModelCommon.Settings(site).logEvent(false).mutex(false));
                         ui.addMessage(
                             (i-1) + " " + Locale.getString(AppLangKey.ADDED, site.getClass().getSimpleName(), site.code)
                         ).write();
@@ -461,7 +464,7 @@ public class AdminSiteImport {
 
                     ++recordCount;
                 } catch (VantarException e) {
-                    Admin.log.error("! unexpected error ({})", site, e);
+                    ServiceLog.log.error("! unexpected error ({})", site, e);
                     ui.addErrorMessage(e).write();
                 }
             }
@@ -474,11 +477,11 @@ public class AdminSiteImport {
         try {
             QueryBuilder q = new QueryBuilder(new Settings());
             q.condition().equal("key", Settings.KEY_ARAS_UPDATE);
-            ModelMongo.deleteNoLog(q);
+            Db.modelMongo.delete(new ModelCommon.Settings(q).logEvent(false).mutex(false));
             Settings settings = new Settings();
             settings.key = Settings.KEY_ARAS_UPDATE;
             settings.value = new DateTime().formatter().getDate();
-            ModelMongo.insertNoLog(settings);
+            Db.modelMongo.insert(new ModelCommon.Settings(settings).logEvent(false).mutex(false));
         } catch (Exception e) {
             ui.addErrorMessage(e);
         }
@@ -528,13 +531,13 @@ public class AdminSiteImport {
     private static void loadSites(WebUi ui) {
         codeIdMap = new HashMap<>();
         try {
-            for (Dto dto : ModelMongo.getAll(new Site.ViewableIdCode())) {
+            for (Dto dto : Db.modelMongo.getAll(new Site.ViewableIdCode())) {
                 codeIdMap.put(((Site.ViewableIdCode) dto).code, ((Site.ViewableIdCode) dto).id);
             }
         } catch (NoContentException e) {
             ui.addMessage("no sites in database");
         } catch (VantarException e) {
-            Admin.log.error("! error loading sites", e);
+            ServiceLog.log.error("! error loading sites", e);
             ui.addErrorMessage("can not load sites");
         }
     }
@@ -593,14 +596,14 @@ public class AdminSiteImport {
                 }
             }
 
-            ResponseMessage res = ModelMongo.insertNoLog(obj);
+            ResponseMessage res = Db.modelMongo.insert(new ModelCommon.Settings(obj).logEvent(false).mutex(false));
             ui.addMessage(
                 Locale.getString(AppLangKey.ADDED, obj.getClass().getSimpleName(), "(" + res.value + ") " + values[0])
             ).write();
-            Admin.log.warn("! inserted new({}) > {}", obj.getClass().getSimpleName(), values[0]);
+            ServiceLog.log.warn("! inserted new({}) > {}", obj.getClass().getSimpleName(), values[0]);
             return (Long) res.value;
         } catch (Exception e) {
-            Admin.log.error("! failed insert ({}, {})", obj.getClass().getSimpleName(), values[0], e);
+            ServiceLog.log.error("! failed insert ({}, {})", obj.getClass().getSimpleName(), values[0], e);
             ui.addErrorMessage(e).write();
             return null;
         }
@@ -657,14 +660,14 @@ public class AdminSiteImport {
 
     private static void removeRemovedSited(WebUi ui) {
         try {
-            for (Dto dto : ModelMongo.getAll(new Site())) {
+            for (Dto dto : Db.modelMongo.getAll(new Site())) {
                 Site site = (Site) dto;
                 if (!siteCodes.contains(site.code)) {
                     try {
-                        ModelMongo.deleteById(site);
+                        Db.modelMongo.delete(new ModelCommon.Settings(site));
                         ui.addMessage("deleted " + site.code + " from Site");
                     } catch (VantarException e) {
-                        Admin.log.error("! can not delete {}", site);
+                        ServiceLog.log.error("! can not delete {}", site);
                         ui.addErrorMessage(e);
                     }
                 }

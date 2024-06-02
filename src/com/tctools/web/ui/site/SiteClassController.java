@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class SiteClassController extends RouteToMethod {
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteClassGet(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteClassModel.getAll(params));
     }
 
-    @Access({"ADMIN", "MCI", "MANAGER", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "TECHNICIAN", "VENDOR", "READONLY",})
     public void siteClassKeyval(Params params, HttpServletResponse response) {
         Response.writeJson(response, SiteClassModel.getAsKeyValue(params));
     }

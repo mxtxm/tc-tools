@@ -2,12 +2,11 @@ package com.tctools.business.model.project.radiometric.workflow.export;
 
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.common.util.ExportCommon;
-import com.vantar.business.*;
+import com.vantar.database.common.Db;
 import com.vantar.database.dto.Dto;
-import com.vantar.database.nosql.mongo.*;
+import com.vantar.database.nosql.mongo.DbMongo;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
-import com.vantar.locale.VantarKey;
 import com.vantar.util.datetime.*;
 import com.vantar.util.json.Json;
 import com.vantar.util.object.ObjectUtil;
@@ -21,12 +20,12 @@ public class StateReport extends ExportCommon {
     private final static String MONTHLY_OVERVIEW = "StateReport.monthlyOverview";
 
 
-    public static Map<String, Integer> getOverview(Params params) throws ServerException {
+    public static Map<String, Integer> getOverview(Params params) throws VantarException {
         Map<String, Integer> data = new HashMap<>(10);
 
         QueryBuilder q = new QueryBuilder(new RadioMetricFlow());
         q.condition().isNotNull("lastState");
-        q.addGroup("lastState", Mongo.ID);
+        q.addGroup("lastState", DbMongo.ID);
         q.addGroup(QueryGroupType.COUNT, "count");
 
         DateTimeRange dateTimeRange = params.getDateTimeRange("from", "to");
@@ -34,12 +33,8 @@ public class StateReport extends ExportCommon {
             q.condition().between("lastStateDateTime", dateTimeRange);
         }
 
-        try {
-            for (Document document : MongoQuery.getAggregate(q)) {
-                data.put(document.get(Mongo.ID).toString(), (Integer) document.get("count"));
-            }
-        } catch (DatabaseException e) {
-            throw new ServerException(VantarKey.FETCH_FAIL);
+        for (Document document : Db.mongo.getAggregate(q)) {
+            data.put(document.get(DbMongo.ID).toString(), (Integer) document.get("count"));
         }
 
         return data;
@@ -52,7 +47,7 @@ public class StateReport extends ExportCommon {
         q.sort("lastStateDateTime");
 
         try {
-            for (Dto dto : ModelMongo.getData(q)) {
+            for (Dto dto : Db.modelMongo.getData(q)) {
                 RadioMetricFlow flow = (RadioMetricFlow) dto;
                 String ym = flow.lastStateDateTime.formatter().getDatePersianYmonth();
 
@@ -75,7 +70,7 @@ public class StateReport extends ExportCommon {
         Map<String, StateStatistic> withTarget = new LinkedHashMap<>();
 
         try {
-            List<RadioMetricTarget> data = ModelMongo.getAll(new RadioMetricTarget());
+            List<RadioMetricTarget> data = Db.modelMongo.getAll(new RadioMetricTarget());
             for (RadioMetricTarget t : data) {
                 String ym = new DateTime(t.year + "-" + t.month + "-01").formatter().getDatePersianYmonth();
                 withTarget.put(ym, new StateStatistic(t.value));
