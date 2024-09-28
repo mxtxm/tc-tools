@@ -1,8 +1,9 @@
 package com.tctools.business.model.project.radiometric;
 
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
+import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
 import com.tctools.common.util.*;
-import com.tctools.web.patch.TestController;
+import com.tctools.web.webtest.TestController;
 import com.vantar.database.common.Db;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.VantarException;
@@ -22,6 +23,7 @@ public class ExportWorkflowModel {
 
     public void createXlsx(Params params, HttpServletResponse response) throws VantarException {
         q = params.getQueryBuilder("q", new RadioMetricFlow.Viewable());
+        WorkFlowModel.setQuery(q);
         buildXlsx(response);
     }
 

@@ -8,7 +8,14 @@ public enum RadioMetricPhotoType {
     TripodInLocation,
     Address,
     Extra1,
-    Extra2;
+    Extra2,
+
+    Drone,
+    TargetBuildingFromTower,
+    TargetBuilding,
+    FlightControlScreen,
+    TowerTopView,
+    ;
 
     public String getFilename() {
         switch (name()) {
@@ -18,6 +25,15 @@ public enum RadioMetricPhotoType {
                 return "Probe View in Front of Measured Sector";
             case "TripodInLocation":
                 return "Tripod in Location";
+
+            case "TargetBuildingFromTower":
+                return "Target building from tower";
+            case "TargetBuilding":
+                return "Target building";
+            case "FlightControlScreen":
+                return "Flight control screen";
+            case "TowerTopView":
+                return "Tower top view";
         }
         return name();
     }

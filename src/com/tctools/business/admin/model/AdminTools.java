@@ -31,6 +31,8 @@ public class AdminTools {
             .addHrefBlock("Docx templates", "/admin/tools/radiometric/templates")
             .addEmptyLine()
             .addHrefBlock("Upload signature", "/admin/tools/radiometric/signature")
+            .addEmptyLine()
+            .addHrefBlock("Manual data entry", "/admin/tools/radiometric/manual/data/entry")
             .blockEnd();
 
         ui.finish();
@@ -251,7 +253,7 @@ public class AdminTools {
             WebUi ui = Admin.getUi("Radiometric templates", params, response, false);
 
             if (file != null && file.isUploaded() && !file.isIoError()) {
-                file.moveTo("/opt/tc-tools/templates/radiometric/site-radiometric.docx");
+                file.moveTo(Param.RADIO_METRIC_DIR + "templates/radiometric/site-radiometric.docx");
                 ui.addMessage("uploaded successfully").write();
                 return;
             }
@@ -269,7 +271,7 @@ public class AdminTools {
             WebUi ui = Admin.getUi("User signature", params, response, false);
 
             if (file != null && file.isUploaded() && !file.isIoError()) {
-                file.moveTo("/opt/tc-tools/files/user/" + file.getOriginalFilename());
+                file.moveTo(Param.RADIO_METRIC_DIR + "files/user/" + file.getOriginalFilename());
                 ui.addMessage("uploaded successfully");
             }
 
@@ -286,11 +288,11 @@ public class AdminTools {
 
     private static void drawSignatures(WebUi ui) {
         try {
-            Files.list(Paths.get("/opt/tc-tools/files/user"))
+            Files.list(Paths.get(Param.RADIO_METRIC_DIR + "files/user"))
                 .filter(Files::isRegularFile)
                 .forEach((file) -> {
                     String fileUrl = Param.USERS_URL + file.getFileName();
-                    String filePath = "/opt/tc-tools/files/user/" + file.getFileName();
+                    String filePath = Param.RADIO_METRIC_DIR + "files/user/" + file.getFileName();
                     ui.addHrefBlock(
                         fileUrl + "   (" + FileUtil.getSizeMb(filePath) + "MB)",
                         fileUrl

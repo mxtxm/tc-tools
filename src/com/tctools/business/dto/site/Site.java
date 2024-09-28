@@ -6,6 +6,7 @@ import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.Date;
 import com.vantar.database.dto.*;
 import com.vantar.exception.VantarException;
+import com.vantar.service.cache.ServiceDtoCache;
 import com.vantar.service.log.ServiceLog;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.string.StringUtil;
@@ -21,6 +22,7 @@ public class Site extends DtoBase {
     public String code;
 
     @Localized
+    @NoList
     public Map<String, String> name;
 
     // BSC RNC
@@ -71,6 +73,7 @@ public class Site extends DtoBase {
     public Long locationTypeId;
     @NoList
     public String address;
+    public String addressOld;
     @Required
     @NoList
     public Location location;
@@ -79,7 +82,8 @@ public class Site extends DtoBase {
     @Default("0")
     public Integer etcTransceiverCount;
     public CollocationType collocationType;
-    public List<Collocation> collocations;
+    @NoList
+    public Set<Collocation> collocations;
 
 
     @Override
@@ -90,7 +94,11 @@ public class Site extends DtoBase {
     @Override
     public boolean beforeUpdate() {
         code = code.toUpperCase();
-        address = normaliseAddress(address);
+        address = normaliseAddress(
+            address,
+            ServiceDtoCache.asDto(Province.class, provinceId).name.get("fa"),
+            ServiceDtoCache.asDto(City.class, cityId).name.get("fa")
+        );
         return true;
     }
 
@@ -103,14 +111,19 @@ public class Site extends DtoBase {
         }
     }
 
-    public static String normaliseAddress(String a) {
+    public static String normaliseAddress(String a, String provinceName, String cityName) {
         if (a == null) {
             return a;
         }
         a = StringUtil.replace(a, "،", ",");
+        a = StringUtil.replace(a, "_", ",");
         a = StringUtil.replace(a, " ,", ",");
         a = StringUtil.replace(a, ", ", ",");
-        return StringUtil.replace(a, ",", " - ");
+        a = StringUtil.replace(a, ",", " - ");
+        a = StringUtil.replace(a, "  ", " ");
+        a = StringUtil.replace(a, "  ", " ");
+        a = StringUtil.replace(a, "  ", " ");
+        return provinceName == null ? a : StringUtil.ltrim(a, provinceName, cityName, "شهر", "استان", "-");
     }
 
 

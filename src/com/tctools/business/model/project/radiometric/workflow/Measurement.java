@@ -103,7 +103,7 @@ public class Measurement {
                             avg = avgTemp;
                         }
 
-                        if (height.equals("150")) {
+                        if (height.equals("150") || height.equals("X")) {
                             if (!gpsDataMissing && (i < 10 || location.isEmpty() || !location.isValid())) {
                                 location.latitude = StringUtil.toDouble(record[5]);
                                 location.longitude = StringUtil.toDouble(record[6]);
@@ -177,42 +177,44 @@ public class Measurement {
         flow.setPropertyValue("radiationStatus" + height, RadioMetricRadiationStatus.Compatible);
 
         // > > > validation
-        Set<String> msg = new HashSet<>(10);
-        if (flow.validationMessage != null) {
-            Set<String> msgs = StringUtil.splitToSet(flow.validationMessage, '\n');
-            if (msgs != null) {
-                for (String m : msgs) {
-                    if (!m.startsWith(height + ":")) {
-                        msg.add(m);
+        if (!"X".equals(height)) {
+            Set<String> msg = new HashSet<>(10);
+            if (flow.validationMessage != null) {
+                Set<String> msgs = StringUtil.splitToSet(flow.validationMessage, '\n');
+                if (msgs != null) {
+                    for (String m : msgs) {
+                        if (!m.startsWith(height + ":")) {
+                            msg.add(m);
+                        }
                     }
                 }
             }
-        }
 
-        long mins = endDateTime == null || startDateTime == null ? 0 : endDateTime.diffSeconds(startDateTime) / 60;
-        if (mins < 3) {
-            msg.add(height + ": too quick (" + mins + "minutes)");
-        } else if (mins > 6) {
-            msg.add(height + ": too slow (" + mins + "minutes)");
-        }
+            long mins = endDateTime == null || startDateTime == null ? 0 : endDateTime.diffSeconds(startDateTime) / 60;
+            if (mins < 3) {
+                msg.add(height + ": too quick (" + mins + "minutes)");
+            } else if (mins > 6) {
+                msg.add(height + ": too slow (" + mins + "minutes)");
+            }
 
-        // compare with each-other
-        if (flow.logDateTime100 != null && flow.logDateTime150 != null && flow.logDateTime170 != null) {
-            long minA = flow.logDateTime100.diffSeconds(flow.logDateTime150) / 60;
-            long minB = flow.logDateTime100.diffSeconds(flow.logDateTime170) / 60;
-            long minC = flow.logDateTime170.diffSeconds(flow.logDateTime150) / 60;
-            if (minA >= 10) {
-                msg.add("100~150: (" + minA + "minutes)");
+            // compare with each-other
+            if (flow.logDateTime100 != null && flow.logDateTime150 != null && flow.logDateTime170 != null) {
+                long minA = flow.logDateTime100.diffSeconds(flow.logDateTime150) / 60;
+                long minB = flow.logDateTime100.diffSeconds(flow.logDateTime170) / 60;
+                long minC = flow.logDateTime170.diffSeconds(flow.logDateTime150) / 60;
+                if (minA >= 10) {
+                    msg.add("100~150: (" + minA + "minutes)");
+                }
+                if (minB >= 10) {
+                    msg.add("100~170: (" + minB + "minutes)");
+                }
+                if (minC >= 10) {
+                    msg.add("150~170:  (" + minC + "minutes)");
+                }
             }
-            if (minB >= 10) {
-                msg.add("100~170: (" + minB + "minutes)");
-            }
-            if (minC >= 10) {
-                msg.add("150~170:  (" + minC + "minutes)");
-            }
-        }
 
-        flow.validationMessage = CollectionUtil.join(msg, "\n");
+            flow.validationMessage = CollectionUtil.join(msg, "\n");
+        }
         // validation < < <
     }
 
@@ -289,9 +291,6 @@ public class Measurement {
             cell = row.createCell(1);
             cell.setCellFormula("ROUND(B375/4.4,3)");
 
-
-            //FileUtil.removeFile(okTempFilename);
-//log.error(">>>>>>>>{}",csvPath);
             workbook.write(out);
         } catch (Exception e) {
             log.error("! {}", csvPath, e);

@@ -1,6 +1,5 @@
 package com.tctools.business.model.project.radiometric.workflow.export;
 
-import com.tctools.business.dto.project.radiometric.complain.RadioMetricComplain;
 import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlow;
 import com.tctools.business.dto.site.Sector;
 import com.tctools.business.service.locale.AppLangKey;
@@ -130,7 +129,8 @@ public class ExportSearchControl extends ExportCommon {
             int iSc = 0;
             int iCc = 0;
             for (RadioMetricFlow.Viewable flow : items) {
-                boolean isCc = !RadioMetricComplain.isEmpty(flow.complain);
+                //boolean isCc = !RadioMetricComplain.isEmpty(flow.complain);
+                boolean isCc = flow.isCc;
                 c = 0;
 
                 if (isCc) {

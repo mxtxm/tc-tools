@@ -1,6 +1,8 @@
 package com.tctools.business.admin.web;
 
+import com.tctools.business.admin.model.AdminManualDataEntry;
 import com.tctools.business.admin.model.AdminTools;
+import com.tctools.common.Param;
 import com.vantar.exception.FinishException;
 import com.vantar.web.*;
 import org.slf4j.*;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
     "/admin/tools/radiometric/templates",
     "/admin/tools/radiometric/templates/docx",
     "/admin/tools/radiometric/signature",
+
+    "/admin/tools/radiometric/manual/data/entry",
 })
 @MultipartConfig(
     location="/tmp",
@@ -48,10 +52,14 @@ public class AdminToolsController extends RouteToMethod {
     }
 
     public void toolsRadiometricTemplatesDocx(Params params, HttpServletResponse response) throws FinishException {
-        Response.download(response, "/opt/tc-tools/templates/radiometric/site-radiometric.docx", "site-radiometric.docx");
+        Response.download(response, Param.RADIO_METRIC_DIR + "templates/radiometric/site-radiometric.docx", "site-radiometric.docx");
     }
 
     public void toolsRadiometricSignature(Params params, HttpServletResponse response) throws FinishException {
         AdminTools.signature(params, response);
+    }
+
+    public void toolsRadiometricManualDataEntry(Params params, HttpServletResponse response) throws FinishException {
+        AdminManualDataEntry.index(params, response);
     }
 }

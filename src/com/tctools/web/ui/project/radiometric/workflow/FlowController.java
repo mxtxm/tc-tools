@@ -1,9 +1,10 @@
 package com.tctools.web.ui.project.radiometric.workflow;
 
 import com.tctools.business.dto.project.container.ProjectType;
-import com.tctools.business.dto.user.*;
+import com.tctools.business.dto.user.User;
+import com.tctools.business.model.project.radiometric.Assigning;
 import com.tctools.business.model.project.radiometric.workflow.WorkFlowModel;
-import com.vantar.exception.*;
+import com.vantar.exception.VantarException;
 import com.vantar.service.Services;
 import com.vantar.service.auth.ServiceAuth;
 import com.vantar.web.*;
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
     "/ui/radio/metric/image/delete",
     "/ui/radio/metric/log/delete",
+
+    "/ui/radio/metric/drone/assign",
 })
 public class FlowController extends RouteToMethod {
 
@@ -81,5 +84,12 @@ public class FlowController extends RouteToMethod {
     public void radioMetricLogDelete(Params params, HttpServletResponse response) throws VantarException {
         ((User) Services.get(ServiceAuth.class).getCurrentUser(params)).projectAccess(ProjectType.RadioMetric);
         Response.writeJson(response, WorkFlowModel.deleteLog(params));
+    }
+
+    @Access({"ADMIN", "MCI", "MANAGER", "ATOMI", "ENGINEER", "VENDOR",})
+    public void radioMetricDroneAssign(Params params, HttpServletResponse response) throws VantarException {
+        User user = ((User) Services.get(ServiceAuth.class).getCurrentUser(params));
+        user.projectAccess(ProjectType.RadioMetric);
+        Response.writeJson(response, Assigning.assignDrone(params, user));
     }
 }

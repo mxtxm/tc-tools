@@ -1,5 +1,5 @@
 /**
- * version: 4.9.18
+ * version: 4.9.20
  */
 $(window).on("load", function () {
 
@@ -16,6 +16,11 @@ $(window).on("load", function () {
         $("#jsonsearch").toggle();
     });
 
+    // search options
+    $("#page-no, #page-length, #sort, #sortpos").on("change", function () {
+        searchToJson();
+    });
+
     // delete delete:
     $("#delete-select-all").on("click", function () {
         $(".delete-check").prop("checked", $(this).is(":checked"));
@@ -24,7 +29,8 @@ $(window).on("load", function () {
     $("#dto-form").on("submit", function () {
         let x = {};
         let nullProperties = [];
-        $('#dto-form').find('input, select, textarea').each(function () {
+
+        $.each(document.getElementById("dto-form").querySelectorAll("input, select, textarea"), function () {
             let e = $(this),
                 v = e.val(),
                 n = e.attr("name"),

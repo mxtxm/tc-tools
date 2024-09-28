@@ -23,6 +23,55 @@ import java.util.*;
 
 public class Assigning {
 
+    public static ResponseMessage assignDrone(Params params, User assignor) throws VantarException {
+        DateTime now = new DateTime();
+
+        RadioMetricFlow flow = new RadioMetricFlow();
+        flow.isCc = false;
+        flow.isDrone = true;
+        flow.assigneeId = params.getLongRequired("assigneeId");
+        flow.assignDateTime = now;
+        flow.lastStateDateTime = now;
+
+        Site site = new Site();
+        site.id = params.getLongRequired("siteId");
+        site = Db.modelMongo.getById(site, params.getLang());
+
+        flow.site = site;
+        flow.assignorId = assignor.getId();
+        flow.provinceId = site.provinceId;
+        flow.cityId = site.cityId;
+        flow.siteAddress = site.address;
+        flow.siteLocation = site.location;
+        flow.sectors = site.sectors;
+
+        flow.state = new ArrayList<>(2);
+        flow.lastStateDateTime = now;
+        flow.lastState = RadioMetricFlowState.Planned;
+        // 1 - Pending
+        State stateA = new State(RadioMetricFlowState.Pending, now);
+        flow.state.add(stateA);
+        // 2- Planned
+        User assignee = Services.get(ServiceDtoCache.class).getDto(User.class, flow.assigneeId);
+        State stateB = new State(flow.lastState, params.getString("comments"));
+        stateB.assignorId = assignor.id;
+        stateB.assignorName = assignor.fullName;
+        stateB.assigneeId = assignee.id;
+        stateB.assigneeName = assignee.fullName;
+        flow.state.add(stateB);
+
+        ResponseMessage r = Db.modelMongo.insert(new ModelCommon.Settings(flow).mutex(false));
+
+        if (StringUtil.isNotEmpty(assignee.mobile)) {
+            SendMessage.sendSms(
+                assignee.mobile,
+                "با سلام" + "\n" + " سایت " + flow.site.code + " برای پرتوسنجی پهبادی به کاربر شما اساین شد "
+            );
+        }
+
+        return r;
+    }
+
     public static ResponseMessage assignComplain(Params params, User assignor) throws VantarException {
         DateTime now = new DateTime();
 
@@ -166,6 +215,7 @@ public class Assigning {
             flow.assignable = true;
             flow.lastStateDateTime = new DateTime();
             flow.lastState = RadioMetricFlowState.Pending;
+            flow.logDateTimeX = null;
             flow.logDateTime100 = null;
             flow.logDateTime150 = null;
             flow.logDateTime170 = null;

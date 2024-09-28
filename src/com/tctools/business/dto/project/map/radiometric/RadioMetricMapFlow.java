@@ -27,22 +27,29 @@ public class RadioMetricMapFlow {
 
     public Double coverage;
 
+    public Double densityAverage6minX;
     public Double densityAverage6min100;
     public Double densityAverage6min150;
     public Double densityAverage6min170;
 
     public boolean isCc;
     public boolean isRe;
+    public String tag;
 
 
     public RadioMetricMapFlow(RadioMetricFlow.ViewableTiny flow) {
+        if ("OLD WORKFLOW".equals(flow.comments)) {
+            tag = "D";
+        }
+
         id = flow.id;
 
         // probably redundant
         assignable = RadioMetricFlow.isAssignable(flow.lastState, flow.site.btsStatusId == null ? null : flow.site.btsStatusId);
 
         site = new SiteForMap(flow.site);
-        if (!RadioMetricComplain.isEmpty(flow.complain)) {
+        //if (!RadioMetricComplain.isEmpty(flow.complain)) {
+        if (flow.isCc) {
             complain = new ComplainForMap(flow.complain);
         }
 
@@ -75,13 +82,8 @@ public class RadioMetricMapFlow {
             isCc = false;
             isRe = false;
         } else {
-            if (flow.complain.type == null || flow.complain.type.equals(ComplainType.Normal)) {
-                isCc = false;
-                isRe = true;
-            } else {
-                isCc = true;
-                isRe = false;
-            }
+            isCc = flow.isCc;
+            isRe = flow.complain.type == null || flow.complain.type.equals(ComplainType.Normal);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.tctools.business.model.project.radiometric.workflow.export;
 
-import com.tctools.business.dto.project.radiometric.complain.RadioMetricComplain;
 import com.tctools.business.dto.project.radiometric.workflow.*;
 import com.tctools.business.dto.site.*;
 import com.tctools.business.service.locale.AppLangKey;
@@ -160,7 +159,8 @@ public class ExportWaveControl extends ExportCommon {
                     continue;
                 }
 
-                boolean isCc = !RadioMetricComplain.isEmpty(flow.complain);
+                //boolean isCc = !RadioMetricComplain.isEmpty(flow.complain);
+                boolean isCc = flow.isCc;
                 c = 0;
 
                 if (isCc) {

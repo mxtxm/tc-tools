@@ -9,8 +9,10 @@ import com.vantar.business.ModelCommon;
 import com.vantar.database.common.Db;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
+import com.vantar.exception.NoContentException;
 import com.vantar.service.Services;
 import com.vantar.service.cache.ServiceDtoCache;
+import com.vantar.service.log.ServiceLog;
 import com.vantar.util.bool.BoolUtil;
 import com.vantar.util.datetime.DateTime;
 import com.vantar.util.file.FileUtil;
@@ -33,9 +35,11 @@ public class RadioMetricFlow extends DtoBase {
     @Default("false")
     public Boolean isDrone;
 
+    @NoList
     @Required
     public Site site;
 
+    @NoList
     public RadioMetricComplain complain;
 
     // assign > > >
@@ -47,6 +51,7 @@ public class RadioMetricFlow extends DtoBase {
     //@Required
     //@Depends(User.class)
     public Long assigneeId;
+    @NoList
     public List<State> state;
     public RadioMetricFlowState lastState;
     @Timestamp
@@ -66,117 +71,224 @@ public class RadioMetricFlow extends DtoBase {
     public Long cityId;
 
     // default=Site.address technician can change after measurement
+    @NoList
     public String siteAddress;
+    public String siteAddressOld;
     // default=Site.location technician can change after measurement
     public Location siteLocation;
     // default=null technician must enter after measurement
+    @NoList
     public String spotAddress;
+    public String spotAddressOld;
     // default=null system must enter after measurement
     public Location spotLocation;
     // < < < location
 
     // proximity > > >
+    @NoList
     public List<Proximity> proximities;
     // < < < proximity
 
     // sectors > > >
+    @NoList
     public List<Sector> sectors;
     // < < < sectors
 
     // measurement device > > >
+    @NoList
     public String deviceTitle;
+    @NoList
     public String deviceManufacturer;
+    @NoList
     public String deviceModel;
+    @NoList
     public String deviceSerialNumber;
+    @NoList
     public String deviceProbe;
+    @NoList
     public DateTime deviceCalibrationExpire;
     // < < < measurement device
 
     // measurement > > >
+    @NoList
     public Integer horizontalDistanceFromLocation;
+    @NoList
     public Integer horizontalDistanceFromLocationEstimate;
+    @NoList
     public Double measurementHeight;
+    @NoList
     public String measurementType;
 
     // checking
+    @NoList
     public String validationMessage;
+    @NoList
     public String committableMessage;
+    @NoList
     public Boolean isCommittable;
 
+    @NoList
+    public Boolean isMeasurementRecordCountAcceptableX;
+    @NoList
+    public Boolean isMeasurementGpsDataAvailableX;
+    @NoList
+    public Boolean isMeasurementTimeAcceptableX;
+
+    @NoList
     public Boolean isMeasurementRecordCountAcceptable100;
+    @NoList
     public Boolean isMeasurementGpsDataAvailable100;
+    @NoList
     public Boolean isMeasurementTimeAcceptable100;
 
+    @NoList
     public Boolean isMeasurementRecordCountAcceptable150;
+    @NoList
     public Boolean isMeasurementGpsDataAvailable150;
+    @NoList
     public Boolean isMeasurementTimeAcceptable150;
 
+    @NoList
     public Boolean isMeasurementRecordCountAcceptable170;
+    @NoList
     public Boolean isMeasurementGpsDataAvailable170;
+    @NoList
     public Boolean isMeasurementTimeAcceptable170;
 
+    @NoList
+    public Boolean isMwCm2X;
+    @NoList
     public Boolean isMwCm2100;
+    @NoList
     public Boolean isMwCm2150;
+    @NoList
     public Boolean isMwCm2170;
 
     // Density min (µw/cm2)
+    @NoList
+    public Double densityMinX;
+    // Density max(µw/cm2)
+    @NoList
+    public Double densityMaxX;
+    @NoList
+    public Double densityAverage6minX;
+    @NoList
+    public Double densityAverageDevice6minX;
+    // Min level of radiation(µw/cm2)
+    @NoList
+    public Double minRadiationLevelX;
+    // Density average - 6 min(µw/cm2)
+    @NoList
+    public Double densityAverageDivMinRadiationX;
+    @NoList
+    public DateTime logDateTimeX;
+    @NoList
+    public RadioMetricRadiationStatus radiationStatusX;
+    @NoList
+    public Double icnirpPercentX;
+
+
+    // Density min (µw/cm2)
+    @NoList
     public Double densityMin100;
     // Density max(µw/cm2)
+    @NoList
     public Double densityMax100;
+    @NoList
     public Double densityAverage6min100;
+    @NoList
     public Double densityAverageDevice6min100;
     // Min level of radiation(µw/cm2)
+    @NoList
     public Double minRadiationLevel100;
     // Density average - 6 min(µw/cm2)
+    @NoList
     public Double densityAverageDivMinRadiation100;
+    @NoList
     public DateTime logDateTime100;
+    @NoList
     public RadioMetricRadiationStatus radiationStatus100;
+    @NoList
     public Double icnirpPercent100;
 
+    @NoList
     public Double densityMin150;
+    @NoList
     public Double densityMax150;
+    @NoList
     public Double densityAverage6min150;
+    @NoList
     public Double densityAverageDevice6min150;
+    @NoList
     public Double minRadiationLevel150;
+    @NoList
     public Double densityAverageDivMinRadiation150;
+    @NoList
     public DateTime logDateTime150;
+    @NoList
     public RadioMetricRadiationStatus radiationStatus150;
+    @NoList
     public Double icnirpPercent150;
 
+    @NoList
     public Double densityMin170;
+    @NoList
     public Double densityMax170;
+    @NoList
     public Double densityAverage6min170;
+    @NoList
     public Double densityAverageDevice6min170;
+    @NoList
     public Double minRadiationLevel170;
+    @NoList
     public Double densityAverageDivMinRadiation170;
+    @NoList
     public DateTime logDateTime170;
+    @NoList
     public RadioMetricRadiationStatus radiationStatus170;
+    @NoList
     public Double icnirpPercent170;
     // < < < measurement
 
     // observation > > >
+    @NoList
     public CollocationType collocationType;
-    public List<Collocation> collocations;
+    @NoList
+    public Set<Collocation> collocations;
 
+    @NoList
     public Integer siteFloor;
 
+    @NoList
     public String reportedProvince;
+    @NoList
     public String reportedCity;
     // < < < observation
 
     public String comments;
 
     // measurement urls > > >
+    @NoList
     public Map<String, String> imageUrls;
+    @NoList
+    public String measurementUrlX;
+    @NoList
     public String measurementUrl100;
+    @NoList
     public String measurementUrl150;
+    @NoList
     public String measurementUrl170;
     // < < < measurement URLS
 
     // > > >
+    @NoList
     public String reporter;
+    @NoList
     public String healthPhysics;
     // < < <
+
+    public List<String> patch;
+
 
     private boolean skipBeforeUpdate = false;
 
@@ -209,33 +321,65 @@ public class RadioMetricFlow extends DtoBase {
 
     @Override
     public boolean beforeUpdate() {
-        spotAddress = Site.normaliseAddress(spotAddress);
-        siteAddress = Site.normaliseAddress(siteAddress);
-        if (complain != null) {
-            complain.address = Site.normaliseAddress(complain.address);
-            complain.complainerAddress = Site.normaliseAddress(complain.complainerAddress);
-        }
+        spotAddress = Site.normaliseAddress(
+            spotAddress,
+            null,
+            null
+        );
+        siteAddress = Site.normaliseAddress(
+            siteAddress,
+            ServiceDtoCache.asDto(Province.class, provinceId).name.get("fa"),
+            ServiceDtoCache.asDto(City.class, cityId).name.get("fa")
+        );
+
         if (site != null) {
-            site.address = Site.normaliseAddress(site.address);
+            site.addressOld = site.address;
+            site.address = Site.normaliseAddress(
+                site.address,
+                ServiceDtoCache.asDto(Province.class, provinceId).name.get("fa"),
+                ServiceDtoCache.asDto(City.class, cityId).name.get("fa")
+            );
         }
 
-        if (complain != null && complain.id == null) {
+        if (complain != null && complain.id != null) {
+            isCc = ComplainType.CustomerComplain.equals(complain.type);
+        } else {
             complain = null;
-            addNullProperties("complain");
             isCc = false;
+            addNullProperties("complain");
         }
 
-        if (BoolUtil.isTrue(isCc)) {
-            if (complain != null) {
-                try {
-                    RadioMetricComplain complainX = new RadioMetricComplain();
-                    complainX.id = complain.id;
-                    complainX = Db.modelMongo.getById(complainX);
-                    complainX.lastState = lastState;
-                    Db.modelMongo.update(new ModelCommon.Settings(complainX).mutex(false));
-                } catch (Exception ignore) {
+        if (complain != null) {
+            try {
+                RadioMetricComplain complainX = new RadioMetricComplain();
+                complainX.id = complain.id;
+                complainX = Db.modelMongo.getById(complainX);
+                complainX.lastState = lastState;
+                complain.provinceId = complainX.provinceId;
+                complain.cityId = complainX.cityId;
+                Db.modelMongo.update(new ModelCommon.Settings(complainX).dtoHasFullData(true).logEvent(false).mutex(false));
 
+                if (complain.provinceId == null || complain.cityId == null) {
+                    ServiceLog.log.error("! bad complain province/city {}", id);
+                } else {
+                    complain.address = Site.normaliseAddress(
+                        complain.address,
+                        ServiceDtoCache.asDto(Province.class, complain.provinceId).name.get("fa"),
+                        ServiceDtoCache.asDto(City.class, complain.cityId).name.get("fa")
+                    );
+                    complain.complainerAddress = Site.normaliseAddress(
+                        complain.complainerAddress,
+                        ServiceDtoCache.asDto(Province.class, complain.provinceId).name.get("fa"),
+                        ServiceDtoCache.asDto(City.class, complain.cityId).name.get("fa")
+                    );
                 }
+            } catch (NoContentException e) {
+                complain = null;
+                isCc = false;
+                addNullProperties("complain");
+                ServiceLog.log.error("! no complain {}", id);
+            } catch (Exception e) {
+                ServiceLog.log.error("! {}", id, e);
             }
         }
 
@@ -243,15 +387,9 @@ public class RadioMetricFlow extends DtoBase {
             return true;
         }
 
-        if (RadioMetricComplain.isEmpty(complain)) {
-            complain = null;
-            addNullProperties("complain");
-            isCc = false;
-        } else {
-            isCc = ComplainType.CustomerComplain.equals(complain.type);
-        }
+        isDrone = BoolUtil.isTrue(isDrone);
 
-        measurementDateTime = logDateTime100;
+        measurementDateTime = isDrone ? logDateTimeX : logDateTime100;
         assignable = isAssignable(lastState, site == null ? null : site.btsStatusId);
 
         if (site != null) {
@@ -262,9 +400,13 @@ public class RadioMetricFlow extends DtoBase {
                 }
             }
 
-            measurementUrl100 = getMeasurementPath(site.code, id, "100", true, true);
-            measurementUrl150 = getMeasurementPath(site.code, id, "150", true, true);
-            measurementUrl170 = getMeasurementPath(site.code, id, "170", true, true);
+            if (isDrone) {
+                measurementUrlX = getMeasurementPath(site.code, id, "X", true, true);
+            } else {
+                measurementUrl100 = getMeasurementPath(site.code, id, "100", true, true);
+                measurementUrl150 = getMeasurementPath(site.code, id, "150", true, true);
+                measurementUrl170 = getMeasurementPath(site.code, id, "170", true, true);
+            }
         }
 
 
@@ -277,14 +419,20 @@ public class RadioMetricFlow extends DtoBase {
             reportedProvince = Services.get(ServiceDtoCache.class).getDto(Province.class, site.provinceId).name.get("fa");
 
             StringBuilder msg = new StringBuilder();
-            if (densityAverage6min100 == null) {
-                msg.append("100cm logfile not uploaded\n");
-            }
-            if (densityAverage6min150 == null) {
-                msg.append("100cm logfile not uploaded\n");
-            }
-            if (densityAverage6min170 == null) {
-                msg.append("100cm logfile not uploaded\n");
+            if (isDrone) {
+                if (densityAverage6minX == null) {
+                    msg.append("Xcm logfile not uploaded\n");
+                }
+            } else {
+                if (densityAverage6min100 == null) {
+                    msg.append("100cm logfile not uploaded\n");
+                }
+                if (densityAverage6min150 == null) {
+                    msg.append("150cm logfile not uploaded\n");
+                }
+                if (densityAverage6min170 == null) {
+                    msg.append("170cm logfile not uploaded\n");
+                }
             }
             if (horizontalDistanceFromLocation == null) {
                 msg.append("horizontal distance from location is missing\n");
@@ -425,6 +573,9 @@ public class RadioMetricFlow extends DtoBase {
     }
 
     public void afterFetchData() {
+        if (site == null) {
+            return;
+        }
         if (siteLocation != null) {
             siteLocation.round(Param.LOCATION_DECIMALS);
         }
@@ -448,6 +599,7 @@ public class RadioMetricFlow extends DtoBase {
         public Boolean reRadioMetric;
 
         public Boolean isCc;
+        public Boolean isDrone;
 
         public Site.Viewable site;
         public RadioMetricComplain.Viewable complain;
@@ -509,6 +661,10 @@ public class RadioMetricFlow extends DtoBase {
         public String committableMessage;
         public Boolean isCommittable;
 
+        public Boolean isMeasurementRecordCountAcceptableX;
+        public Boolean isMeasurementGpsDataAvailableX;
+        public Boolean isMeasurementTimeAcceptableX;
+
         public Boolean isMeasurementRecordCountAcceptable100;
         public Boolean isMeasurementGpsDataAvailable100;
         public Boolean isMeasurementTimeAcceptable100;
@@ -521,6 +677,14 @@ public class RadioMetricFlow extends DtoBase {
         public Boolean isMeasurementGpsDataAvailable170;
         public Boolean isMeasurementTimeAcceptable170;
 
+        public Double densityMinX;
+        public Double densityMaxX;
+        public Double densityAverage6minX;
+        public Double densityAverageDevice6minX;
+        public Double minRadiationLevelX;
+        public Double densityAverageDivMinRadiationX;
+        public DateTime logDateTimeX;
+        public RadioMetricRadiationStatus radiationStatusX;
 
         public Double densityMin100;
         public Double densityMax100;
@@ -549,6 +713,7 @@ public class RadioMetricFlow extends DtoBase {
         public DateTime logDateTime170;
         public RadioMetricRadiationStatus radiationStatus170;
 
+        public Boolean isMwCm2X;
         public Boolean isMwCm2100;
         public Boolean isMwCm2150;
         public Boolean isMwCm2170;
@@ -569,6 +734,7 @@ public class RadioMetricFlow extends DtoBase {
 
         // measurement urls > > >
         public Map<String, String> imageUrls;
+        public String measurementUrlX;
         public String measurementUrl100;
         public String measurementUrl150;
         public String measurementUrl170;
@@ -605,6 +771,14 @@ public class RadioMetricFlow extends DtoBase {
                 site.location.round(Param.LOCATION_DECIMALS);
             }
         }
+
+        public String getSiteAddress() {
+            String address = StringUtil.replace(siteAddress, "  ", " ");
+            address = StringUtil.replace(address, "  ", " ");
+            address = StringUtil.replace(address, "  ", " ");
+            address = StringUtil.ltrim(address, province.name, city.name, "شهر", "استان", "-", "_", ",", "،");
+            return " استان " + province.name + " - شهر " + city.name + " - " + address;
+        }
     }
 
 
@@ -621,6 +795,7 @@ public class RadioMetricFlow extends DtoBase {
         public Boolean reRadioMetric;
 
         public Boolean isCc;
+        public Boolean isDrone;
 
         public Site.ViewableTiny site;
         public RadioMetricComplain.ViewableTiny complain;
@@ -651,10 +826,12 @@ public class RadioMetricFlow extends DtoBase {
         public String spotAddress;
         public Location spotLocation;
 
+        public Double densityAverage6minX;
         public Double densityAverage6min100;
         public Double densityAverage6min150;
         public Double densityAverage6min170;
 
+        public Boolean isMwCm2X;
         public Boolean isMwCm2100;
         public Boolean isMwCm2150;
         public Boolean isMwCm2170;
@@ -662,6 +839,7 @@ public class RadioMetricFlow extends DtoBase {
         // > > > CHECKING
         public Boolean isCommittable;
         public String committableMessage;
+        public String comments;
         // < < < CHECKING
 
 

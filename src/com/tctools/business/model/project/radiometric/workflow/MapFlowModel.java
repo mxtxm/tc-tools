@@ -20,15 +20,18 @@ public class MapFlowModel {
             params,
             new RadioMetricFlow.ViewableTiny()
         );
- //       int i = 0;
+
         List<RadioMetricMapFlow> items = new ArrayList<>(data.data.size());
         for (Dto dto : data.data) {
             RadioMetricFlow.ViewableTiny flow = (RadioMetricFlow.ViewableTiny) dto;
             if (flow.site.location == null || flow.site.location.isEmpty()) {
                 continue;
             }
-            items.add(new RadioMetricMapFlow(flow));
-//            ++i;
+            RadioMetricMapFlow mFlow = new RadioMetricMapFlow(flow);
+            if ("OLD WORKFLOW".equals(flow.comments)) {
+                mFlow.assignable = false;
+            }
+            items.add(mFlow);
         }
         return items;
     }

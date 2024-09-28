@@ -3,6 +3,7 @@ package com.tctools.business.admin.model;
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.Role;
 import com.tctools.business.service.locale.AppLangKey;
+import com.tctools.common.Param;
 import com.vantar.admin.database.data.panel.DataUtil;
 import com.vantar.database.dto.Dto;
 import com.vantar.exception.VantarException;
@@ -77,6 +78,7 @@ public class AdminApp {
     public static void extendMenu(Params params, Map<String, String> menu) {
         if (Services.get(ServiceAuth.class).hasAccess(params, Role.MANAGER)) {
             menu.put(Locale.getString(AppLangKey.ADMIN_IMPORT_EXPORT), "/admin/import/index");
+            menu.put("Tools", "/admin/tools/index");
         }
     }
 
@@ -93,10 +95,10 @@ public class AdminApp {
     }
 
     public static void factoryResetAfter() {
-        DirUtil.makeDirectory("/opt/tc-tools/backup/");
-        DirUtil.makeDirectory("/opt/tc-tools/documents/");
-        DirUtil.makeDirectory("/opt/tc-tools/files/radiometric/");
-        DirUtil.makeDirectory("/opt/tc-tools/files/temp/");
-        DirUtil.makeDirectory("/opt/tc-tools/files/user/");
+        DirUtil.makeDirectory(Param.RADIO_METRIC_DIR + "backup/");
+        DirUtil.makeDirectory(Param.RADIO_METRIC_DIR + "documents/");
+        DirUtil.makeDirectory(Param.RADIO_METRIC_DIR + "files/radiometric/");
+        DirUtil.makeDirectory(Param.RADIO_METRIC_DIR + "files/temp/");
+        DirUtil.makeDirectory(Param.RADIO_METRIC_DIR + "files/user/");
     }
 }

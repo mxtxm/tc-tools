@@ -232,7 +232,7 @@ public class AdminSiteImport {
                     }
 
                     if (collocationTypeOther != null) {
-                        site.collocations = new ArrayList<>();
+                        site.collocations = new HashSet<>();
                         String text = normalizeMore(shared);
                         for (String operatorName : operatorNames) {
                             if (text.contains(operatorName)) {

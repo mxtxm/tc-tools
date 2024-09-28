@@ -16,7 +16,7 @@ public class ExportCommon {
     protected static final Logger log = LoggerFactory.getLogger(ExportCommon.class);
 
 
-    protected static String getValue(Object obj) {
+    public static String getValue(Object obj) {
         if (obj == null) {
             return "";
         }
@@ -25,9 +25,12 @@ public class ExportCommon {
             s = StringUtil.rtrim(s, '0');
             s = StringUtil.rtrim(s, '.');
             return s;
-            //return s.endsWith(".0") ? StringUtil.remove(s, ".0") : s;
         }
-        return obj.toString();
+        String v = obj.toString();
+        if ("undefined".equalsIgnoreCase(v)) {
+            return "";
+        }
+        return v;
     }
 
     protected static String getValueObj(String obj) {

@@ -1,23 +1,123 @@
 # TC-Tools #
+* https://www.rf-emf.nak-mci.ir
 
-todo: user
-todo: email --> servers
-todo: monitoring
-
-
-https://www.rf-emf.nak-mci.ir
-http://185.147.162.67:8080/ui/radio/metric/site/zip?id=38806
 
 ## Todo ##
-* HTTPS
 * Normal ---> Regular
 * date time --> handle
+todo: pahbad ertefa faghat yekie
+TODO: KHALABAN=PARTOKAR
+TODO: karshenase tahiye konande (texti bashe)
+TODO: khalaban = partokar
+todo: word gozaresh -> 6 ---> ax near medical o ammozeshi biad age dasht
+* todo: add type=drone to all workflow services 
+* todo: add type=drone to all reports services
+* todo: add type=drone word template
+* todo: add type=drone to all ui pages
+* todo: cc-> normal ---> eine normal barkhord shavad
+* todo: GL0756 --> complain normal ---> map ---> cc nabashe
+* TODO: siteLocation ---> BASHE
+* WAVE CONTROL ---> CC NORMAL --> CC NABAHSE
+* ADDRESS DAGHIGH --> CITY PROVINCE TAHESH MIOFTE
+* verified as excel
+* near site --> when state is pending does not show 
+* word ---> form
+* min --> null
+* 5 ax drone
+* beja adadhaye ghermez noghteh chin
 
 
-site import
-framework update
-site duplicate patch
-fix cc missing file in report as1356 6part 1png
+## 2024-8-11 2.14 ##
+* add: assignable to search export
+* fix: upload image files
+* fix: map size
+* updates: ui
+
+
+
+## 2024-8-10 2.13 ##
+* add: assignable to search
+
+
+## 2024-7-17 2.12 ##
+* update: do not show "OLD WORKFLOW" as assignable
+
+## 2024-7-16 2.11 ##
+* check: cc/normal dto
+* fix: address export site/word
+* fix: cc/normal export site/word
+* fix: cc/normal export search control
+* fix: cc/normal export wave control
+* fix: cc/normal map search
+* fix: ui/radio/metric/flow/get > map > site.location ---> siteLocation (updated by tech)
+
+
+## 2024-7-01 2.10 ##
+* add frequency extract TH3126 -> added "TDLTE"
+
+
+## 2024-6-22 2.9 ##
+* add: drone image types:
+    * Drone
+    * TargetBuildingFromTower
+    * TargetBuilding
+    * FlightControlScreen
+    * NearCenter
+* add: drone mode: "/ui/radio/metric/log/delete" --> height=X
+* add: drone mode: "/ui/radio/metric/measurement/submit" --> height=X
+
+
+## 2024-6-22 2.8 ##
+* add: template site-radiometric-drone.docx
+* change: site.address --> trim province and city
+* change: complain.address --> trim province and city
+* change: flow.siteAddress --> trim province and city
+* word: flow.siteAddress --> format add - city - province
+* patch: address normalize 
+* patch: CCConflictFix 
+* patch: CityFix 
+* data: cleanup cc conflicts
+
+
+
+
+## 2024-6-8 2.7 ##
+* create: list of comments "CONVERT MSS MATCH" or "MANUALLY APPROVED"
+* patch: OldStateToPending --> set to pending if comments "CONVERT MSS MATCH" or "MANUALLY APPROVED", set comments to "OLD WORKFLOW"
+    * bazras, date measurement
+    * complain ----> 32894 AR0793
+    * complain ----> 32895 ES0010
+    * complain ----> 32896 AS0122
+    * has data ----> 6021 KM0215
+    * has data ----> 6453 KM0986
+    * has data ----> 6471 KM1124
+    * has data ----> 9411 QN0022
+    * has data ----> 9447 QN0059
+    * has data ----> 9561 QN0200
+    * has data ----> 9568 QN0207
+    * has data ----> 12382 GL0440
+    * has data ----> 12467 GL0300
+    * has data ----> 12512 GL0536
+    * has data ----> 12534 GL0530
+    * has data ----> 12578 GL0540
+    * has data ----> 12618 GL0202
+    * has data ----> 12690 GL0017
+    * has data ----> 12691 GL0109
+    * has data ----> 12852 GL0443
+    * has data ----> 15287 KM0555
+    * has data ----> 16943 TH0699
+    * has data ----> 17248 TH1888
+    * has data ----> 17468 TH2084
+    * has data ----> 18015 TH2079
+* update: map --> "OLD WORKFLOW" --> show different marker
+* update: /ui/radio/metric/flows/search/map --> tag added to be able to differentiate between markers
+
+
+## 2024-5-05 2.6 ##
+* site import
+* framework update
+* site duplicate patch
+* fix cc missing file in report as1356 6part 1png
 
 
 ## 2024-4-21 2.5 ##

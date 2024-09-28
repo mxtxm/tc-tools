@@ -1,6 +1,7 @@
 package com.tctools.business.admin.model;
 
 import com.tctools.business.service.locale.AppLangKey;
+import com.tctools.common.Param;
 import com.vantar.admin.index.Admin;
 import com.vantar.exception.FinishException;
 import com.vantar.locale.Locale;
@@ -18,7 +19,7 @@ public class AdminImageBrowse {
         WebUi ui = Admin.getUi(Locale.getString(AppLangKey.ADMIN_IMAGE_BROWSE), params, response, false);
 
         try {
-            drawStructure(ui, "/static/", "/opt/tc-tools/files/");
+            drawStructure(ui, "/static/", Param.RADIO_METRIC_DIR + "files/");
         } catch (IOException e) {
             ui.addErrorMessage(e);
         }

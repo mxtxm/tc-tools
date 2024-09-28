@@ -10,6 +10,7 @@ import com.tctools.common.util.Docx;
 import com.vantar.business.ModelCommon;
 import com.vantar.database.common.*;
 import com.vantar.database.datatype.Location;
+import com.vantar.database.dto.Dto;
 import com.vantar.database.query.*;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
@@ -43,25 +44,26 @@ public class WorkFlowModel {
     }
 
     public static ResponseMessage update(Params params) throws VantarException {
-        TempParams tempParams;
-        try {
-            tempParams = params.getJson(TempParams.class);
-        } catch (Exception e) {
-            throw new InputException(VantarKey.INVALID_JSON_DATA);
-        }
-
-        if (tempParams == null || NumberUtil.isIdInvalid(tempParams.id)) {
-            throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
-        }
-
+//        TempParams tempParams;
+//        try {
+//            tempParams = params.getJson(TempParams.class);
+//        } catch (Exception e) {
+//            throw new InputException(VantarKey.INVALID_JSON_DATA);
+//        }
+//
+//        if (tempParams == null || NumberUtil.isIdInvalid(tempParams.id)) {
+//            throw new InputException(VantarKey.INVALID_ID, "id (RadioMetricFlow)");
+//        }
+//
         RadioMetricFlow flowX = new RadioMetricFlow();
-        flowX.id = tempParams.id;
-
-        try {
-            flowX = Db.modelMongo.getById(flowX, params.getLang());
-        } catch (VantarException e) {
-            throw new ServerException(VantarKey.FAIL_FETCH);
-        }
+//        flowX.id = tempParams.id;
+//
+//
+//        try {
+//            flowX = Db.modelMongo.getById(flowX, params.getLang());
+//        } catch (VantarException e) {
+//            throw new ServerException(VantarKey.FAIL_FETCH);
+//        }
 
         return Db.modelMongo.update(
             new ModelCommon.Settings(params, flowX)
@@ -176,7 +178,54 @@ public class WorkFlowModel {
     }
 
     public static PageData search(Params params) throws VantarException {
-        return Db.modelMongo.search(params, new RadioMetricFlow.Viewable());
+        return Db.modelMongo.search(params, new RadioMetricFlow.Viewable(), new ModelCommon.QueryEvent() {
+            @Override
+            public void beforeQuery(QueryBuilder q) {
+                if (params.extractFromJson("assignable", Boolean.class, false)) {
+                    setQuery(q);
+                }
+            }
+
+            @Override
+            public void afterSetData(Dto dto) {
+
+            }
+
+            @Override
+            public void afterSetData(Dto dto, List<?> list) {
+
+            }
+        });
+    }
+
+    public static void setQuery(QueryBuilder q) {
+        q.condition()
+            .notEqual("comments", "OLD WORKFLOW")
+            .addCondition(
+                new QueryCondition(QueryOperator.OR)
+                    .equal("site.btsStatusId", 3) // FLM In service
+                    .equal("site.btsStatusId", 5) // In service
+                    .equal("site.btsStatusId", 6) // NI In service
+            );
+
+        boolean hasStateCondition = false;
+        for (QueryMatchItem item : q.getCondition().q) {
+            if ("lastState".equalsIgnoreCase(item.fieldName)) {
+                hasStateCondition = true;
+                break;
+            }
+        }
+
+        if (!hasStateCondition) {
+            q.condition().addCondition(
+                new QueryCondition(QueryOperator.OR)
+                    .equal("lastState", RadioMetricFlowState.Pending)
+                    .equal("lastState", RadioMetricFlowState.Problematic)
+                    .equal("lastState", RadioMetricFlowState.Returned)
+                    .equal("lastState", RadioMetricFlowState.Revise)
+                    .equal("lastState", RadioMetricFlowState.Terminated)
+            );
+        }
     }
 
     public static RadioMetricFlow.Viewable get(Params params) throws VantarException {
@@ -228,6 +277,7 @@ public class WorkFlowModel {
 
         uploadImages(params, flow, success, errors);
 
+        applyMeasurement(params, "X", flow, success, errors);
         applyMeasurement(params, "100", flow, success, errors);
         applyMeasurement(params, "150", flow, success, errors);
         applyMeasurement(params, "170", flow, success, errors);
@@ -306,7 +356,6 @@ public class WorkFlowModel {
                 );
                 return;
             }
-
             uploaded.moveTo(path);
             if (imageType.equals(RadioMetricPhotoType.TowerView.name())) {
                 resize(path, 750, 999);

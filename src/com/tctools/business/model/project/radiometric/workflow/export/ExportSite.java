@@ -10,6 +10,8 @@ import com.vantar.database.common.Db;
 import com.vantar.database.query.QueryBuilder;
 import com.vantar.exception.*;
 import com.vantar.locale.VantarKey;
+import com.vantar.service.log.ServiceLog;
+import com.vantar.util.bool.BoolUtil;
 import com.vantar.util.collection.CollectionUtil;
 import com.vantar.util.file.*;
 import com.vantar.util.number.NumberUtil;
@@ -27,8 +29,6 @@ public class ExportSite extends ExportCommon {
 
 
     public static void zip(Params params, HttpServletResponse response) throws VantarException {
-//        boolean x = FileUtil.exists("/opt/tc-tools/files/radiometric/AS1356/complain/غلامرضا خالقی -  درخواست شماره 1131239 - تبریز.png");
-//        TestController.log.error(">>>>>>>>{}", x);
         RadioMetricFlow.Viewable flow = Db.modelMongo.getById(params, new RadioMetricFlow.Viewable());
 
         String zipTempDir = DirUtil.getTempDirectory();
@@ -37,21 +37,16 @@ public class ExportSite extends ExportCommon {
 
         docx(params, response, false);
 
-        if (!RadioMetricComplain.isEmpty(flow.complain)) {
+        if (flow.isCc) {
             QueryBuilder q = new QueryBuilder(new RadioMetricComplain.Viewable());
             q.condition().equal("ccnumber", flow.complain.ccnumber);
             try {
                 flow.complain = Db.modelMongo.getFirst(q);
-            } catch (Exception e) {
-//                log.info(">>>>");
+            } catch (Exception ignore) {
+
             }
 
-  //          log.info(">>>>{}", flow.complain);
-
-            //39841
             String imagePath = flow.complain.getImageFilePath(true);
-    //        log.info(">>>>{}", imagePath);
-            //        'غلامرضا خالقی -  درخواست شماره 1131239 - تبریز.png'
             if (imagePath != null) {
                 FileUtil.copy(imagePath, flow.getPath() + flow.complain.getImageFilename());
             }
@@ -60,42 +55,45 @@ public class ExportSite extends ExportCommon {
                 String ccnumber = flow.complain.ccnumber;
                 String path = flow.getPath();
 
-//                log.error(">>>>>>{}", imagePath);
-//                log.error(">>>>>>{}", ccnumber);
-//                log.error(">>>>>>{}", path);
-
                 DirUtil.browseDir(Param.RADIO_METRIC_FILES + flow.site.code + "/complain/", file -> {
                     if (file.getName().contains(ccnumber)) {
-                        log.error(">>>>>>{} ---> {}", file.getAbsolutePath(), path + file.getName());
-
                         FileUtil.copy(file.getAbsolutePath(), path + file.getName());
                     }
                 });
-            } catch (Exception e) {
-                log.error(">>>>>>", e);
+            } catch (Exception ignore) {
+
             }
         }
 
         String dir = Param.RADIO_METRIC_FILES + flow.site.code + "/measurement/" + flow.id;
 
         try {
-            String csv100 = flow.getPath() + flow.site.code + "__100CM__OK.csv";
-            String csv150 = flow.getPath() + flow.site.code + "__150CM__OK.csv";
-            String csv170 = flow.getPath() + flow.site.code + "__170CM__OK.csv";
-            String csv100x = flow.getPath() + flow.site.code + "__100CM__OK.xlsx";
-            String csv150x = flow.getPath() + flow.site.code + "__150CM__OK.xlsx";
-            String csv170x = flow.getPath() + flow.site.code + "__170CM__OK.xlsx";
-            if (flow.isMwCm2100) {
-                FileUtil.removeFile(csv100);
-                FileUtil.removeFile(csv100x);
-            }
-            if (flow.isMwCm2150) {
-                FileUtil.removeFile(csv150);
-                FileUtil.removeFile(csv150x);
-            }
-            if (flow.isMwCm2170) {
-                FileUtil.removeFile(csv170);
-                FileUtil.removeFile(csv170x);
+            if (BoolUtil.isTrue(flow.isDrone)) {
+                String csvX = flow.getPath() + flow.site.code + "__droneCM__OK.csv";
+                String csvXx = flow.getPath() + flow.site.code + "__droneCM__OK.xlsx";
+                if (flow.isMwCm2X) {
+                    FileUtil.removeFile(csvX);
+                    FileUtil.removeFile(csvXx);
+                }
+            } else {
+                String csv100 = flow.getPath() + flow.site.code + "__100CM__OK.csv";
+                String csv150 = flow.getPath() + flow.site.code + "__150CM__OK.csv";
+                String csv170 = flow.getPath() + flow.site.code + "__170CM__OK.csv";
+                String csv100x = flow.getPath() + flow.site.code + "__100CM__OK.xlsx";
+                String csv150x = flow.getPath() + flow.site.code + "__150CM__OK.xlsx";
+                String csv170x = flow.getPath() + flow.site.code + "__170CM__OK.xlsx";
+                if (flow.isMwCm2100) {
+                    FileUtil.removeFile(csv100);
+                    FileUtil.removeFile(csv100x);
+                }
+                if (flow.isMwCm2150) {
+                    FileUtil.removeFile(csv150);
+                    FileUtil.removeFile(csv150x);
+                }
+                if (flow.isMwCm2170) {
+                    FileUtil.removeFile(csv170);
+                    FileUtil.removeFile(csv170x);
+                }
             }
         } catch (Exception ignore) {
 
@@ -129,7 +127,8 @@ public class ExportSite extends ExportCommon {
             String s = StringUtil.replace(
                 StringUtil.remove(
                     getValue(flow.site.frequencyBand).toUpperCase(),
-                    "2G", "3G", "4G", "5G", "MHZ", "(", ")"), '-', ','
+                    "2G", "3G", "4G", "5G", "MHZ", "TDLTE", "(", ")"
+                ), '-', ','
             );
             String[] set = StringUtil.splitToSet(s, ',').toArray(new String[0]);
             int[] freqs = new int[set.length];
@@ -147,15 +146,9 @@ public class ExportSite extends ExportCommon {
 
         mapping.put("siteCode", getValue(flow.site.code));
         mapping.put("siteName", getValue(flow.site.name));
-        mapping.put(
-            "siteAddress",
-                " استان "
-                    + getValue(flow.province.name) + " - "
-                    + " شهر "
-                    + getValue(flow.city.name)
-                    + " - "
-                    + getValue(flow.siteAddress)
-        );
+
+        mapping.put("siteAddress", flow.getSiteAddress());
+
         mapping.put("latitude", flow.siteLocation == null ? "" : getValue(flow.siteLocation.latitude));
         mapping.put("longitude", flow.siteLocation == null ? "" : getValue(flow.siteLocation.longitude));
 
@@ -372,7 +365,7 @@ public class ExportSite extends ExportCommon {
         String complainComplainerName = "";
         String complainTel = "";
         String complainMobile = "";
-        if (!RadioMetricComplain.isEmpty(flow.complain)) {
+        if (flow.isCc) {
             complainFloorCount = getValue(flow.complain.floorCount);
             complainComplainerName = getValue(flow.complain.complainerName);
             complainTel = getValue(flow.complain.complainerPhone);
@@ -441,89 +434,120 @@ public class ExportSite extends ExportCommon {
                 100
             )
         );
-        mapping.put(
-            "imgLocation1",
-            getImage(
-                RadioMetricFlow.getImagePath(RadioMetricPhotoType.TowerView, flow.site.code, flow.id, false, true),
-                350,
-                450
-            )
-        );
-        mapping.put(
-            "imgLocation2",
-            getImage(
-                RadioMetricFlow.getImagePath(RadioMetricPhotoType.ProbeViewInFrontOfMeasuredSector, flow.site.code, flow.id, false, true),
-                350,
-                450
-            )
-        );
 
-        Map<String, String> proximityImages = Proximity.getImagePaths(flow.site.code, flow.id, false, true);
-        String proximityImageItem = proximityImages.get(StringUtil.toKababCase(RadioMetricProximityType.HealthFacility.toString()));
-        if (StringUtil.isEmpty(proximityImageItem)) {
-            proximityImageItem = proximityImages.get(StringUtil.toKababCase(RadioMetricProximityType.EducationalInstitution.toString()));
-        }
 
-        if (!StringUtil.isEmpty(proximityImageItem)) {
+
+        if (BoolUtil.isTrue(flow.isDrone)) {
+            mapping.put(
+                "imgLocation1",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.Drone, flow.site.code, flow.id, false, true),
+                    350, 450
+                )
+            );
+            mapping.put(
+                "imgLocation2",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.TargetBuildingFromTower, flow.site.code, flow.id, false, true),
+                    350, 450
+                )
+            );
             mapping.put(
                 "imgLocation3",
                 getImage(
-                    proximityImageItem,
-                    210,
-                    300
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.TargetBuilding, flow.site.code, flow.id, false, true),
+                    350, 450
+                )
+            );
+            mapping.put(
+                "imgLocation4",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.FlightControlScreen, flow.site.code, flow.id, false, true),
+                    350, 450
+                )
+            );
+            mapping.put(
+                "imgLocation5",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.TowerTopView, flow.site.code, flow.id, false, true),
+                    350, 450
                 )
             );
 
-            mapping.put(
-                "dummy",
-                getImage(
-                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.Address, flow.site.code, flow.id, false, true),
-                    210,
-                    300
-                )
-            );
+
 
         } else {
             mapping.put(
-                "imgLocation3",
+                "imgLocation1",
                 getImage(
-                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.Address, flow.site.code, flow.id, false, true),
-                    210,
-                    300
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.TowerView, flow.site.code, flow.id, false, true),
+                    350, 450
+                )
+            );
+            mapping.put(
+                "imgLocation2",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.ProbeViewInFrontOfMeasuredSector, flow.site.code, flow.id, false, true),
+                    350, 450
+                )
+            );
+
+            Map<String, String> proximityImages = Proximity.getImagePaths(flow.site.code, flow.id, false, true);
+            String proximityImageItem = proximityImages.get(StringUtil.toKababCase(RadioMetricProximityType.HealthFacility.toString()));
+            if (StringUtil.isEmpty(proximityImageItem)) {
+                proximityImageItem = proximityImages.get(StringUtil.toKababCase(RadioMetricProximityType.EducationalInstitution.toString()));
+            }
+            if (!StringUtil.isEmpty(proximityImageItem)) {
+                mapping.put(
+                    "imgLocation3",
+                    getImage(
+                        proximityImageItem,
+                        210, 300
+                    )
+                );
+                mapping.put(
+                    "dummy",
+                    getImage(
+                        RadioMetricFlow.getImagePath(RadioMetricPhotoType.Address, flow.site.code, flow.id, false, true),
+                        210, 300
+                    )
+                );
+            } else {
+                mapping.put(
+                    "imgLocation3",
+                    getImage(
+                        RadioMetricFlow.getImagePath(RadioMetricPhotoType.Address, flow.site.code, flow.id, false, true),
+                        210, 300
+                    )
+                );
+            }
+            mapping.put(
+                "imgLocation4",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.TripodInLocation, flow.site.code, flow.id, false, true),
+                    210, 300
+                )
+            );
+            mapping.put(
+                "dummy2",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.Extra1, flow.site.code, flow.id, false, true),
+                    210, 300
+                )
+            );
+            mapping.put(
+                "dummy3",
+                getImage(
+                    RadioMetricFlow.getImagePath(RadioMetricPhotoType.Extra2, flow.site.code, flow.id, false, true),
+                    210, 300
                 )
             );
         }
 
-        mapping.put(
-            "imgLocation4",
-            getImage(
-                RadioMetricFlow.getImagePath(RadioMetricPhotoType.TripodInLocation, flow.site.code, flow.id, false, true),
-                210,
-                300
-            )
-        );
-
-        mapping.put(
-            "dummy2",
-            getImage(
-                RadioMetricFlow.getImagePath(RadioMetricPhotoType.Extra1, flow.site.code, flow.id, false, true),
-                210,
-                300
-            )
-        );
-
-        mapping.put(
-            "dummy3",
-            getImage(
-                RadioMetricFlow.getImagePath(RadioMetricPhotoType.Extra2, flow.site.code, flow.id, false, true),
-                210,
-                300
-            )
-        );
-
 
         String siteCode = flow.site.code.toUpperCase();
-        String filename = siteCode + (RadioMetricComplain.isEmpty(flow.complain) ? "" : ("__" + flow.complain.ccnumber)) + ".docx";
+        //String filename = siteCode + (RadioMetricComplain.isEmpty(flow.complain) ? "" : ("__" + flow.complain.ccnumber)) + ".docx";
+        String filename = siteCode + (!flow.isCc ? "" : ("__" + flow.complain.ccnumber)) + ".docx";
         String filePath = flow.getPath();
         try {
             Docx.createFromTemplate(Param.RADIO_METRIC_SITE_TEMPLATE, filePath, filename, mapping);
@@ -549,9 +573,14 @@ public class ExportSite extends ExportCommon {
     }
 
     private static String dateSet(String d) {
-        String[] dt = StringUtil.split(d, ' ');
-        String[] parts = StringUtil.split(dt[0], '/');
-        return parts.length != 3 ? "" : parts[2] + '/' + parts[1] + '/' + parts[0];
+        try {
+            String[] dt = StringUtil.split(d, ' ');
+            String[] parts = StringUtil.split(dt[0], '/');
+            return parts.length != 3 ? "" : parts[2] + '/' + parts[1] + '/' + parts[0];
+        } catch (Exception e) {
+            ServiceLog.log.error("!!!!", e);
+            return "";
+        }
     }
 
     private static Object getImage(String path, int w, int h) {

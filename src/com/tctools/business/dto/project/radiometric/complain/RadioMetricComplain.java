@@ -5,7 +5,6 @@ import com.tctools.business.dto.project.radiometric.workflow.RadioMetricFlowStat
 import com.tctools.business.dto.site.Site;
 import com.tctools.business.dto.user.User;
 import com.tctools.common.Param;
-import com.tctools.web.patch.TestController;
 import com.vantar.database.datatype.Location;
 import com.vantar.database.dto.*;
 import com.vantar.service.Services;
@@ -42,6 +41,7 @@ public class RadioMetricComplain extends DtoBase {
     @Required
     public String siteCode;
     @Localized
+    @NoList
     public Map<String, String> siteName;
 
     @Required
@@ -67,6 +67,7 @@ public class RadioMetricComplain extends DtoBase {
     public Long cityId;
     @Required
     public String address;
+    public String addressOld;
     // < < < location
 
     // complainer > > >
@@ -74,6 +75,7 @@ public class RadioMetricComplain extends DtoBase {
     public String complainerMobile;
     public String complainerPhone;
     public String complainerAddress;
+    public String complainerAddressOld;
     public String complainerComments;
 
     public RadioMetricFlowState lastState;
@@ -103,11 +105,9 @@ public class RadioMetricComplain extends DtoBase {
     private static String getImagePathX(String filename, String siteCode, boolean isUrl, boolean exists) {
         try {
             String filePath = Param.RADIO_METRIC_FILES + siteCode + "/complain/" + filename;
-            TestController.log.error(">>>>>>{}", filePath);
             if (exists && !FileUtil.exists(filePath)) {
                 return null;
             }
-
             return isUrl ? Param.RADIO_METRIC_URL + siteCode + "/complain/" + filename : filePath;
         } catch (Exception e) {
             return null;
@@ -136,8 +136,22 @@ public class RadioMetricComplain extends DtoBase {
 
     @Override
     public boolean beforeUpdate() {
-        address = Site.normaliseAddress(address);
-        complainerAddress = Site.normaliseAddress(complainerAddress);
+        try {
+            String Xaddress = Site.normaliseAddress(
+                address,
+                ServiceDtoCache.asDto(Province.class, provinceId).name.get("fa"),
+                ServiceDtoCache.asDto(City.class, cityId).name.get("fa")
+            );
+            String XcomplainerAddress = Site.normaliseAddress(
+                complainerAddress,
+                ServiceDtoCache.asDto(Province.class, provinceId).name.get("fa"),
+                ServiceDtoCache.asDto(City.class, cityId).name.get("fa")
+            );
+            address = Xaddress;
+            complainerAddress = XcomplainerAddress;
+        } catch (Exception e) {
+
+        }
 
         assignTime = new DateTime();
         if (assigneeId != null && workFlowId != null) {
@@ -169,6 +183,7 @@ public class RadioMetricComplain extends DtoBase {
     public static boolean isEmpty(RadioMetricComplain.ViewableTiny c) {
         return c == null || StringUtil.isEmpty(c.ccnumber);
     }
+
 
 
     @Storage("RadioMetricComplain")
